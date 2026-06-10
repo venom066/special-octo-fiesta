@@ -109,8 +109,12 @@ def scrape_carsensor() -> list[dict]:
             title_m = re.search(r"V90クロスカントリー[^\n]{0,80}", raw_text)
             title = title_m.group(0).strip() if title_m else raw_text[:80]
 
-            # ── D4のみ（T5/T6/B5/PHEVは除外）
-            if "D4" not in title:
+            # ── グーネットのタイトルは全角 → 半角変換してD4/CCフィルタ
+            title_han = title.translate(str.maketrans(
+                "ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ０１２３４５６７８９",
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            ))
+            if "D4" not in title_han or "クロスカントリー" not in title:
                 continue
 
             # ── 年式・走行距離
