@@ -78,15 +78,7 @@ def url_set_param(url: str, key: str, value: str) -> str:
 # ─────────────────────────────
 # カーセンサー
 # ─────────────────────────────
-
-# カーセンサーのタイトルに混入するノイズ文字列
-_CS_NOISE = [
-    "保証の種類を表示しています", "保証の種類について",
-    "360° 画像付", "オンライン相談可", "車両品質評価書付",
-    "販売店保証", "ディーラー保証",
-]
-
-def scrape_carsensor(base_url: str) -> list[dict]:
+def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
     listings = []
     session = requests.Session()
     session.headers.update(HEADERS)
@@ -107,10 +99,12 @@ def scrape_carsensor(base_url: str) -> list[dict]:
             # タイトル（バッジ・注記テキストを除去）
             car_info = item.select_one(".cassetteMain__carInfoContainer")
             if car_info:
+                # バッジ類（保証表示など）を除いた純粋な車名部分を取得
                 for badge in car_info.select(".badge, .cassetteMain__badges, .cassetteMain__label"):
                     badge.decompose()
                 raw = car_info.get_text(" ", strip=True)
-                for noise in _CS_NOISE:
+                # 既知のノイズ文字列を除去
+                for noise in ["保証の種類を表示しています", "保証の種類について", "360° 画像付", "オンライン相談可", "車両品質評価書付", "販売店保証", "ディーラー保証"]:
                     raw = raw.replace(noise, "")
                 title = " ".join(raw.split())[:100]
             else:
@@ -154,6 +148,7 @@ def scrape_carsensor(base_url: str) -> list[dict]:
                     "price_man": price_man,
                     "url": link,
                     "fingerprint": make_fingerprint(year, distance_km),
+                    "watch_name": watch_name,
                     "scraped_at": datetime.now().isoformat(),
                 })
 
@@ -172,7 +167,7 @@ def scrape_carsensor(base_url: str) -> list[dict]:
 # ─────────────────────────────
 # グーネット（GET対応）
 # ─────────────────────────────
-def scrape_goonet(base_url: str) -> list[dict]:
+def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
     listings = []
     session = requests.Session()
     session.headers.update(HEADERS)
@@ -234,6 +229,7 @@ def scrape_goonet(base_url: str) -> list[dict]:
                     "price_man": price_man,
                     "url": link,
                     "fingerprint": make_fingerprint(year, distance_km),
+                    "watch_name": watch_name,
                     "scraped_at": datetime.now().isoformat(),
                 })
 
@@ -262,6 +258,9 @@ def merge_listings(all_listings: list[dict]) -> list[dict]:
             }
         else:
             merged[fp]["sources"][listing["source"]] = listing["url"]
+            # keep watch_name if not already set
+            if not merged[fp].get("watch_name") and listing.get("watch_name"):
+                merged[fp]["watch_name"] = listing["watch_name"]
             if listing["price_man"] and (
                 not merged[fp]["price_man"]
                 or listing["price_man"] < merged[fp]["price_man"]
@@ -330,7 +329,7 @@ def main() -> None:
         if cs_url:
             print("  [カーセンサー]")
             try:
-                cs = scrape_carsensor(cs_url)
+                cs = scrape_carsensor(cs_url, watch_name=name)
                 all_raw.extend(cs)
                 print(f"  → {len(cs)} 件")
             except Exception as e:
@@ -340,7 +339,7 @@ def main() -> None:
         if goo_url:
             print("  [グーネット]")
             try:
-                goo = scrape_goonet(goo_url)
+                goo = scrape_goonet(goo_url, watch_name=name)
                 all_raw.extend(goo)
                 print(f"  → {len(goo)} 件")
             except Exception as e:
