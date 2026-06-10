@@ -235,8 +235,8 @@ def scrape_goonet() -> list[dict]:
             heading = item.select_one(".heading_inner")
             title = heading.get_text(" ", strip=True)[:100] if heading else "Unknown"
 
-            # ── D4のみ（T5/T6/B5/PHEVは除外）
-            if "D4" not in title:
+            # ── クロスカントリー + D4のみ（全角タイトル対応）
+            if "クロスカントリー" not in title or not re.search(r'[DＤ][4４]', title):
                 continue
 
             dw = item.select_one(".data-wrapper")
