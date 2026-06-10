@@ -3,7 +3,8 @@
     {
       "name": "Volvo V90 CC D4",
       "carsensor_url": "https://www.carsensor.net/usedcar/search.php?STID=CS210610&SORT=22&CARC=VO_S043&GRDKC=VO_S043_F001_K007*VO_S043_F001_K009*VO_S043_F001_K008*VO_S043_F001_K010*VO_S043_F001_K006&AR=25*40*44*45*1*47&SMAX=70000&PMAX=4000000",
-      "goonet_url": "https://www.goo-net.com/php/search/summary.php?maker_cd=4010&car_cd=40102508&pref_c=07%2C08%2C09%2C10%2C11%2C12%2C13%2C14%2C15%2C19%2C20%2C22&car_grade_cd=40102508%7C89%2C40102508%7C73%2C40102508%7C86%2C40102508%7C76&model_select_cd=40102508_89_43%2C40102508_89_46%2C40102508_73_43%2C40102508_73_46%2C40102508_86_43%2C40102508_86_46%2C40102508_76_46%2C40102508_76_43&price2=400&total_payment=1&distance2=70000&baitai=goo"
+      "goonet_url": "https://www.goo-net.com/php/search/summary.php?maker_cd=4010&car_cd=40102508&pref_c=07%2C08%2C09%2C10%2C11%2C12%2C13%2C14%2C15%2C19%2C20%2C22&car_grade_cd=40102508%7C89%2C40102508%7C73%2C40102508%7C86%2C40102508%7C76&model_select_cd=40102508_89_43%2C40102508_89_46%2C40102508_73_43%2C40102508_73_46%2C40102508_86_43%2C40102508_86_46%2C40102508_76_46%2C40102508_76_43&price2=400&total_payment=1&distance2=70000&baitai=goo",
+      "mota_url": "https://autoc-one.jp/used/searchv2/?makerFullCodes=VO&modelFullCodes=VO_S043&grades=VO_S043_F001_K010*VO_S043_F001_K009*VO_S043_F001_K007*VO_S043_F001_K008*VO_S043_F001_K006&sort=6a"
     }
   ]
 }
