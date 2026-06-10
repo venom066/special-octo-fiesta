@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-06-10T15:46:23.881193",
-  "total": 4,
+  "updated_at": "2026-06-10T16:59:29.283610",
+  "total": 51,
   "listings": [
     {
       "source": "carsensor",
@@ -10,8 +10,8 @@
       "price_man": 303,
       "url": "https://www.carsensor.net/usedcar/detail/AU7082889808/index.html",
       "fingerprint": "2020_72000",
-      "watch_name": "Volvo V90 CC D4",
-      "scraped_at": "2026-06-10T15:46:21.704640",
+      "watch_name": "V90 CC D4",
+      "scraped_at": "2026-06-10T16:58:56.102459",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7082889808/index.html"
       }
@@ -24,8 +24,8 @@
       "price_man": 318,
       "url": "https://www.carsensor.net/usedcar/detail/AU7044088004/index.html",
       "fingerprint": "2018_58000",
-      "watch_name": "Volvo V90 CC D4",
-      "scraped_at": "2026-06-10T15:46:21.706929",
+      "watch_name": "V90 CC D4",
+      "scraped_at": "2026-06-10T16:58:56.104824",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7044088004/index.html",
         "goonet": "https://www.goo-net.com/usedcar/spread/goo/14/700050839330260514002.html"
@@ -39,8 +39,8 @@
       "price_man": 328,
       "url": "https://www.carsensor.net/usedcar/detail/AU7053133931/index.html",
       "fingerprint": "2019_35000",
-      "watch_name": "Volvo V90 CC D4",
-      "scraped_at": "2026-06-10T15:46:21.709164",
+      "watch_name": "V90 CC D4",
+      "scraped_at": "2026-06-10T16:58:56.107092",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7053133931/index.html",
         "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700050342130260524005.html"
@@ -54,11 +54,687 @@
       "price_man": 399,
       "url": "https://www.carsensor.net/usedcar/detail/AU7009871495/index.html",
       "fingerprint": "2019_47000",
-      "watch_name": "Volvo V90 CC D4",
-      "scraped_at": "2026-06-10T15:46:21.711292",
+      "watch_name": "V90 CC D4",
+      "scraped_at": "2026-06-10T16:58:56.109294",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7009871495/index.html",
         "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700957241130260512003.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V90 D4 モメンタム ディーゼルターボ インテリセーフ マルーンブラウン革 ナビ DTV 全方位カメラ スマートキー DSRC オートLED パークアシストパイロット 前後ドライブレコーダ",
+      "year": 2019,
+      "distance_km": 75000,
+      "price_man": 243,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6904068259/index.html",
+      "fingerprint": "2019_75000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:00.785831",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6904068259/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700054083120260129002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V90 D4 モメンタム ディーゼルターボ (純正ナビ/全周囲C/薄茶本革/電動ゲート) ハンズフリー電動ゲート/BLIS/自動駐車&発車/衝突回避/純正18アルミ/ルーフレール/シートヒータ",
+      "year": 2020,
+      "distance_km": 22000,
+      "price_man": 279,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7032031394/index.html",
+      "fingerprint": "2020_22000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:00.788142",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7032031394/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V90 D4 ノルディック エディション ディーゼルターボ 禁煙車 サンルーフ ハーマンカードン シートヒーター 純正ナビ 全方位カメラ フルセグ BT ETC 前後ドラレコ BT BSM H",
+      "year": 2020,
+      "distance_km": 53000,
+      "price_man": 299,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7052609395/index.html",
+      "fingerprint": "2020_53000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:00.790381",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7052609395/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/14/988026053001310353002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V90 D4 インスクリプション ディーゼルターボ 白革シート HarmanKardon AppleCarPlay 外装色：マッセルブルーメタリック（721）☆ACC☆レーンキープ☆ブラインド",
+      "year": 2018,
+      "distance_km": 19000,
+      "price_man": 338,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6981771244/index.html",
+      "fingerprint": "2018_19000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:00.792653",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6981771244/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V90 T8 ツインエンジン AWD インスクリプション 4WD ブラウンナッパレザー ガラスサンルーフ 純正ナビ フルセグ 360度カメラ Bowers/Wilkinsプレミアムサラウンド ",
+      "year": 2017,
+      "distance_km": 52000,
+      "price_man": 339,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7021916911/index.html",
+      "fingerprint": "2017_52000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:00.794805",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7021916911/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V90 リチャージ プラグイン ハイブリッド T8 AWD インスクリプション 4WD ブロンド革 シートヒーター&ベンチレーション ウッドインテリア 純正HDDナビ地デジ Bowers&Wi",
+      "year": 2021,
+      "distance_km": 59000,
+      "price_man": 395,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6879305155/index.html",
+      "fingerprint": "2021_59000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:00.797096",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6879305155/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700951041330260311002.html"
+      }
+    },
+    {
+      "source": "goonet",
+      "title": "ボルボ Ｖ９０ Ｄ４　モメンタム　・ディーゼルターボ　純正ナビ　全周囲カメラ　ＥＴＣ　前後ドラレコ　薄茶本革シート　シートヒーター　ハンズフリー電動ゲート　レークル　ソナー　自動発車＆駐車　衝突回避　",
+      "year": 2020,
+      "distance_km": 23000,
+      "price_man": null,
+      "url": "https://www.goo-net.com/usedcar/spread/goo/13/700056108830260522004.html",
+      "fingerprint": "2020_23000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:02.950018",
+      "sources": {
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700056108830260522004.html"
+      }
+    },
+    {
+      "source": "goonet",
+      "title": "ボルボ Ｖ９０ Ｄ４　モメンタム　２０２０年式　クリーンディーゼル　レザーシート　フロントシートヒーター　３６０度カメラ　純正１８インチアルミホイール",
+      "year": 2020,
+      "distance_km": 64000,
+      "price_man": null,
+      "url": "https://www.goo-net.com/usedcar/spread/goo/13/700957241230260531001.html",
+      "fingerprint": "2020_64000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:02.954293",
+      "sources": {
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700957241230260531001.html"
+      }
+    },
+    {
+      "source": "goonet",
+      "title": "ボルボ Ｖ９０ Ｄ４　インスクリプション　ＡＣＣ　レーンキープ　ＢＳＭ　ＨＵＤ　Ｈａｒｍａｎ　Ｋａｒｄｏｎ　白革シート　Ｐシート　Ｈ　ベンチレーション　ステアリングＨ　純ナビ　フルセグ　ＣａｒＰｌａｙ",
+      "year": 2018,
+      "distance_km": 20000,
+      "price_man": null,
+      "url": "https://www.goo-net.com/usedcar/spread/goo/11/941026042500506963001.html",
+      "fingerprint": "2018_20000",
+      "watch_name": "V90 D4+T8",
+      "scraped_at": "2026-06-10T16:59:02.956902",
+      "sources": {
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/11/941026042500506963001.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD インテリセーフ・ACC・本革エアシート・ナビTV・全周囲カメラ・CarPlay・Harman/Kardonサウンド・純正1",
+      "year": 2020,
+      "distance_km": 80000,
+      "price_man": 277,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6944685200/index.html",
+      "fingerprint": "2020_80000",
+      "watch_name": "XC60 D4+T",
+      "scraped_at": "2026-06-10T16:59:04.963047",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6944685200/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700050003130260412002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ XC60 D4 AWD モメンタム ディーゼルターボ 4WD ボルボSENSUS BT/CD/DTV ETC LEDライト ☆ボルボSENSUS（センターディスプレイ） ・Bluetooth ",
+      "year": 2020,
+      "distance_km": 46000,
+      "price_man": 335,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6956590900/index.html",
+      "fingerprint": "2020_46000",
+      "watch_name": "XC60 D4+T",
+      "scraped_at": "2026-06-10T16:59:04.965308",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6469405739/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/11/941026050400506963003.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD エアサス 茶革 SR ACC HUD 360 ハーマンC エアサス車サンルーフブラウンレザーシートベンチレーターマッサージ",
+      "year": 2020,
+      "distance_km": 13000,
+      "price_man": 384,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7005454413/index.html",
+      "fingerprint": "2020_13000",
+      "watch_name": "XC60 D4+T",
+      "scraped_at": "2026-06-10T16:59:04.969487",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7005454413/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/941026032900504480001.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD ワンオーナー ハーマンカードン ディーゼルターボ 純正ナビ 全方位カメラ フルセグTV iPod AppleCarPlay",
+      "year": 2020,
+      "distance_km": 43000,
+      "price_man": 384,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7026183512/index.html",
+      "fingerprint": "2020_43000",
+      "watch_name": "XC60 D4+T",
+      "scraped_at": "2026-06-10T16:59:04.971575",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7026183512/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/12/941026052100508501002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD クライメートパッケージ harman/kardonサウンド 360度カメラ 白革シート ステアリングヒーターシートヒーター",
+      "year": 2020,
+      "distance_km": 37000,
+      "price_man": 386,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7066000715/index.html",
+      "fingerprint": "2020_37000",
+      "watch_name": "XC60 D4+T",
+      "scraped_at": "2026-06-10T16:59:04.973891",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7066000715/index.html"
+      }
+    },
+    {
+      "source": "goonet",
+      "title": "ボルボ ＸＣ６０ Ｄ４　ＡＷＤ　インスクリプション　クライメートＰＫＧ　リヤシートヒーター　ステアリングホイールヒーター　ｈａｒｍａｎ／ｋａｒｄｏｎサウンド　ヘッドアップディスプレイ　前席パワーシート",
+      "year": 2020,
+      "distance_km": 38000,
+      "price_man": null,
+      "url": "https://www.goo-net.com/usedcar/spread/goo/14/941026060500541761001.html",
+      "fingerprint": "2020_38000",
+      "watch_name": "XC60 D4+T",
+      "scraped_at": "2026-06-10T16:59:06.876172",
+      "sources": {
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/12/700040448920260312009.html"
+      }
+    },
+    {
+      "source": "goonet",
+      "title": "ボルボ ＸＣ６０ リチャージ　ＰＨＶ　Ｔ８　ＡＷＤ　インスクリプション　４ＷＤ　エアサス・純正ＨＤＤナビ・パノラマサンルーフ・３６０°カメラ・シートヒーター・ステアリングヒーター・ｈａｒｍａｎ／ｋａｒ",
+      "year": 2021,
+      "distance_km": 65000,
+      "price_man": null,
+      "url": "https://www.goo-net.com/usedcar/spread/goo/14/700120019830260609003.html",
+      "fingerprint": "2021_65000",
+      "watch_name": "XC60 D4+T",
+      "scraped_at": "2026-06-10T16:59:06.879078",
+      "sources": {
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/14/700120019830260609003.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD 4WD 禁煙車 純正ナビ ブラックレザー フルセグTV アダプティブクルコン シートヒーター 全周囲カメラ ETC アイドリングストップ クリアランスソナ",
+      "year": 2021,
+      "distance_km": 52000,
+      "price_man": 234,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6931135349/index.html",
+      "fingerprint": "2021_52000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.835464",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6931135349/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700052027130260405007.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD 4WD クライメイトパッケージ 前後シートヒーター ハンドルヒーター 茶革シート ナビTV 360度カメラ ソナー パーキングアシスト 電動リアゲート A",
+      "year": 2021,
+      "distance_km": 26000,
+      "price_man": 299,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7020373229/index.html",
+      "fingerprint": "2021_26000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.837553",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7020373229/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD 4WD サンルーフ PowerSeat&ClimatePKG ドラレコ 48V 前後シートヒーター ステアリングホイールヒーター 360°カメラ パワーテ",
+      "year": 2021,
+      "distance_km": 48000,
+      "price_man": 324,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7017767012/index.html",
+      "fingerprint": "2021_48000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.839813",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7017767012/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700957240530260516001.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD プロ 4WD ユーザー買取車 本革シート 全周囲カメラ メーカオプションナビ フルセグTV 純正アルミホイール19インチ LEDヘッドライト WAA/C ",
+      "year": 2021,
+      "distance_km": 60000,
+      "price_man": 329,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7067297316/index.html",
+      "fingerprint": "2021_60000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.842148",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7067297316/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD プロ 4WD harman/kardon 前後シートヒーター ステアリングヒーター リラクゼーション機能 ベンチレーション機能 支払総額 360 .3 万",
+      "year": 2021,
+      "distance_km": 50000,
+      "price_man": 360,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7028778355/index.html",
+      "fingerprint": "2021_50000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.844136",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7028778355/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー プラス B5 AWD 4WD 1オーナー 走行7200km 革 ナビ 360度カメラ ソナー ハンドル&シートヒーター 電動メモリーシート 電動リアゲート スマートキー",
+      "year": 2024,
+      "distance_km": 7000,
+      "price_man": 369,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7071719260/index.html",
+      "fingerprint": "2024_7000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.846280",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7071719260/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700056108930260606004.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD 4WD Climate&PowerseatPKG ドラレコ 48V 前後シートヒーター ステアリングホイールヒーター パワーテールゲート ワイヤレススマホ",
+      "year": 2021,
+      "distance_km": 24000,
+      "price_man": 379,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7058644719/index.html",
+      "fingerprint": "2021_24000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.848521",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7005939515/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700050263330260401001.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD プロ 4WD 支払総額 392 .4 万円 車両本体価格 379 .0 万円 残価 ローン価格 月々 33,700 円 詳細を見る 年式 2022 (R0",
+      "year": 2022,
+      "distance_km": 22000,
+      "price_man": 392,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7013365088/index.html",
+      "fingerprint": "2022_22000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.850622",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7013365088/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー プラス B5 AWD 4WD 当社管理ユーザー様の下取り車両で、整備履歴等管理もしっかりとした車両入荷致しました。 支払総額 399 .3 万円 車両本体価格 379 ",
+      "year": 2023,
+      "distance_km": 25000,
+      "price_man": 399,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7013365089/index.html",
+      "fingerprint": "2023_25000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.852683",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7013365089/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー プラス B5 AWD 4WD ClimatePKG Google搭載 ドラレコ 48V 濃茶革 ブライトダスクメタリック 前後シートヒーター ステアリングホイールヒータ",
+      "year": 2023,
+      "distance_km": 24000,
+      "price_man": 409,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7069999599/index.html",
+      "fingerprint": "2023_24000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.854960",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7069999599/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー プラス B5 AWD 4WD 雨天でも濡れずにご覧頂ける全天候屋内ショールームに常時３０台以上展示中！詳細はスタッフまでお問合せください！ 支払総額 411 万円 車両",
+      "year": 2023,
+      "distance_km": 22000,
+      "price_man": 411,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6977553940/index.html",
+      "fingerprint": "2023_22000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.857153",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6977553940/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー B5 AWD プロ 4WD 2022年モデル ClimatePKG 48V harman/kardon 白革 前後シートヒーター ステアリングホイールヒーター ベンチレ",
+      "year": 2021,
+      "distance_km": 27000,
+      "price_man": 413,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7014669286/index.html",
+      "fingerprint": "2021_27000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.859388",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7014669286/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700056108930260517002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー アルティメット B5 AWD 4WD 2年保証付 Googleインフォテイメントシステム harman/kardonプレミアムオーディオ パーフォレーテッドファインナッ",
+      "year": 2022,
+      "distance_km": 19000,
+      "price_man": 415,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6975640371/index.html",
+      "fingerprint": "2022_19000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.863870",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6975640371/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60クロスカントリー プラス B5 AWD 4WD 支払総額 415 .2 万円 車両本体価格 398 .0 万円 年式 2023 (R05) 走行距離 1.8 万km 車検 2028(R1",
+      "year": 2023,
+      "distance_km": 18000,
+      "price_man": 415,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6958039289/index.html",
+      "fingerprint": "2023_18000",
+      "watch_name": "V60 CC B5",
+      "scraped_at": "2026-06-10T16:59:08.865876",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6958039289/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 B4 モメンタム インテリセーフ・ACC・本革シート・純正HDDナビTV・全周囲カメラ・CarPlay・スマートキー・LEDライト・ハンズフリー電動リアゲート・コーナーセンサー・純正1",
+      "year": 2021,
+      "distance_km": 43000,
+      "price_man": 242,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7050174302/index.html",
+      "fingerprint": "2021_43000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:13.207268",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7062343461/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700050003130260529002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 B4 モメンタム 禁煙車 純正ナビ フルセグTV 全周囲カメラ 電動リアゲート ブラインドスポットモニター アダプティブクルーズコントロール シートヒーター ステアリングヒーター ワイ",
+      "year": 2021,
+      "distance_km": 16000,
+      "price_man": 267,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7054068771/index.html",
+      "fingerprint": "2021_16000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:13.209556",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7054068771/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700052027130260530005.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 B4 モメンタム ブラウン本革シート パワーシート 全席シートヒーター ステアリングヒーター 純正ナビ 全方位モニター パワーバックドア クルーズコントロール ドライブレコーダー ET",
+      "year": 2021,
+      "distance_km": 21000,
+      "price_man": 269,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6777198288/index.html",
+      "fingerprint": "2021_21000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:13.211809",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6777198288/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700050258230260122002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 B4 モメンタム 純正ナビ/360°カメラ/ETC/LEDヘッドライト/フルセグTV/アクティブクルーズコントロール/ブラインドスポットモニター/茶革シート/シートヒーター/ステアリン",
+      "year": 2021,
+      "distance_km": 31000,
+      "price_man": 279,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6980270971/index.html",
+      "fingerprint": "2021_31000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:13.213913",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7069764559/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 B5 インスクリプション パノラマサンルーフ ハーマンカードンサウンド ヘッドアップディスプレイ 全方位カメラ パワーテールゲート Bluetooth ドラレコ ETC2.0 ワンオー",
+      "year": 2021,
+      "distance_km": 30000,
+      "price_man": 287,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6897575662/index.html",
+      "fingerprint": "2021_30000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:13.216100",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6897575662/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700055182030260319001.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 プラス B4 純正Googleナビ/360°カメラ/ETC/LEDヘッドライト/アクティブクルーズコントロール/ブラインドスポットモニター/パイロットアシスト/carplay対応/レザ",
+      "year": 2022,
+      "distance_km": 39000,
+      "price_man": 309,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7049854514/index.html",
+      "fingerprint": "2022_39000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:13.220476",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7049854514/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 プラス B4 デニムブルーメタリック/ドラレコ/ETC 頭金0円で最長96回までローンがご利用可能です！全国販売可能です☆総額はお気軽にお問い合わせ下さい！！！ 支払総額 316 .7",
+      "year": 2023,
+      "distance_km": 32000,
+      "price_man": 316,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7017763903/index.html",
+      "fingerprint": "2023_32000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:13.222731",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7017763903/index.html"
+      }
+    },
+    {
+      "source": "goonet",
+      "title": "ボルボ Ｖ６０ Ｂ４　モメンタム　１９インチインスプリクションアルミ　ブラックレザーシート　純正ナビＨＤＤナビゲーション　バックカメラ　クルーズコントロール",
+      "year": 2022,
+      "distance_km": 11000,
+      "price_man": null,
+      "url": "https://www.goo-net.com/usedcar/spread/goo/15/700060059830260302006.html",
+      "fingerprint": "2022_11000",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-06-10T16:59:14.991398",
+      "sources": {
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/15/700060059830260302006.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 リチャージ プラグイン ハイブリッド T6 AWD インスクリプション (サンルーフ/黒本革/ハーマンカードン) 全周囲カメラ/純正ナビ/フルセグTV/マッサージ機能付/シートヒーター",
+      "year": 2021,
+      "distance_km": 47000,
+      "price_man": 259,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6618932991/index.html",
+      "fingerprint": "2021_47000",
+      "watch_name": "V60 PHEV",
+      "scraped_at": "2026-06-10T16:59:17.148617",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6618932991/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700056108830251025004.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 T6 ツインエンジン AWD インスクリプション 4WD harman/kardon 地上デジタルTV 本革シート フロント・シートヒーター Apple Carplay Android",
+      "year": 2020,
+      "distance_km": 29000,
+      "price_man": 355,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6954757242/index.html",
+      "fingerprint": "2020_29000",
+      "watch_name": "V60 PHEV",
+      "scraped_at": "2026-06-10T16:59:17.150532",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6954757242/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "アウディ A4アバント 35 TDI Sライン ディーゼルターボ 後期 ターボ マトリクスLED メモリーシート ナビ 全方位M ドラレコ ETC 追従クルコン Pシート シートヒーター Pアシスト ",
+      "year": 2023,
+      "distance_km": 57000,
+      "price_man": 289,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6980262129/index.html",
+      "fingerprint": "2023_57000",
+      "watch_name": "A4アバントTDI",
+      "scraped_at": "2026-06-10T16:59:20.580381",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6980262129/index.html",
+        "goonet": "https://www.goo-net.com/usedcar/spread/goo/12/988026043000404410002.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "アウディ A4アバント 35 TDI アドバンスト ディーゼルターボ アウディプレセンス ACC レーンアシスト サイドアシスト 360°カメラ バーチャルコックピット ベージュレザーシート シートヒ",
+      "year": 2023,
+      "distance_km": 27000,
+      "price_man": 308,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7066974462/index.html",
+      "fingerprint": "2023_27000",
+      "watch_name": "A4アバントTDI",
+      "scraped_at": "2026-06-10T16:59:20.582710",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7066974462/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "アウディ A4アバント 40 TDI クワトロ Sライン ディーゼルターボ 4WD (専用半革/純正ナビTV全周囲C/電動ゲート) ディーゼルターボ/マトリクスLED/シートヒーター/Pシート/シート",
+      "year": 2023,
+      "distance_km": 48000,
+      "price_man": 319,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6904360275/index.html",
+      "fingerprint": "2023_48000",
+      "watch_name": "A4アバントTDI",
+      "scraped_at": "2026-06-10T16:59:20.584922",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6904360275/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "アウディ A4アバント Sライン コンペティション プラス ディーゼルターボ 4WD 75台限定 Sラインプラスパッケージ コンフォートパッケージ ブラックスタイリングパッケージ ダンピングコントロー",
+      "year": 2024,
+      "distance_km": 21000,
+      "price_man": 0,
+      "url": "",
+      "fingerprint": "2024_21000",
+      "watch_name": "A4アバントTDI",
+      "scraped_at": "2026-06-10T16:59:20.587432",
+      "sources": {
+        "carsensor": ""
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "フォルクスワーゲン アルテオンシューティングブレーク TSI 4モーション Rライン アドバンス 4WD 認定中古車・20インチアルミホイール ディスカバープロ＆バックカメラ＆ETC付き!!認定中古車",
+      "year": 2022,
+      "distance_km": 41000,
+      "price_man": 364,
+      "url": "https://www.carsensor.net/usedcar/detail/AU6938515123/index.html",
+      "fingerprint": "2022_41000",
+      "watch_name": "アルテオンSB",
+      "scraped_at": "2026-06-10T16:59:23.635220",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6938515123/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ポルシェ マカン PDK 4WD 赤黒レザー/LCA/Fカメラ/前後ドラレコ/禁煙 D車 右H パドルシフト ブラック/レッドレザー シートヒーター 純正ナビBカメラ フロントカメラ BOSEサウンド",
+      "year": 2019,
+      "distance_km": 30000,
+      "price_man": 348,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7077055949/index.html",
+      "fingerprint": "2019_30000",
+      "watch_name": "ポルシェ ~350M",
+      "scraped_at": "2026-06-10T16:59:27.628236",
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7077055949/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ポルシェ 911 S/T 1オ-ナ- D車 OP約469 60Years911ヘリテージデザインパッケージ スポーツデカール Exclusive Designテールライト フロントリフト クロノパッケ",
+      "year": 2025,
+      "distance_km": 50,
+      "price_man": 0,
+      "url": "",
+      "fingerprint": "2025_50",
+      "watch_name": "ポルシェ ~350M",
+      "scraped_at": "2026-06-10T16:59:27.630667",
+      "sources": {
+        "carsensor": ""
       }
     }
   ]
