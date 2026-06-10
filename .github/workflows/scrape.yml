@@ -11,7 +11,7 @@ jobs:
     permissions:
       contents: write          # data.json / seen.json をpushするために必要
 
-    steps:
+    steps
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -27,7 +27,7 @@ jobs:
       - name: Run scraper
         env:
           NTFY_TOPIC:       ${{ secrets.NTFY_TOPIC }}
-          GITHUB_PAGES_URL: ${{ secrets.GITHUB_PAGES_URL }}
+          GITHUB_PAGES_URL: ${{ secrets.PAGES_URL }}
         run: python scraper/scrape.py
 
       - name: Commit and push data files
