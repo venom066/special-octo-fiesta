@@ -279,7 +279,8 @@ def send_ntfy(new_listings: list[dict]) -> None:
         return
 
     count = len(new_listings)
-    title = f"🚗 中古車 新着 {count}件"
+    # HTTPヘッダーはlatin-1のみ対応のため絵文字不可
+    title = f"中古車 新着 {count}件"
 
     lines = []
     for l in new_listings[:5]:
@@ -298,13 +299,16 @@ def send_ntfy(new_listings: list[dict]) -> None:
     if GITHUB_PAGES_URL:
         headers["Click"] = GITHUB_PAGES_URL
 
-    resp = requests.post(
-        f"https://ntfy.sh/{NTFY_TOPIC}",
-        data="\n".join(lines).encode("utf-8"),
-        headers=headers,
-        timeout=10,
-    )
-    print(f"  ntfy status: {resp.status_code}")
+    try:
+        resp = requests.post(
+            f"https://ntfy.sh/{NTFY_TOPIC}",
+            data="\n".join(lines).encode("utf-8"),
+            headers=headers,
+            timeout=10,
+        )
+        print(f"  ntfy status: {resp.status_code}")
+    except Exception as e:
+        print(f"  ntfy error (skipping): {e}")
 
 # ─────────────────────────────
 # メイン
