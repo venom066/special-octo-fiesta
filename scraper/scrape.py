@@ -68,9 +68,24 @@ def parse_price_man(text: str):
     m = re.search(r"([\d.]+)\s*万円", text.replace("\n", ""))
     return int(float(m.group(1))) if m else None
 
+def url_set_param(url: str, key: str, value: str) -> str:
+    """URLの特定パラメータを書き換えて返す"""
+    parsed = urlparse(url)
+    params = {k: v[0] for k, v in parse_qs(parsed.query, keep_blank_values=True).items()}
+    params[key] = value
+    return urlunparse(parsed._replace(query=urlencode(params)))
+
 # ─────────────────────────────
 # カーセンサー
 # ─────────────────────────────
+
+# カーセンサーのタイトルに混入するノイズ文字列
+_CS_NOISE = [
+    "保証の種類を表示しています", "保証の種類について",
+    "360° 画像付", "オンライン相談可", "車両品質評価書付",
+    "販売店保証", "ディーラー保証",
+]
+
 def scrape_carsensor(base_url: str) -> list[dict]:
     listings = []
     session = requests.Session()
@@ -89,9 +104,17 @@ def scrape_carsensor(base_url: str) -> list[dict]:
             break
 
         for item in items:
-            # タイトル
+            # タイトル（バッジ・注記テキストを除去）
             car_info = item.select_one(".cassetteMain__carInfoContainer")
-            title = car_info.get_text(" ", strip=True)[:100] if car_info else ""
+            if car_info:
+                for badge in car_info.select(".badge, .cassetteMain__badges, .cassetteMain__label"):
+                    badge.decompose()
+                raw = car_info.get_text(" ", strip=True)
+                for noise in _CS_NOISE:
+                    raw = raw.replace(noise, "")
+                title = " ".join(raw.split())[:100]
+            else:
+                title = ""
 
             # 年式・走行距離
             year = distance_km = None
@@ -154,6 +177,7 @@ def scrape_goonet(base_url: str) -> list[dict]:
     session = requests.Session()
     session.headers.update(HEADERS)
 
+    # offset=0 から開始、limit は URL に含まれていれば使う（デフォルト50）
     parsed_base = urlparse(base_url)
     base_params = {k: v[0] for k, v in parse_qs(parsed_base.query, keep_blank_values=True).items()}
     limit = int(base_params.get("limit", "50"))
