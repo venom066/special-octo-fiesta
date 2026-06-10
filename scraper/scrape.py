@@ -207,6 +207,7 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
             price_text = price_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
             price_m = re.search(r"([\d.]+)", price_text)
             price_man = int(float(price_m.group(1))) if price_m else None
+            if price_man == 0: price_man = None
 
             link_el = item.select_one('a[href*="/usedcar/spread/"]')
             if link_el:
