@@ -6,38 +6,39 @@
 <title>中古車ウォッチャー</title>
 <style>
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #22263a;
-  --border: #2a2d3a;
-  --text: #e8eaf0;
-  --muted: #8b8fa8;
-  --accent: #4a90e2;
-  --fav: #f39c12;
-  --cs: #e74c3c;
-  --goo: #27ae60;
-  --mota: #8e44ad;
+--bg: #0f1117;
+--surface: #1a1d27;
+--surface2: #22263a;
+--border: #2a2d3a;
+--text: #e8eaf0;
+--muted: #8b8fa8;
+--accent: #4a90e2;
+--fav: #f39c12;
+--cs: #e74c3c;
+--goo: #27ae60;
+--mota: #8e44ad;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; min-height: 100vh; }
+
 header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
 header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 #updated { font-size: 0.75rem; color: var(--muted); }
-#refreshBtn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 6px 12px; font-size: 0.8rem; cursor: pointer; transition: all .15s; white-space: nowrap; }
-#refreshBtn:hover { border-color: var(--accent); color: var(--text); }
-#refreshBtn:disabled { opacity: .4; cursor: not-allowed; }
+
 .watch-tabs { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
 .watch-tabs::-webkit-scrollbar { display: none; }
 .watch-tab { background: none; border: none; border-bottom: 3px solid transparent; color: var(--muted); padding: 11px 16px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s; }
 .watch-tab:hover { color: var(--text); }
 .watch-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 .watch-tab.fav-tab.active { color: var(--fav); border-bottom-color: var(--fav); }
-.watch-tab-count { display: inline-block; background: var(--surface2); border-radius: 10px; font-size: 0.7rem; padding: 1px 6px; margin-left: 5px; color: var(--muted); }
-.watch-tab.active .watch-tab-count { background: rgba(74,144,226,.2); color: var(--accent); }
-.watch-tab.fav-tab.active .watch-tab-count { background: rgba(243,156,18,.2); color: var(--fav); }
-.cond-bar { background: rgba(74,144,226,.05); border-bottom: 1px solid var(--border); padding: 7px 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.tab-count { display: inline-block; background: var(--surface2); border-radius: 10px; font-size: 0.7rem; padding: 1px 6px; margin-left: 5px; color: var(--muted); }
+.watch-tab.active .tab-count { background: rgba(74,144,226,.2); color: var(--accent); }
+.watch-tab.fav-tab.active .tab-count { background: rgba(243,156,18,.2); color: var(--fav); }
+
+.cond-bar { background: rgba(74,144,226,.04); border-bottom: 1px solid var(--border); padding: 7px 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .cond-label { font-size: 0.7rem; color: var(--muted); flex-shrink: 0; }
 .cond-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 2px 10px; font-size: 0.72rem; color: var(--muted); }
+
 .controls { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .sort-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 .sort-label { font-size: 0.75rem; color: var(--muted); }
@@ -48,31 +49,46 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .dot-mota { background: var(--mota); }
 .mota-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-decoration: none; background: rgba(142,68,173,.18); border: 1px solid var(--mota); color: #a569bd; transition: all .15s; white-space: nowrap; margin-left: auto; }
 .mota-link-btn:hover { background: rgba(142,68,173,.32); color: #c39bd3; }
+
 .count-bar { padding: 7px 20px 2px; font-size: 0.78rem; color: var(--muted); }
 #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 12px 20px 28px; }
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; cursor: pointer; transition: transform .1s, border-color .15s, box-shadow .15s; user-select: none; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; cursor: pointer; transition: transform .1s, border-color .15s, box-shadow .15s; }
 .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 16px rgba(74,144,226,.12); }
-.card.is-fav { border-color: rgba(243,156,18,.5); }
-.card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.15); }
+.card.is-fav { border-color: rgba(243,156,18,.45); }
+.card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.14); }
+.card.is-sold { opacity: 0.42; cursor: default; filter: grayscale(0.45); }
+.card.is-sold:hover { transform: none; border-color: var(--border); box-shadow: none; }
+
 .multi-badge { position: absolute; top: -8px; right: 50px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.sold-badge { position: absolute; top: -8px; left: 12px; background: #555870; color: #aaa; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .05em; }
+
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 .card-title { font-size: 0.85rem; line-height: 1.4; color: var(--text); flex: 1; }
+
 .fav-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 4px 6px; color: var(--muted); transition: all .15s; flex-shrink: 0; }
 .fav-btn:hover { border-color: var(--fav); color: var(--fav); transform: scale(1.1); }
 .fav-btn.on { border-color: var(--fav); color: var(--fav); background: rgba(243,156,18,.1); }
+
+.dismiss-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; line-height: 1; padding: 4px 7px; color: var(--muted); transition: all .15s; flex-shrink: 0; }
+.dismiss-btn:hover { border-color: #e74c3c; color: #e74c3c; transform: scale(1.1); }
+
 .specs { display: flex; gap: 14px; flex-wrap: wrap; }
 .spec-item { display: flex; flex-direction: column; gap: 2px; }
 .spec-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .spec-value { font-size: 1rem; font-weight: 700; }
 .spec-value.price { color: var(--accent); }
+
 .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
 .card-sources { display: flex; gap: 5px; flex-wrap: wrap; }
-.src-badge { display: inline-flex; align-items: center; gap: 3px; padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 600; }
+.src-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 600; }
 .src-badge.cs { background: rgba(231,76,60,.14); color: #e74c3c; }
 .src-badge.goo { background: rgba(39,174,96,.14); color: #2ecc71; }
 .card-arrow { font-size: 0.72rem; color: var(--muted); }
+
 #empty { display: none; padding: 60px 20px; text-align: center; color: var(--muted); }
 #loading { padding: 60px 20px; text-align: center; color: var(--muted); }
+
 .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
 .popup-overlay.show { display: flex; }
 .popup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 360px; width: 100%; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.6); animation: popIn .15s ease; }
@@ -84,14 +100,14 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .popup-link:hover { opacity: .82; transform: translateX(3px); }
 .popup-link.cs { background: rgba(231,76,60,.14); color: #e74c3c; border: 1px solid rgba(231,76,60,.3); }
 .popup-link.goo { background: rgba(39,174,96,.14); color: #2ecc71; border: 1px solid rgba(39,174,96,.3); }
-.popup-link-icon { font-size: 1.1rem; }
 .popup-close { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 9px; cursor: pointer; font-size: 0.85rem; text-align: center; transition: all .15s; }
 .popup-close:hover { border-color: var(--muted); color: var(--text); }
+
 @media (max-width: 480px) {
-  header { padding: 10px 14px; }
-  .watch-tabs, .controls, .cond-bar { padding-left: 14px; padding-right: 14px; }
-  #grid { padding: 10px 14px 24px; gap: 12px; }
-  .card { padding: 12px; }
+header { padding: 10px 14px; }
+.watch-tabs, .controls, .cond-bar { padding-left: 14px; padding-right: 14px; }
+#grid { padding: 10px 14px 24px; gap: 12px; }
+.card { padding: 12px; }
 }
 </style>
 </head>
@@ -100,7 +116,6 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 <header>
   <h1>🚗 中古車ウォッチャー</h1>
   <span id="updated">読み込み中…</span>
-  <button id="refreshBtn">🔄 更新</button>
 </header>
 
 <div class="watch-tabs" id="watchTabs"></div>
@@ -133,49 +148,68 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 </div>
 
 <script>
-const FAV_KEY = "usedcar_favorites";
-const DATA_URL = "./data/data.json";
-const CONFIG_URL = "./config.json";
+const FAV_KEY        = "usedcar_favorites";
+const SEEN_CACHE_KEY = "usedcar_seen_cache";
+const DISMISSED_KEY  = "usedcar_dismissed";
+const DATA_URL       = "./data/data.json";
+const CONFIG_URL     = "./config.json";
+const FAV_WATCH      = "__fav__";
 
-const FAV_WATCH = "__fav__";
+let allListings  = [];
+let soldListings = [];
+let watches      = [];
+let currentWatch = FAV_WATCH;
+let sortKey      = "price";
+let sortDir      = "asc";
 
-let allListings = [];
-let watches = [];
-let currentWatch = FAV_WATCH; // default: お気に入り
-let sortKey = "price";
-let sortDir = "asc";
-
+// Favorites
 function getFavs() {
   try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); }
   catch { return new Set(); }
 }
 function saveFavs(s) { localStorage.setItem(FAV_KEY, JSON.stringify([...s])); }
 function toggleFav(fp) {
-  const f = getFavs();
-  f.has(fp) ? f.delete(fp) : f.add(fp);
-  saveFavs(f);
-  return f.has(fp);
+  const f = getFavs(); f.has(fp) ? f.delete(fp) : f.add(fp); saveFavs(f); return f.has(fp);
 }
+
+// Seen cache (sold detection)
+function getSeenCache() {
+  try { return JSON.parse(localStorage.getItem(SEEN_CACHE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function saveSeenCache(c) { localStorage.setItem(SEEN_CACHE_KEY, JSON.stringify(c)); }
+
+// Dismissed (永久に削除)
+function getDismissed() {
+  try { return new Set(JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function saveDismissed(s) { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...s])); }
+function dismissCard(fp) {
+  const d = getDismissed(); d.add(fp); saveDismissed(d);
+  const c = getSeenCache(); delete c[fp]; saveSeenCache(c);
+  const f = getFavs(); f.delete(fp); saveFavs(f);
+}
+
 function esc(s) {
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-// Watch tabs: ★お気に入り | [watch names]
-function watchCount(key) {
-  if (key === FAV_WATCH) return getFavs().size;
-  return allListings.filter(l => l.watch_name === key).length;
-}
+// Watch tabs
 function buildWatchTabs() {
   const el = document.getElementById("watchTabs");
   el.innerHTML = "";
   const tabs = [
-    {key: FAV_WATCH, label: "★ お気に入り", cls: "fav-tab"},
-    ...watches.map(w => ({key: w.name, label: w.name, cls: ""}))
+    { key: FAV_WATCH, label: "★ お気に入り", extra: "fav-tab" },
+    ...watches.map(w => ({ key: w.name, label: w.name, extra: "" }))
   ];
   for (const t of tabs) {
+    const count = t.key === FAV_WATCH
+      ? getFavs().size
+      : allListings.filter(l => l.watch_name === t.key).length;
     const btn = document.createElement("button");
-    btn.className = "watch-tab " + (t.cls||"") + (currentWatch===t.key?" active":"");
-    btn.innerHTML = esc(t.label) + `<span class="watch-tab-count">${watchCount(t.key)}</span>`;
+    btn.className = "watch-tab " + t.extra + (currentWatch === t.key ? " active" : "");
+    btn.innerHTML = esc(t.label) + '<span class="tab-count">' + count + "</span>";
     btn.addEventListener("click", () => {
       currentWatch = t.key;
       buildWatchTabs();
@@ -187,88 +221,101 @@ function buildWatchTabs() {
   }
 }
 
-// Conditions bar (from goonet_url params)
+// Conditions bar
 const PREF = {"01":"北海道","02":"青森","03":"岩手","04":"宮城","05":"秋田","06":"山形","07":"福島","08":"茨城","09":"栃木","10":"群馬","11":"埼玉","12":"千葉","13":"東京","14":"神奈川","15":"新潟","16":"富山","17":"石川","18":"福井","19":"山梨","20":"長野","21":"岐阜","22":"静岡","23":"愛知","24":"三重","25":"滋賀","26":"京都","27":"大阪","28":"兵庫","29":"奈良","30":"和歌山","31":"鳥取","32":"島根","33":"岡山","34":"広島","35":"山口","36":"徳島","37":"香川","38":"愛媛","39":"高知","40":"福岡","41":"佐賀","42":"長崎","43":"熊本","44":"大分","45":"宮崎","46":"鹿児島","47":"沖縄"};
+
 function updateCondBar() {
   const bar = document.getElementById("condBar");
   const w = watches.find(x => x.name === currentWatch);
-  if (!w) { bar.style.display="none"; return; }
+  if (!w) { bar.style.display = "none"; return; }
   const chips = [];
   try {
     const p = new URL(w.goonet_url).searchParams;
     const price2 = p.get("price2");
-    if (price2) chips.push("価格 〜"+price2+"万円");
+    if (price2) chips.push("価格 〜" + price2 + "万円");
     const dist2 = p.get("distance2");
-    if (dist2) chips.push("走行 〜"+(parseInt(dist2)/10000).toFixed(0)+"万km");
+    if (dist2) chips.push("走行 〜" + (parseInt(dist2) / 10000).toFixed(0) + "万km");
+    const nen1 = p.get("nen1");
+    if (nen1) chips.push(nen1 + "年〜");
     const prefC = p.get("pref_c");
     if (prefC) {
-      const names = prefC.split(",").map(c=>PREF[c]).filter(Boolean);
-      if (names.length) chips.push("地域: "+(names.length<=7?names.join(" "):names.slice(0,6).join(" ")+" 他"+(names.length-6)+"県"));
+      const names = prefC.split(",").map(c => PREF[c]).filter(Boolean);
+      if (names.length) chips.push("地域: " + (names.length <= 7 ? names.join(" ") : names.slice(0, 6).join(" ") + " 他" + (names.length - 6) + "県"));
     }
-  } catch(e){}
-  if (!chips.length) { bar.style.display="none"; return; }
-  bar.innerHTML = `<span class="cond-label">絞り込み条件</span>`+chips.map(c=>`<span class="cond-chip">${esc(c)}</span>`).join("");
-  bar.style.display="flex";
+  } catch(e) {}
+  if (!chips.length) { bar.style.display = "none"; return; }
+  bar.innerHTML = '<span class="cond-label">絞り込み条件</span>' + chips.map(c => '<span class="cond-chip">' + esc(c) + "</span>").join("");
+  bar.style.display = "flex";
 }
 
 function updateMotaLink() {
   const link = document.getElementById("motaLink");
   const w = watches.find(x => x.name === currentWatch);
-  if (w?.mota_url) { link.href=w.mota_url; link.style.display="inline-flex"; }
-  else { link.style.display="none"; }
+  if (w && w.mota_url) { link.href = w.mota_url; link.style.display = "inline-flex"; }
+  else { link.style.display = "none"; }
 }
 
 // Sort
-const SORT_LABELS = {price:"価格",year:"年式",dist:"走行"};
-const SORT_DEFAULTS = {price:"asc",year:"desc",dist:"asc"};
-function initSortBtns() {
+const SORT_LABELS   = { price: "価格", year: "年式", dist: "走行" };
+const SORT_DEFAULTS = { price: "asc", year: "desc", dist: "asc" };
+
+function updateSortBtns() {
   document.querySelectorAll(".sort-btn").forEach(btn => {
     const k = btn.dataset.sort;
-    const isActive = k===sortKey;
+    const isActive = k === sortKey;
     btn.classList.toggle("active", isActive);
     const dir = isActive ? sortDir : SORT_DEFAULTS[k];
-    btn.textContent = SORT_LABELS[k]+" "+(dir==="asc"?"↑":"↓");
+    btn.textContent = SORT_LABELS[k] + " " + (dir === "asc" ? "↑" : "↓");
   });
 }
-function sortListings(list) {
-  return [...list].sort((a,b) => {
-    let va,vb;
-    if (sortKey==="price") { va=a.price_man??9999; vb=b.price_man??9999; }
-    else if (sortKey==="year") { va=a.year??0; vb=b.year??0; }
-    else { va=a.distance_km??999999; vb=b.distance_km??999999; }
-    return sortDir==="asc" ? va-vb : vb-va;
-  });
-}
+
 document.querySelectorAll(".sort-btn").forEach(btn => {
   btn.addEventListener("click", function() {
     const k = this.dataset.sort;
-    if (sortKey===k) sortDir = sortDir==="asc"?"desc":"asc";
-    else { sortKey=k; sortDir=SORT_DEFAULTS[k]; }
-    initSortBtns();
+    if (sortKey === k) sortDir = sortDir === "asc" ? "desc" : "asc";
+    else { sortKey = k; sortDir = SORT_DEFAULTS[k]; }
+    updateSortBtns();
     applyAll();
   });
 });
 
+function sortList(list) {
+  return [...list].sort((a, b) => {
+    let va, vb;
+    if      (sortKey === "price") { va = a.price_man   ?? 9999;   vb = b.price_man   ?? 9999; }
+    else if (sortKey === "year")  { va = a.year        ?? 0;      vb = b.year        ?? 0; }
+    else                          { va = a.distance_km ?? 999999; vb = b.distance_km ?? 999999; }
+    return sortDir === "asc" ? va - vb : vb - va;
+  });
+}
+
 // Apply
 function applyAll() {
   const favs = getFavs();
-  let list;
+  let active, sold;
   if (currentWatch === FAV_WATCH) {
-    list = allListings.filter(l => favs.has(l.fingerprint));
+    active = allListings.filter(l => favs.has(l.fingerprint));
+    sold   = soldListings.filter(l => favs.has(l.fingerprint));
   } else {
-    list = allListings.filter(l => l.watch_name === currentWatch);
+    active = allListings.filter(l => l.watch_name === currentWatch);
+    sold   = soldListings.filter(l => l.watch_name === currentWatch);
   }
-  list = sortListings(list);
+  const combined = [...sortList(active), ...sortList(sold)];
+
   const empty = document.getElementById("empty");
-  if (currentWatch === FAV_WATCH && list.length === 0) {
+  if (combined.length === 0) {
     empty.style.display = "block";
-    empty.innerHTML = `<div style="font-size:2rem;margin-bottom:10px">☆</div><div style="color:var(--muted);font-size:0.9rem">お気に入りはまだありません<br>カードの ☆ をタップして追加しましょう</div>`;
+    empty.innerHTML = currentWatch === FAV_WATCH
+      ? '<div style="font-size:2rem;margin-bottom:10px">☆</div><div style="color:var(--muted);font-size:0.9rem">お気に入りはまだありません<br>カードの ☆ をタップして追加しましょう</div>'
+      : '<div style="color:var(--muted);font-size:0.9rem">該当車両がありません</div>';
   } else {
     empty.style.display = "none";
-    empty.innerHTML = "";
   }
-  document.getElementById("countBar").textContent = list.length + "件";
-  renderCards(list);
+
+  document.getElementById("countBar").textContent =
+    active.length + "件" + (sold.length > 0 ? "　売却済 " + sold.length + "件" : "");
+
+  renderCards(combined);
 }
 
 // Render
@@ -276,59 +323,67 @@ function renderCards(listings) {
   const grid = document.getElementById("grid");
   const favs = getFavs();
   grid.innerHTML = "";
+
   for (const l of listings) {
-    const fp = l.fingerprint;
-    const isFav = favs.has(fp);
-    const sources = l.sources || {[l.source]: l.url};
+    const fp      = l.fingerprint;
+    const isFav   = favs.has(fp);
+    const isSold  = !!l.sold;
+    const sources = l.sources || { [l.source]: l.url };
     const srcKeys = Object.keys(sources);
     const isMulti = srcKeys.length > 1;
-    const dist = l.distance_km!=null ? (l.distance_km/10000).toFixed(1)+"万km" : "—";
-    const price = l.price_man!=null ? l.price_man.toLocaleString()+"万円" : "—";
+    const dist    = l.distance_km != null ? (l.distance_km / 10000).toFixed(1) + "万km" : "—";
+    const price   = l.price_man   != null ? l.price_man.toLocaleString() + "万円" : "—";
+
     const badges = srcKeys.map(s => {
-      const label = {carsensor:"カーセンサー",goonet:"グーネット"}[s]||s;
-      const cls = {carsensor:"cs",goonet:"goo"}[s]||"";
-      return `<span class="src-badge ${cls}">${label}</span>`;
+      const label = { carsensor: "カーセンサー", goonet: "グーネット" }[s] || s;
+      const cls   = { carsensor: "cs", goonet: "goo" }[s] || "";
+      return '<span class="src-badge ' + cls + '">' + label + "</span>";
     }).join("");
+
+    const actionBtn = isSold
+      ? '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="リストから削除">✕</button>'
+      : '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>";
+
     const card = document.createElement("div");
-    card.className = "card" + (isFav?" is-fav":"");
-    card.innerHTML = `
-      ${isMulti?'<div class="multi-badge">複数サイト</div>':""}
-      <div class="card-top">
-        <div class="card-title">${esc(l.title)}</div>
-        <button class="fav-btn ${isFav?"on":""}" data-fp="${esc(fp)}" title="${isFav?"お気に入り解除":"お気に入りに追加"}">${isFav?"★":"☆"}</button>
-      </div>
-      <div class="specs">
-        <div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">${l.year}年</span></div>
-        <div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">${dist}</span></div>
-        <div class="spec-item"><span class="spec-label">支払総額</span><span class="spec-value price">${price}</span></div>
-      </div>
-      <div class="card-footer">
-        <div class="card-sources">${badges}</div>
-        <span class="card-arrow">${isMulti?"選択して開く →":"詳細を見る →"}</span>
-      </div>
-    `;
-    card.addEventListener("click", e => {
-      if (e.target.closest(".fav-btn")) return;
-      if (isMulti) openPopup(l);
-      else window.open(sources[srcKeys[0]], "_blank", "noopener");
-    });
-    card.querySelector(".fav-btn").addEventListener("click", function(e) {
-      e.stopPropagation();
-      const on = toggleFav(this.dataset.fp);
-      this.textContent = on ? "★" : "☆";
-      this.classList.toggle("on", on);
-      this.title = on ? "お気に入り解除" : "お気に入りに追加";
-      // update card border
-      card.classList.toggle("is-fav", on);
-      // if on fav tab, re-render (item may disappear when unfaved)
-      if (currentWatch === FAV_WATCH) {
+    card.className = "card" + (isSold ? " is-sold" : isFav ? " is-fav" : "");
+    card.innerHTML =
+      (isSold ? '<div class="sold-badge">売却済</div>' : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
+      '<div class="card-top"><div class="card-title">' + esc(l.title) + "</div>" + actionBtn + "</div>" +
+      '<div class="specs">' +
+        '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
+        '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
+        '<div class="spec-item"><span class="spec-label">支払総額</span><span class="spec-value price">' + esc(price) + "</span></div>" +
+      "</div>" +
+      '<div class="card-footer"><div class="card-sources">' + badges + "</div>" +
+      (isSold ? "" : '<span class="card-arrow">' + (isMulti ? "選択して開く →" : "詳細を見る →") + "</span>") +
+      "</div>";
+
+    if (!isSold) {
+      card.addEventListener("click", e => {
+        if (e.target.closest(".fav-btn")) return;
+        if (isMulti) openPopup(l);
+        else window.open(sources[srcKeys[0]], "_blank", "noopener");
+      });
+      card.querySelector(".fav-btn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        const on = toggleFav(this.dataset.fp);
+        this.textContent = on ? "★" : "☆";
+        this.classList.toggle("on", on);
+        this.title = on ? "お気に入り解除" : "お気に入りに追加";
+        card.className = "card" + (on ? " is-fav" : "");
+        if (currentWatch === FAV_WATCH) { buildWatchTabs(); applyAll(); }
+        else buildWatchTabs();
+      });
+    } else {
+      card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        dismissCard(this.dataset.fp);
+        soldListings = soldListings.filter(x => x.fingerprint !== this.dataset.fp);
         buildWatchTabs();
         applyAll();
-      } else {
-        // just update the count badge on fav tab
-        buildWatchTabs();
-      }
-    });
+      });
+    }
+
     grid.appendChild(card);
   }
 }
@@ -338,14 +393,14 @@ function openPopup(l) {
   document.getElementById("popupCarName").textContent = l.title;
   const linksEl = document.getElementById("popupLinks");
   linksEl.innerHTML = "";
-  const labels = {carsensor:"カーセンサー",goonet:"グーネット"};
-  const cls = {carsensor:"cs",goonet:"goo"};
-  const icons = {carsensor:"🔴",goonet:"🟢"};
-  for (const [src,url] of Object.entries(l.sources||{})) {
+  const labels = { carsensor: "カーセンサー", goonet: "グーネット" };
+  const cls    = { carsensor: "cs", goonet: "goo" };
+  const icons  = { carsensor: "🔴", goonet: "🟢" };
+  for (const [src, url] of Object.entries(l.sources || {})) {
     const a = document.createElement("a");
-    a.href=url; a.target="_blank"; a.rel="noopener";
-    a.className = "popup-link "+(cls[src]||"");
-    a.innerHTML = `<span class="popup-link-icon">${icons[src]||"🔗"}</span>${esc(labels[src]||src)}で開く ↗`;
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    a.className = "popup-link " + (cls[src] || "");
+    a.innerHTML = "<span>" + (icons[src] || "🔗") + "</span>" + esc(labels[src] || src) + "で開く ↗";
     a.addEventListener("click", closePopup);
     linksEl.appendChild(a);
   }
@@ -353,41 +408,62 @@ function openPopup(l) {
 }
 function closePopup() { document.getElementById("popup").classList.remove("show"); }
 document.getElementById("popupClose").addEventListener("click", closePopup);
-document.getElementById("popup").addEventListener("click", e => { if(e.target===e.currentTarget) closePopup(); });
-document.addEventListener("keydown", e => { if(e.key==="Escape") closePopup(); });
-document.getElementById("refreshBtn").addEventListener("click", loadData);
+document.getElementById("popup").addEventListener("click", e => { if (e.target === e.currentTarget) closePopup(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePopup(); });
 
 // Load
 async function loadData() {
   const loading = document.getElementById("loading");
-  const btn = document.getElementById("refreshBtn");
   loading.style.display = "block";
   loading.textContent = "データを読み込んでいます…";
   document.getElementById("grid").innerHTML = "";
   document.getElementById("empty").style.display = "none";
   document.getElementById("countBar").textContent = "";
-  btn.disabled = true; btn.textContent = "読み込み中…";
+
   try {
-    const ts = "?t="+Date.now();
-    const [cfgRes,datRes] = await Promise.all([fetch(CONFIG_URL+ts), fetch(DATA_URL+ts)]);
-    if (cfgRes.ok) { const cfg = await cfgRes.json(); watches = cfg.watches||[]; }
-    if (!datRes.ok) throw new Error("HTTP "+datRes.status);
+    const ts = "?t=" + Date.now();
+    const [cfgRes, datRes] = await Promise.all([
+      fetch(CONFIG_URL + ts),
+      fetch(DATA_URL + ts)
+    ]);
+    if (cfgRes.ok) { const cfg = await cfgRes.json(); watches = cfg.watches || []; }
+    if (!datRes.ok) throw new Error("HTTP " + datRes.status);
     const data = await datRes.json();
-    allListings = data.listings||[];
+    allListings = data.listings || [];
+
+    // seen cache 更新
+    const cache     = getSeenCache();
+    const dismissed = getDismissed();
+    for (const l of allListings) {
+      cache[l.fingerprint] = {
+        title: l.title, year: l.year, distance_km: l.distance_km,
+        price_man: l.price_man, sources: l.sources, source: l.source,
+        url: l.url, watch_name: l.watch_name, fingerprint: l.fingerprint
+      };
+    }
+    saveSeenCache(cache);
+
+    // 売却済み検出
+    const activeFps = new Set(allListings.map(l => l.fingerprint));
+    soldListings = Object.values(cache)
+      .filter(l => !activeFps.has(l.fingerprint) && !dismissed.has(l.fingerprint))
+      .map(l => ({ ...l, sold: true }));
+
     const upd = data.updated_at ? new Date(data.updated_at).toLocaleString("ja-JP") : "—";
-    document.getElementById("updated").textContent = `最終更新: ${upd}（全${data.total||allListings.length}件）`;
+    document.getElementById("updated").textContent =
+      "最終更新: " + upd + "（全" + (data.total || allListings.length) + "件）";
+
     buildWatchTabs();
     updateCondBar();
     updateMotaLink();
-    initSortBtns();
+    updateSortBtns();
     loading.style.display = "none";
     applyAll();
   } catch(err) {
-    loading.textContent = "⚠ 読み込み失敗: "+err.message;
-  } finally {
-    btn.disabled = false; btn.textContent = "🔄 更新";
+    loading.textContent = "⚠ 読み込み失敗: " + err.message;
   }
 }
+
 loadData();
 </script>
 </body>
