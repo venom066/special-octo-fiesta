@@ -85,8 +85,6 @@ def scrape_carsensor() -> list[dict]:
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    # V90 CCは全台数が少ない（26台程度）ので1ページで全取得できる
-    # ページネーション対応: CS120X{nn}0001_index.html
     page = 1
     while True:
         if page == 1:
@@ -108,9 +106,12 @@ def scrape_carsensor() -> list[dict]:
             # ── タイトル（グレード名）
             car_info = item.select_one(".cassetteMain__carInfoContainer")
             raw_text = car_info.get_text(" ", strip=True) if car_info else ""
-            # "ボルボ V90クロスカントリー T5 AWD モメンタム ..." のような形式
             title_m = re.search(r"V90クロスカントリー[^\n]{0,80}", raw_text)
             title = title_m.group(0).strip() if title_m else raw_text[:80]
+
+            # ── D4のみ（T5/T6/B5/PHEVは除外）
+            if "D4" not in title:
+                continue
 
             # ── 年式・走行距離
             year = distance_km = None
@@ -121,14 +122,16 @@ def scrape_carsensor() -> list[dict]:
                 elif "走行距離" in t:
                     distance_km = parse_distance_km(t)
 
-            # ── 支払総額
-            price_el = item.select_one(".cassetteMain__priceInfo")
-            price_text = price_el.get_text(" ", strip=True) if price_el else ""
-            # 「支払総額 128 万円」を優先
-            total_m = re.search(r"支払総額.*?([\d.]+)\s*万円", price_text, re.DOTALL)
-            if total_m:
-                price_man = int(float(total_m.group(1)))
+            # ── 支払総額（.totalPrice__mainPriceNum を直接取得）
+            num_el = item.select_one(".totalPrice__mainPriceNum")
+            if num_el:
+                try:
+                    price_man = int(float(num_el.get_text(strip=True).replace(",", "")))
+                except ValueError:
+                    price_man = None
             else:
+                price_el = item.select_one(".cassetteMain__priceInfo")
+                price_text = price_el.get_text(" ", strip=True) if price_el else ""
                 price_man = parse_price_man(price_text)
 
             # ── 詳細リンク
@@ -151,7 +154,6 @@ def scrape_carsensor() -> list[dict]:
                     "scraped_at": datetime.now().isoformat(),
                 })
 
-        # 次ページがあるか確認
         next_btn = soup.select_one(".pager__item--next:not(.pager__item--disabled)")
         if not next_btn or page >= 10:
             break
@@ -166,12 +168,10 @@ def scrape_carsensor() -> list[dict]:
 # ─────────────────────────────
 GOONET_URL = "https://www.goo-net.com/php/search/summary.php"
 
-# フォームから取得した実際の検索条件（ユーザーのブラウザタブより）
 GOONET_PARAMS = {
     "maker_cd":       "4010",
     "car_cd":         "40102508",
     "pref_c":         "08,09,10,11,12,13,14,22,07,15,20,19",
-    # クロスカントリーD4 AWD系 + D4各種 + T6 + PHEV のグレードコード
     "car_grade_cd":   (
         "40102508|86,40102508|76,40102508|89,40102508|73,"
         "40102508|113,40102508|129,40102508|69,40102508|79,"
@@ -186,11 +186,11 @@ GOONET_PARAMS = {
         "40102508_36_26,40102508_33_26"
     ),
     "price1":        "",
-    "price2":        "400",       # 400万円以下
+    "price2":        "400",
     "car_price":     "0",
     "total_payment": "1",
     "distance1":     "",
-    "distance2":     "70000",     # 7万km以下
+    "distance2":     "70000",
     "nenshiki":      "",
     "nen1":          "",
     "nen2":          "",
@@ -220,7 +220,6 @@ def scrape_goonet() -> list[dict]:
         resp = session.post(GOONET_URL, data=params, timeout=30)
         resp.raise_for_status()
 
-        # グーネットはEUC-JPエンコード
         html = resp.content.decode("euc-jp", errors="replace")
         soup = BeautifulSoup(html, "html.parser")
 
@@ -229,14 +228,15 @@ def scrape_goonet() -> list[dict]:
             break
 
         for item in items:
-            # ── タイトル
             heading = item.select_one(".heading_inner")
             title = heading.get_text(" ", strip=True)[:100] if heading else "Unknown"
 
-            # ── 年式・走行距離（.data-wrapperのテキストから抽出）
+            # ── D4のみ（T5/T6/B5/PHEVは除外）
+            if "D4" not in title:
+                continue
+
             dw = item.select_one(".data-wrapper")
             dw_text = dw.get_text(" ", strip=True) if dw else ""
-            # 全角数字を半角に変換してから解析
             dw_text = dw_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
 
             year_m   = re.search(r"年式\s*(\d{4})\s*年", dw_text)
@@ -245,14 +245,12 @@ def scrape_goonet() -> list[dict]:
             year        = int(year_m.group(1)) if year_m else None
             distance_km = int(float(dist_m.group(1)) * 10_000) if dist_m else None
 
-            # ── 価格（支払総額）
             price_el = item.select_one(".total_payment .num")
             price_text = price_el.get_text(strip=True) if price_el else ""
             price_text = price_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
             price_m = re.search(r"([\d.]+)", price_text)
             price_man = int(float(price_m.group(1))) if price_m else None
 
-            # ── 詳細リンク
             link_el = item.select_one('a[href*="/usedcar/spread/"]')
             if link_el:
                 href = link_el.get("href", "").split("#")[0]
@@ -272,7 +270,6 @@ def scrape_goonet() -> list[dict]:
                     "scraped_at": datetime.now().isoformat(),
                 })
 
-        # 次ページ確認
         next_link = soup.select_one(".pager_next a, .pager a.next")
         if not next_link or page >= 10:
             break
@@ -283,9 +280,8 @@ def scrape_goonet() -> list[dict]:
 
 
 # ─────────────────────────────
-# MOTA (autoc-one.jp) — SSR、Playwright不要
+# MOTA (autoc-one.jp)
 # ─────────────────────────────
-# ユーザーの実際の検索条件URL（D4 AWD系グレード絞り込み済み）
 MOTA_URL = (
     "https://autoc-one.jp/used/searchv2/"
     "?makerFullCodes=VO"
@@ -299,9 +295,39 @@ MOTA_URL = (
 def scrape_mota() -> list[dict]:
     listings = []
     session = requests.Session()
-    session.headers.update(HEADERS)
+
+    mota_headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "ja,en-US;q=0.7,en;q=0.3",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "none",
+        "Sec-Fetch-User": "?1",
+        "Cache-Control": "max-age=0",
+    }
+    session.headers.update(mota_headers)
 
     try:
+        # トップページを先に訪問してクッキーを取得
+        try:
+            session.get("https://autoc-one.jp/", timeout=15)
+            time.sleep(1.5)
+        except Exception:
+            pass
+
+        # 検索ページをReferer付きで取得
+        session.headers.update({
+            "Referer": "https://autoc-one.jp/",
+            "Sec-Fetch-Site": "same-origin",
+        })
         resp = session.get(MOTA_URL, timeout=30)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.content, "html.parser")
@@ -310,12 +336,14 @@ def scrape_mota() -> list[dict]:
         print(f"  {len(items)} items found")
 
         for item in items:
-            # ── タイトル（グレード名）
             carname_el = item.select_one(".carname")
             title = carname_el.get_text(" ", strip=True) if carname_el else ""
             title = title[:100]
 
-            # ── 年式・走行距離（.mdt/.mdd ペアから抽出）
+            # ── D4のみ
+            if title and "D4" not in title:
+                continue
+
             year = distance_km = None
             labels = item.select(".mdt")
             values = item.select(".mdd")
@@ -325,11 +353,10 @@ def scrape_mota() -> list[dict]:
                     str.maketrans("０１２３４５６７８９．", "0123456789.")
                 )
                 if lbl_text == "年式":
-                    year = parse_year(val_text)          # "2020年" → 2020
+                    year = parse_year(val_text)
                 elif lbl_text == "走行":
-                    distance_km = parse_distance_km(val_text)  # "15.9万km" → 159000
+                    distance_km = parse_distance_km(val_text)
 
-            # ── 支払総額（.price_box から）
             price_box = item.select_one(".price_box")
             price_text = price_box.get_text(" ", strip=True) if price_box else ""
             price_text = price_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
@@ -339,7 +366,6 @@ def scrape_mota() -> list[dict]:
             else:
                 price_man = parse_price_man(price_text)
 
-            # ── 詳細リンク
             link_el = item.select_one('a[href*="/used/detail/"]')
             if link_el:
                 href = link_el.get("href", "")
@@ -369,10 +395,6 @@ def scrape_mota() -> list[dict]:
 # 重複マージ
 # ─────────────────────────────
 def merge_listings(all_listings: list[dict]) -> list[dict]:
-    """
-    同じフィンガープリント（年式+走行距離）の車両を1件にまとめ、
-    複数サイトのURLを sources dict に集約する。
-    """
     merged: dict[str, dict] = {}
     for listing in all_listings:
         fp = listing["fingerprint"]
@@ -382,9 +404,7 @@ def merge_listings(all_listings: list[dict]) -> list[dict]:
                 "sources": {listing["source"]: listing["url"]},
             }
         else:
-            # 複数サイトに同じ車がある → URLを追記
             merged[fp]["sources"][listing["source"]] = listing["url"]
-            # 価格は最安値を優先
             if listing["price_man"] and (
                 not merged[fp]["price_man"]
                 or listing["price_man"] < merged[fp]["price_man"]
@@ -440,7 +460,6 @@ def main() -> None:
 
     all_raw: list[dict] = []
 
-    # カーセンサー
     print("▶ カーセンサー")
     try:
         cs = scrape_carsensor()
@@ -449,7 +468,6 @@ def main() -> None:
     except Exception as e:
         print(f"  ERROR: {e}")
 
-    # グーネット
     print("▶ グーネット")
     try:
         goo = scrape_goonet()
@@ -458,7 +476,6 @@ def main() -> None:
     except Exception as e:
         print(f"  ERROR: {e}")
 
-    # MOTA
     print("▶ MOTA")
     try:
         mota = scrape_mota()
@@ -467,31 +484,25 @@ def main() -> None:
     except Exception as e:
         print(f"  ERROR: {e}")
 
-    # マージ
     merged = merge_listings(all_raw)
     print(f"▶ マージ後: {len(merged)} 件")
 
-    # seen.json 読み込み
     seen_list: list[str] = load_json(SEEN_FILE, [])
     seen: set[str]       = set(seen_list)
     first_run            = len(seen) == 0
 
-    # 新着検出
     new_listings = [l for l in merged if l["fingerprint"] not in seen]
     print(f"▶ 新着: {len(new_listings)} 件{'（初回実行のため通知なし）' if first_run else ''}")
 
-    # data.json 保存
     save_json(DATA_FILE, {
         "updated_at": datetime.now().isoformat(),
         "total":      len(merged),
         "listings":   merged,
     })
 
-    # seen.json 更新
     seen.update(l["fingerprint"] for l in merged)
     save_json(SEEN_FILE, sorted(seen))
 
-    # 通知（初回実行はスキップ）
     if new_listings and not first_run:
         send_ntfy(new_listings)
 
