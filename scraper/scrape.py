@@ -69,7 +69,6 @@ def parse_price_man(text: str):
     return int(float(m.group(1))) if m else None
 
 def url_set_param(url: str, key: str, value: str) -> str:
-    """URLの特定パラメータを書き換えて返す"""
     parsed = urlparse(url)
     params = {k: v[0] for k, v in parse_qs(parsed.query, keep_blank_values=True).items()}
     params[key] = value
@@ -96,21 +95,17 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
             break
 
         for item in items:
-            # タイトル（バッジ・注記テキストを除去）
             car_info = item.select_one(".cassetteMain__carInfoContainer")
             if car_info:
-                # バッジ類（保証表示など）を除いた純粋な車名部分を取得
                 for badge in car_info.select(".badge, .cassetteMain__badges, .cassetteMain__label"):
                     badge.decompose()
                 raw = car_info.get_text(" ", strip=True)
-                # 既知のノイズ文字列を除去
                 for noise in ["保証の種類を表示しています", "保証の種類について", "360° 画像付", "オンライン相談可", "車両品質評価書付", "販売店保証", "ディーラー保証"]:
                     raw = raw.replace(noise, "")
                 title = " ".join(raw.split())[:100]
             else:
                 title = ""
 
-            # 年式・走行距離
             year = distance_km = None
             for spec in item.select(".specList__detailBox"):
                 t = spec.get_text(strip=True)
@@ -119,7 +114,6 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                 elif "走行距離" in t:
                     distance_km = parse_distance_km(t)
 
-            # 支払総額
             num_el = item.select_one(".totalPrice__mainPriceNum")
             if num_el:
                 try:
@@ -131,7 +125,6 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                 price_text = price_el.get_text(" ", strip=True) if price_el else ""
                 price_man = parse_price_man(price_text)
 
-            # 詳細リンク
             link_el = item.select_one('a[href*="/usedcar/detail/"]')
             if link_el:
                 href = link_el.get("href", "")
@@ -152,7 +145,6 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                     "scraped_at": datetime.now().isoformat(),
                 })
 
-        # 次ページ: 「次へ」リンクのhrefを直接使う
         next_btn = soup.select_one(".pager__item--next:not(.pager__item--disabled) a")
         if not next_btn or page >= 10:
             break
@@ -172,7 +164,6 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
     session = requests.Session()
     session.headers.update(HEADERS)
 
-    # offset=0 から開始、limit は URL に含まれていれば使う（デフォルト50）
     parsed_base = urlparse(base_url)
     base_params = {k: v[0] for k, v in parse_qs(parsed_base.query, keep_blank_values=True).items()}
     limit = int(base_params.get("limit", "50"))
@@ -207,7 +198,11 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
             year = int(year_m.group(1)) if year_m else None
             distance_km = int(float(dist_m.group(1)) * 10_000) if dist_m else None
 
-            price_el = item.select_one(".total_payment .num")
+            # 支払総額: .hontai-price ブロック内の .num-red（赤字＝支払総額）
+            # 実際のHTML: <div class="hontai-price">支払総額 (税込)<p class="num num-red">279.8万円</p>...
+            price_el = item.select_one(".hontai-price .num-red")
+            if not price_el:
+                price_el = item.select_one(".hontai-price .num")
             price_text = price_el.get_text(strip=True) if price_el else ""
             price_text = price_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
             price_m = re.search(r"([\d.]+)", price_text)
@@ -233,7 +228,6 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
                     "scraped_at": datetime.now().isoformat(),
                 })
 
-        # 次ページ確認
         next_link = soup.select_one(".pager_next a, .pager a.next")
         if not next_link or page >= 10:
             break
@@ -258,7 +252,6 @@ def merge_listings(all_listings: list[dict]) -> list[dict]:
             }
         else:
             merged[fp]["sources"][listing["source"]] = listing["url"]
-            # keep watch_name if not already set
             if not merged[fp].get("watch_name") and listing.get("watch_name"):
                 merged[fp]["watch_name"] = listing["watch_name"]
             if listing["price_man"] and (
