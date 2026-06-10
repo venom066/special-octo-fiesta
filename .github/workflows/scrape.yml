@@ -1,0 +1,41 @@
+name: Scrape V90 Cross Country
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # 30分ごと (UTC)
+  workflow_dispatch:           # 手動実行ボタンも有効化
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write          # data.json / seen.json をpushするために必要
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scraper
+        env:
+          NTFY_TOPIC:       ${{ secrets.NTFY_TOPIC }}
+          GITHUB_PAGES_URL: ${{ secrets.GITHUB_PAGES_URL }}
+        run: python scraper/scrape.py
+
+      - name: Commit and push data files
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/data.json data/seen.json
+          # 変更がなければコミットしない
+          git diff --staged --quiet || \
+            git commit -m "chore: update listings $(date -u +'%Y-%m-%dT%H:%MZ')"
+          git push

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V90 CC 中古車ウォッチャー</title>
+<style>
+  :root {
+    --bg:       #0f1117;
+    --surface:  #1a1d27;
+    --border:   #2a2d3a;
+    --text:     #e8eaf0;
+    --muted:    #8b8fa8;
+    --accent:   #4a90e2;
+    --new:      #2ecc71;
+    --fav:      #f39c12;
+    --cs:       #e74c3c;
+    --goo:      #27ae60;
+    --mota:     #8e44ad;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    flex: 1;
+    min-width: 180px;
+  }
+
+  #updated {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* ── コントロールバー ── */
+  .controls {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .filter-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+
+  .source-dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+  }
+  .dot-cs   { background: var(--cs); }
+  .dot-goo  { background: var(--goo); }
+  .dot-mota { background: var(--mota); }
+
+  /* ── カード グリッド ── */
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    transition: transform .1s, border-color .15s;
+  }
+  .card:hover { transform: translateY(-2px); border-color: var(--accent); }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+    line-height: 1.4;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .fav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    line-height: 1;
+    padding: 0;
+    color: var(--border);
+    transition: color .15s, transform .1s;
+    flex-shrink: 0;
+  }
+  .fav-btn.on  { color: var(--fav); }
+  .fav-btn:hover { transform: scale(1.2); }
+
+  .specs {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .spec-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .spec-value { font-size: 1rem; font-weight: 700; }
+  .spec-value.price { color: var(--accent); }
+
+  .sources {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity .15s;
+  }
+  .source-link:hover { opacity: .8; }
+  .source-link.cs   { background: rgba(231,76,60,.15);  color: #e74c3c; }
+  .source-link.goo  { background: rgba(39,174,96,.15);  color: #2ecc71; }
+  .source-link.mota { background: rgba(142,68,173,.15); color: #a569bd; }
+
+  /* 複数サイトに掲載 → カードにリング */
+  .card.multi { border-color: #f39c12; }
+  .multi-badge {
+    position: absolute;
+    top: -8px; right: 14px;
+    background: #f39c12;
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* 空メッセージ */
+  #empty {
+    display: none;
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 1rem;
+  }
+
+  /* ローディング */
+  #loading {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  /* ── モバイル調整 ── */
+  @media (max-width: 480px) {
+    header { padding: 10px 14px; }
+    #grid  { padding: 12px; gap: 12px; }
+    .card  { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚗 V90 CC ウォッチャー</h1>
+  <span id="updated">読み込み中…</span>
+</header>
+
+<div class="controls">
+  <div class="btn-group" id="filterGroup">
+    <button class="filter-btn active" data-filter="all">すべて</button>
+    <button class="filter-btn" data-filter="fav">★ お気に入り</button>
+    <button class="filter-btn" data-filter="multi">複数サイト</button>
+    <button class="filter-btn" data-filter="cs">
+      <span class="source-dot dot-cs"></span>カーセンサー
+    </button>
+    <button class="filter-btn" data-filter="goo">
+      <span class="source-dot dot-goo"></span>グーネット
+    </button>
+    <button class="filter-btn" data-filter="mota">
+      <span class="source-dot dot-mota"></span>MOTA
+    </button>
+  </div>
+</div>
+
+<div id="loading">データを読み込んでいます…</div>
+<div id="empty">該当する車両がありません</div>
+<div id="grid"></div>
+
+<script>
+// ─── お気に入り管理 ───────────────────────────────
+const FAV_KEY = "v90cc_favorites";
+
+function getFavs() {
+  try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+
+function saveFavs(set) {
+  localStorage.setItem(FAV_KEY, JSON.stringify([...set]));
+}
+
+function toggleFav(fp) {
+  const favs = getFavs();
+  favs.has(fp) ? favs.delete(fp) : favs.add(fp);
+  saveFavs(favs);
+  return favs.has(fp);
+}
+
+// ─── フィルター状態 ──────────────────────────────
+let currentFilter = "all";
+let allListings   = [];
+
+// ─── カードレンダリング ───────────────────────────
+function renderCards(listings) {
+  const grid  = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+  const favs  = getFavs();
+
+  grid.innerHTML = "";
+
+  if (!listings.length) {
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  for (const l of listings) {
+    const fp      = l.fingerprint;
+    const isFav   = favs.has(fp);
+    const sources = l.sources || { [l.source]: l.url };
+    const srcKeys = Object.keys(sources);
+    const isMulti = srcKeys.length > 1;
+
+    const dist  = l.distance_km ? (l.distance_km / 10000).toFixed(1) + "万km" : "—";
+    const price = l.price_man   ? l.price_man + "万円" : "—";
+
+    // ソースリンクHTML
+    const srcLinks = srcKeys.map(src => {
+      const url   = sources[src];
+      const label = { carsensor: "カーセンサー", goonet: "グーネット", mota: "MOTA" }[src] || src;
+      const cls   = { carsensor: "cs", goonet: "goo", mota: "mota" }[src] || "";
+      return `<a href="${url}" target="_blank" rel="noopener" class="source-link ${cls}">${label}</a>`;
+    }).join("");
+
+    const card = document.createElement("div");
+    card.className = "card" + (isMulti ? " multi" : "");
+    card.dataset.fp = fp;
+    card.innerHTML = `
+      ${isMulti ? '<div class="multi-badge">複数サイト</div>' : ""}
+      <div class="card-top">
+        <div class="card-title">${escHtml(l.title)}</div>
+        <button class="fav-btn ${isFav ? "on" : ""}" data-fp="${fp}" title="お気に入り">
+          ${isFav ? "★" : "☆"}
+        </button>
+      </div>
+      <div class="specs">
+        <div class="spec-item">
+          <span class="spec-label">年式</span>
+          <span class="spec-value">${l.year}年</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">走行</span>
+          <span class="spec-value">${dist}</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">支払総額</span>
+          <span class="spec-value price">${price}</span>
+        </div>
+      </div>
+      <div class="sources">${srcLinks}</div>
+    `;
+
+    // お気に入りボタン
+    card.querySelector(".fav-btn").addEventListener("click", function () {
+      const on = toggleFav(this.dataset.fp);
+      this.textContent = on ? "★" : "☆";
+      this.classList.toggle("on", on);
+      if (currentFilter === "fav") applyFilter();
+    });
+
+    grid.appendChild(card);
+  }
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// ─── フィルター適用 ───────────────────────────────
+function applyFilter() {
+  const favs = getFavs();
+  let filtered;
+
+  switch (currentFilter) {
+    case "fav":
+      filtered = allListings.filter(l => favs.has(l.fingerprint));
+      break;
+    case "multi":
+      filtered = allListings.filter(l => Object.keys(l.sources || {}).length > 1);
+      break;
+    case "cs":
+      filtered = allListings.filter(l => (l.sources || {})["carsensor"]);
+      break;
+    case "goo":
+      filtered = allListings.filter(l => (l.sources || {})["goonet"]);
+      break;
+    case "mota":
+      filtered = allListings.filter(l => (l.sources || {})[" mota"]);
+      break;
+    default:
+      filtered = allListings;
+  }
+
+  // 支払総額の安い順
+  filtered = [...filtered].sort((a, b) => (a.price_man || 9999) - (b.price_man || 9999));
+  renderCards(filtered);
+}
+
+// ─── フィルターボタン ────────────────────────────
+document.getElementById("filterGroup").addEventListener("click", e => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentFilter = btn.dataset.filter;
+  applyFilter();
+});
+
+// ─── データ取得 ───────────────────────────────────
+async function loadData() {
+  const loading = document.getElementById("loading");
+  try {
+    // GitHub Pages では相対パスで取得
+    const res = await fetch("./data/data.json?t=" + Date.now());
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const data = await res.json();
+
+    allListings = data.listings || [];
+
+    const updatedAt = data.updated_at
+      ? new Date(data.updated_at).toLocaleString("ja-JP")
+      : "—";
+    document.getElementById("updated").textContent =
+      `最終更新: ${updatedAt}（全${data.total || allListings.length}件）`;
+
+    loading.style.display = "none";
+    applyFilter();
+  } catch (err) {
+    loading.textContent = "⚠ データの読み込みに失敗しました: " + err.message;
+    console.error(err);
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
