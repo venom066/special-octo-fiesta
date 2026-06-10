@@ -125,6 +125,10 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                 price_text = price_el.get_text(" ", strip=True) if price_el else ""
                 price_man = parse_price_man(price_text)
 
+            # ASK（要相談）= 0円扱いを除外
+            if price_man == 0:
+                price_man = None
+
             link_el = item.select_one('a[href*="/usedcar/detail/"]')
             if link_el:
                 href = link_el.get("href", "")
@@ -198,8 +202,7 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
             year = int(year_m.group(1)) if year_m else None
             distance_km = int(float(dist_m.group(1)) * 10_000) if dist_m else None
 
-            # 支払総額: .hontai-price ブロック内の .num-red（赤字＝支払総額）
-            # 実際のHTML: <div class="hontai-price">支払総額 (税込)<p class="num num-red">279.8万円</p>...
+            # 支払総額: .hontai-price .num-red（赤字）→ fallback .hontai-price .num
             price_el = item.select_one(".hontai-price .num-red")
             if not price_el:
                 price_el = item.select_one(".hontai-price .num")
@@ -207,7 +210,10 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
             price_text = price_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
             price_m = re.search(r"([\d.]+)", price_text)
             price_man = int(float(price_m.group(1))) if price_m else None
-            if price_man == 0: price_man = None
+
+            # ASK（要相談）= 0円扱いを除外
+            if price_man == 0:
+                price_man = None
 
             link_el = item.select_one('a[href*="/usedcar/spread/"]')
             if link_el:
@@ -273,7 +279,6 @@ def send_ntfy(new_listings: list[dict]) -> None:
         return
 
     count = len(new_listings)
-    # HTTPヘッダーはlatin-1のみ対応のため絵文字不可
     title = f"中古車 新着 {count}件"
 
     lines = []
