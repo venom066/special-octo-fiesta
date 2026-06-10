@@ -1,70 +1,18 @@
 {
-  "updated_at": "2026-06-10T06:06:26.863148",
-  "total": 33,
+  "updated_at": "2026-06-10T06:22:14.495676",
+  "total": 7,
   "listings": [
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD モメンタム 4WD ブラックレザー　シートヒーター　シートエアコン　ステアリングヒーター　ヘッドアップディスプレイ　360カメラ　インテリセーフ",
-      "year": 2018,
-      "distance_km": 151000,
-      "price_man": 128,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6843971198/index.html",
-      "fingerprint": "2018_151000",
-      "scraped_at": "2026-06-10T06:06:24.339948",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6843971198/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD モメンタム 4WD 禁煙車　純正9型ナビ　フルセグTV　全周囲カメラ　温熱茶革シート　シートヒーター　レーダークルーズコントロール　衝突軽減ブレ",
-      "year": 2017,
-      "distance_km": 88000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6811586411/index.html",
-      "fingerprint": "2017_88000",
-      "scraped_at": "2026-06-10T06:06:24.341136",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6811586411/index.html"
-      }
-    },
     {
       "source": "carsensor",
       "title": "V90クロスカントリー D4 AWD プロ ディーゼルターボ 4WD 2020年モデル/禁煙車/ブラウンレザーシート(ヒータ付)/純正ナビ/フルセグTV/Bluetooth対応/US",
       "year": 2020,
       "distance_km": 159000,
-      "price_man": 0,
+      "price_man": 195,
       "url": "https://www.carsensor.net/usedcar/detail/AU7060154784/index.html",
       "fingerprint": "2020_159000",
-      "scraped_at": "2026-06-10T06:06:24.342230",
+      "scraped_at": "2026-06-10T06:22:10.245609",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7060154784/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD モメンタム 4WD 支払総額 208 万円 車両本体価格 195 .0 万円 年式 2017 (H29) 走行距離 7.5 万km 車検 202",
-      "year": 2017,
-      "distance_km": 75000,
-      "price_man": 208,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6890069955/index.html",
-      "fingerprint": "2017_75000",
-      "scraped_at": "2026-06-10T06:06:24.343207",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6890069955/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T6 AWD モメンタム 4WD ACC LKA BLIS パノラマサンルーフ 純正ナビ フルセグTV 全方位カメラ 黒革シートヒーター パワーシート LED",
-      "year": 2017,
-      "distance_km": 123000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7044096120/index.html",
-      "fingerprint": "2017_123000",
-      "scraped_at": "2026-06-10T06:06:24.344302",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7044096120/index.html"
       }
     },
     {
@@ -72,38 +20,12 @@
       "title": "V90クロスカントリー D4 AWD サマム ディーゼルターボ 4WD 2年保証付　ポールスターエンジニアード・パフォーマンスソフトウェア　harman/kardonプレミアムオーデ",
       "year": 2019,
       "distance_km": 128000,
-      "price_man": 0,
+      "price_man": 221,
       "url": "https://www.carsensor.net/usedcar/detail/AU6915583590/index.html",
       "fingerprint": "2019_128000",
-      "scraped_at": "2026-06-10T06:06:24.345424",
+      "scraped_at": "2026-06-10T06:22:10.247652",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU6915583590/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD モメンタム 4WD サンルーフ　茶革　TVKIT DVD再生　コムテック360度ドラレコ インターフェース　純正ナビ　フルセグ　Bluetoot",
-      "year": 2017,
-      "distance_km": 87000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7030789190/index.html",
-      "fingerprint": "2017_87000",
-      "scraped_at": "2026-06-10T06:06:24.346526",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7030789190/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD 4WD 純正ドライブレコーダー　純正19インチアルミホイール　ディスプレイオーディオ　シートヒーター　ルーフレール　弊社買取車両 ★今がチャンス",
-      "year": 2020,
-      "distance_km": 70000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6886603285/index.html",
-      "fingerprint": "2020_70000",
-      "scraped_at": "2026-06-10T06:06:24.347603",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6886603285/index.html"
       }
     },
     {
@@ -111,51 +33,12 @@
       "title": "V90クロスカントリー D4 AWD サマム ディーゼルターボ 4WD ポールスターpkg　1オナ　アンバー革　ナビ　DTV　全方位カメラ　スマキー　DSRC　オートLED　ハーマン",
       "year": 2019,
       "distance_km": 87000,
-      "price_man": 0,
+      "price_man": 283,
       "url": "https://www.carsensor.net/usedcar/detail/AU6973243868/index.html",
       "fingerprint": "2019_87000",
-      "scraped_at": "2026-06-10T06:06:24.348676",
+      "scraped_at": "2026-06-10T06:22:10.249620",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU6973243868/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD サマム 4WD パノラマガラスサンルーフ Bower&Wilinsプレミアムサウンド HUD ブラックレザーシート PWシート ベンチレーション",
-      "year": 2017,
-      "distance_km": 69000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7065229534/index.html",
-      "fingerprint": "2017_69000",
-      "scraped_at": "2026-06-10T06:06:24.349798",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7065229534/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー B6 AWD プロ 4WD エアサス仕様　マイルドハイブリッド　Bowers&Wilkinsプレミアムオーディオ　パノラマサンルーフ　マッサージ機能付きナッパ",
-      "year": 2021,
-      "distance_km": 102000,
-      "price_man": 298,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6963091355/index.html",
-      "fingerprint": "2021_102000",
-      "scraped_at": "2026-06-10T06:06:24.350868",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6963091355/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD サマム 4WD 純正HDDナビ・360°カメラ・ナッパレザー・純正ドラレコ・フルセグTV・ベンチレーション・シートヒーター・ステアリングヒーター",
-      "year": 2018,
-      "distance_km": 40000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6944692741/index.html",
-      "fingerprint": "2018_40000",
-      "scraped_at": "2026-06-10T06:06:24.351951",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6944692741/index.html"
       }
     },
     {
@@ -163,13 +46,12 @@
       "title": "V90クロスカントリー D4 AWD サマム ディーゼルターボ 4WD パノラマSR　harman/kardon　ACC　BLIS　LKA　CTA　パークアシスト　360°ビュー　白",
       "year": 2018,
       "distance_km": 58000,
-      "price_man": 0,
+      "price_man": 318,
       "url": "https://www.carsensor.net/usedcar/detail/AU7044088004/index.html",
       "fingerprint": "2018_58000",
-      "scraped_at": "2026-06-10T06:06:24.353101",
+      "scraped_at": "2026-06-10T06:22:10.251818",
       "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7044088004/index.html",
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/14/700050839330260514002.html"
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7044088004/index.html"
       }
     },
     {
@@ -177,10 +59,10 @@
       "title": "V90クロスカントリー D4 AWD モメンタム ディーゼルターボ 4WD ディーゼル車・4WD車・茶革シート・ナビTV・360度カメラ・バックカメラ・コーナーセンサー・カープレイ対",
       "year": 2019,
       "distance_km": 42000,
-      "price_man": 0,
+      "price_man": 328,
       "url": "https://www.carsensor.net/usedcar/detail/AU6519942720/index.html",
       "fingerprint": "2019_42000",
-      "scraped_at": "2026-06-10T06:06:24.354078",
+      "scraped_at": "2026-06-10T06:22:10.253017",
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU6519942720/index.html"
       }
@@ -190,65 +72,12 @@
       "title": "V90クロスカントリー D4 AWD ディーゼルターボ 4WD 純正ナビ　360°カメラ　ACC　レザーシート　シートヒーター　パワーシート　自動駐車　BLIS　LEDヘッドライト",
       "year": 2019,
       "distance_km": 35000,
-      "price_man": 0,
+      "price_man": 328,
       "url": "https://www.carsensor.net/usedcar/detail/AU7053133931/index.html",
       "fingerprint": "2019_35000",
-      "scraped_at": "2026-06-10T06:06:24.355188",
+      "scraped_at": "2026-06-10T06:22:10.254353",
       "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7053133931/index.html",
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700050342130260524005.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD サマム 4WD お問い合わせの際は【カーセンサーを見た！】と販売店までお伝え下さい。 支払総額 332 万円 車両本体価格 325 .0 万円",
-      "year": 2017,
-      "distance_km": 56000,
-      "price_man": 332,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6274077024/index.html",
-      "fingerprint": "2017_56000",
-      "scraped_at": "2026-06-10T06:06:24.356211",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6274077024/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD サマム 4WD 2019年モデル　ポールスターソフトウェア　パノラマルーフ　ナッパレザー　Harman/Kardon　HDDナビ　地デジTV　A",
-      "year": 2019,
-      "distance_km": 54000,
-      "price_man": 353,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7000627190/index.html",
-      "fingerprint": "2019_54000",
-      "scraped_at": "2026-06-10T06:06:24.357280",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7000627190/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー T5 AWD モメンタム 4WD 認定中古車・弊社下取・ワンオーナー・禁煙・ ◆九州エリア在庫数約２００台以上！グループ店舗在庫はご商談可能です！◆大分だけで",
-      "year": 2017,
-      "distance_km": 36000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6997980800/index.html",
-      "fingerprint": "2017_36000",
-      "scraped_at": "2026-06-10T06:06:24.358333",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6997980800/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー B6 AWD プロ 4WD 後期モデル　パノラマスライディングルーフ　Bowers&Wilkins　ブラウンレザー　インテリセーフ　HUD　LED　パワーシー",
-      "year": 2021,
-      "distance_km": 62000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6977546927/index.html",
-      "fingerprint": "2021_62000",
-      "scraped_at": "2026-06-10T06:06:24.359397",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6977546927/index.html"
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7053133931/index.html"
       }
     },
     {
@@ -259,179 +88,9 @@
       "price_man": 399,
       "url": "https://www.carsensor.net/usedcar/detail/AU7009871495/index.html",
       "fingerprint": "2019_47000",
-      "scraped_at": "2026-06-10T06:06:24.360470",
+      "scraped_at": "2026-06-10T06:22:10.256791",
       "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7009871495/index.html",
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700957241130260512003.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー B6 AWD プロ 4WD アダプティブクルーズ　黒レザー　ハーマンカードンステレオ　ドラレコ　純正18AW　TVナビ　AppleCarPlay　パワーバック",
-      "year": 2022,
-      "distance_km": 48000,
-      "price_man": 408,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7052603798/index.html",
-      "fingerprint": "2022_48000",
-      "scraped_at": "2026-06-10T06:06:24.361499",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7052603798/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー B6 AWD プロ 4WD Bowers&Willkins ナッパレザー 純正ナビ インテリセーフ 純正20インチアルミホイール パワーバックドア ブラインド",
-      "year": 2021,
-      "distance_km": 40000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7038203236/index.html",
-      "fingerprint": "2021_40000",
-      "scraped_at": "2026-06-10T06:06:24.362608",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7038203236/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー オーシャン レース エディション 4WD クロスカントリーオーシャンレースED15台限定車/パノラマサンルーフ/ワンオーナー/4WD/純正メモリーナビ/全方位",
-      "year": 2018,
-      "distance_km": 32000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7071030386/index.html",
-      "fingerprint": "2018_32000",
-      "scraped_at": "2026-06-10T06:06:24.363645",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7071030386/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー B6 AWD プロ 4WD 支払総額 495 .8 万円 車両本体価格 480 .0 万円 年式 2022 (R04) 走行距離 3.5 万km 車検 202",
-      "year": 2022,
-      "distance_km": 35000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7037136071/index.html",
-      "fingerprint": "2022_35000",
-      "scraped_at": "2026-06-10T06:06:24.364631",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7037136071/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー アルティメット B5 AWD 4WD シートヒーター　シートエアコン　パワーシート　トランクスルー　フロアマット　コネクテッド機能　ナビ　音楽プレーヤー接続",
-      "year": 2023,
-      "distance_km": 27000,
-      "price_man": 0,
-      "url": "https://www.carsensor.net/usedcar/detail/AU6930364663/index.html",
-      "fingerprint": "2023_27000",
-      "scraped_at": "2026-06-10T06:06:24.365710",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU6930364663/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "V90クロスカントリー アルティメット B5 AWD 4WD ワンオーナー　Google搭載車　ナビ　全方位カメラ　ETC　レザーシート　シートヒーター　ベンチレーション　ステアリン",
-      "year": 2024,
-      "distance_km": 27000,
-      "price_man": 580,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7021918380/index.html",
-      "fingerprint": "2024_27000",
-      "scraped_at": "2026-06-10T06:06:24.366812",
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7021918380/index.html"
-      }
-    },
-    {
-      "source": "goonet",
-      "title": "ボルボ Ｖ９０ Ｔ６　ＡＷＤ　インスクリプション　２０１７年向け販売モデル　Ｂ＆Ｗスピーカー　ウッドパネル　サンルーフ　前後シートヒーター　ベンチレーション　ヘッドアップＤＰ　純正２０インチアルミホイ",
-      "year": 2017,
-      "distance_km": 62000,
-      "price_man": null,
-      "url": "https://www.goo-net.com/usedcar/spread/goo/13/700957241230260503003.html",
-      "fingerprint": "2017_62000",
-      "scraped_at": "2026-06-10T06:06:26.619701",
-      "sources": {
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700957241230260503003.html"
-      }
-    },
-    {
-      "source": "goonet",
-      "title": "ボルボ Ｖ９０ Ｄ４　モメンタム　・ディーゼルターボ　純正ナビ　全周囲カメラ　ＥＴＣ　前後ドラレコ　薄茶本革シート　シートヒーター　ハンズフリー電動ゲート　レークル　ソナー　自動発車＆駐車　衝突回避　",
-      "year": 2020,
-      "distance_km": 23000,
-      "price_man": null,
-      "url": "https://www.goo-net.com/usedcar/spread/goo/13/700056108830260522004.html",
-      "fingerprint": "2020_23000",
-      "scraped_at": "2026-06-10T06:06:26.621342",
-      "sources": {
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700056108830260522004.html"
-      }
-    },
-    {
-      "source": "goonet",
-      "title": "ボルボ Ｖ９０ リチャージ　ＰＨＶ　Ｔ８　ＡＷＤ　インスクリプション　ブロンド革　Ｓヒーター＆ベンチレーション　ウッドインテリア　純正ナビ　Ｂｏｗｅｒｓ＆Ｗｉｌｋｉｎｓ　ＨＵＤ　全周Ｃ＆Ｐアシスト　イ",
-      "year": 2021,
-      "distance_km": 59000,
-      "price_man": null,
-      "url": "https://www.goo-net.com/usedcar/spread/goo/13/700951041330260311002.html",
-      "fingerprint": "2021_59000",
-      "scraped_at": "2026-06-10T06:06:26.622896",
-      "sources": {
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700951041330260311002.html"
-      }
-    },
-    {
-      "source": "goonet",
-      "title": "ボルボ Ｖ９０ Ｔ６　ＡＷＤ　インスクリプション　パノラマガラスサンルーフ　ナッパレザー　Ｂｏｗｅｒｓ／Ｗｉｌｋｉｎｓプレミアムサラウンド　ステアリング＆シートヒーター　ヘッドアップディスプレイ　純正",
-      "year": 2017,
-      "distance_km": 43000,
-      "price_man": null,
-      "url": "https://www.goo-net.com/usedcar/spread/goo/13/700052028430260215003.html",
-      "fingerprint": "2017_43000",
-      "scraped_at": "2026-06-10T06:06:26.624363",
-      "sources": {
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700052028430260215003.html"
-      }
-    },
-    {
-      "source": "goonet",
-      "title": "ボルボ Ｖ９０ Ｄ４　モメンタム　２０２０年式　クリーンディーゼル　レザーシート　フロントシートヒーター　３６０度カメラ　純正１８インチアルミホイール",
-      "year": 2020,
-      "distance_km": 64000,
-      "price_man": null,
-      "url": "https://www.goo-net.com/usedcar/spread/goo/13/700957241230260531001.html",
-      "fingerprint": "2020_64000",
-      "scraped_at": "2026-06-10T06:06:26.625677",
-      "sources": {
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/13/700957241230260531001.html"
-      }
-    },
-    {
-      "source": "goonet",
-      "title": "ボルボ Ｖ９０ Ｄ４　ノルディックエディション　禁煙車　サンルーフ　ハーマンカードン　シートヒーター　純正ナビ　全方位カメラ　フルセグ　ＥＴＣ　前後ドラレコ　ＢＳＭ　ＨＵＤ　ＡＣＣ　コーナーセンサー　",
-      "year": 2020,
-      "distance_km": 53000,
-      "price_man": null,
-      "url": "https://www.goo-net.com/usedcar/spread/goo/14/988026053001310353002.html",
-      "fingerprint": "2020_53000",
-      "scraped_at": "2026-06-10T06:06:26.628337",
-      "sources": {
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/14/988026053001310353002.html"
-      }
-    },
-    {
-      "source": "goonet",
-      "title": "ボルボ Ｖ９０ Ｄ４　インスクリプション　ＡＣＣ　レーンキープ　ＢＳＭ　ＨＵＤ　Ｈａｒｍａｎ　Ｋａｒｄｏｎ　白革シート　Ｐシート　Ｈ　ベンチレーション　ステアリングＨ　純ナビ　フルセグ　ＣａｒＰｌａｙ",
-      "year": 2018,
-      "distance_km": 20000,
-      "price_man": null,
-      "url": "https://www.goo-net.com/usedcar/spread/goo/11/941026042500506963001.html",
-      "fingerprint": "2018_20000",
-      "scraped_at": "2026-06-10T06:06:26.630951",
-      "sources": {
-        "goonet": "https://www.goo-net.com/usedcar/spread/goo/11/941026042500506963001.html"
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7009871495/index.html"
       }
     }
   ]
