@@ -31,37 +31,35 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .watch-tab { background: none; border: none; border-bottom: 3px solid transparent; color: var(--muted); padding: 11px 16px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s; }
 .watch-tab:hover { color: var(--text); }
 .watch-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.watch-tab.fav-tab.active { color: var(--fav); border-bottom-color: var(--fav); }
 .watch-tab-count { display: inline-block; background: var(--surface2); border-radius: 10px; font-size: 0.7rem; padding: 1px 6px; margin-left: 5px; color: var(--muted); }
 .watch-tab.active .watch-tab-count { background: rgba(74,144,226,.2); color: var(--accent); }
+.watch-tab.fav-tab.active .watch-tab-count { background: rgba(243,156,18,.2); color: var(--fav); }
 .cond-bar { background: rgba(74,144,226,.05); border-bottom: 1px solid var(--border); padding: 7px 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .cond-label { font-size: 0.7rem; color: var(--muted); flex-shrink: 0; }
 .cond-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 2px 10px; font-size: 0.72rem; color: var(--muted); }
 .controls { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.btn-group { display: flex; gap: 4px; flex-wrap: wrap; }
-.filter-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 20px; padding: 5px 14px; font-size: 0.8rem; cursor: pointer; transition: all .15s; }
-.filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-.filter-btn:hover:not(.active) { border-color: var(--accent); color: var(--text); }
-.sort-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; margin-left: auto; }
+.sort-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
 .sort-label { font-size: 0.75rem; color: var(--muted); }
 .sort-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; transition: all .15s; white-space: nowrap; }
 .sort-btn.active { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
 .sort-btn:hover:not(.active) { color: var(--text); border-color: var(--muted); }
 .source-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
 .dot-mota { background: var(--mota); }
-.mota-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-decoration: none; background: rgba(142,68,173,.18); border: 1px solid var(--mota); color: #a569bd; transition: all .15s; white-space: nowrap; }
+.mota-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-decoration: none; background: rgba(142,68,173,.18); border: 1px solid var(--mota); color: #a569bd; transition: all .15s; white-space: nowrap; margin-left: auto; }
 .mota-link-btn:hover { background: rgba(142,68,173,.32); color: #c39bd3; }
 .count-bar { padding: 7px 20px 2px; font-size: 0.78rem; color: var(--muted); }
 #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 12px 20px 28px; }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; cursor: pointer; transition: transform .1s, border-color .15s, box-shadow .15s; user-select: none; }
 .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 16px rgba(74,144,226,.12); }
-.card.multi { border-color: rgba(243,156,18,.35); }
-.card.multi:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.1); }
-.multi-badge { position: absolute; top: -8px; right: 14px; background: var(--fav); color: #000; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.card.is-fav { border-color: rgba(243,156,18,.5); }
+.card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.15); }
+.multi-badge { position: absolute; top: -8px; right: 50px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 .card-title { font-size: 0.85rem; line-height: 1.4; color: var(--text); flex: 1; }
-.fav-btn { background: none; border: none; cursor: pointer; font-size: 1.3rem; line-height: 1; padding: 2px; color: var(--border); transition: color .15s, transform .1s; flex-shrink: 0; }
-.fav-btn.on { color: var(--fav); }
-.fav-btn:hover { transform: scale(1.2); }
+.fav-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 4px 6px; color: var(--muted); transition: all .15s; flex-shrink: 0; }
+.fav-btn:hover { border-color: var(--fav); color: var(--fav); transform: scale(1.1); }
+.fav-btn.on { border-color: var(--fav); color: var(--fav); background: rgba(243,156,18,.1); }
 .specs { display: flex; gap: 14px; flex-wrap: wrap; }
 .spec-item { display: flex; flex-direction: column; gap: 2px; }
 .spec-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
@@ -94,7 +92,6 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
   .watch-tabs, .controls, .cond-bar { padding-left: 14px; padding-right: 14px; }
   #grid { padding: 10px 14px 24px; gap: 12px; }
   .card { padding: 12px; }
-  .sort-group { margin-left: 0; }
 }
 </style>
 </head>
@@ -110,11 +107,6 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 <div class="cond-bar" id="condBar" style="display:none"></div>
 
 <div class="controls">
-  <div class="btn-group" id="filterGroup">
-    <button class="filter-btn active" data-filter="all">すべて</button>
-    <button class="filter-btn" data-filter="fav">★ お気に入り</button>
-    <button class="filter-btn" data-filter="multi">複数サイト</button>
-  </div>
   <div class="sort-group">
     <span class="sort-label">並び替え</span>
     <button class="sort-btn active" data-sort="price">価格 ↑</button>
@@ -128,7 +120,7 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 
 <div class="count-bar" id="countBar"></div>
 <div id="loading">データを読み込んでいます…</div>
-<div id="empty">該当する車両がありません</div>
+<div id="empty"></div>
 <div id="grid"></div>
 
 <div class="popup-overlay" id="popup">
@@ -145,10 +137,11 @@ const FAV_KEY = "usedcar_favorites";
 const DATA_URL = "./data/data.json";
 const CONFIG_URL = "./config.json";
 
+const FAV_WATCH = "__fav__";
+
 let allListings = [];
 let watches = [];
-let currentWatch = "__all__";
-let currentFilter = "all";
+let currentWatch = FAV_WATCH; // default: お気に入り
 let sortKey = "price";
 let sortDir = "asc";
 
@@ -167,26 +160,38 @@ function esc(s) {
   return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
 
-function watchCount(name) {
-  return name === "__all__" ? allListings.length : allListings.filter(l => l.watch_name === name).length;
+// Watch tabs: ★お気に入り | [watch names]
+function watchCount(key) {
+  if (key === FAV_WATCH) return getFavs().size;
+  return allListings.filter(l => l.watch_name === key).length;
 }
 function buildWatchTabs() {
   const el = document.getElementById("watchTabs");
   el.innerHTML = "";
-  const tabs = [{key:"__all__",label:"すべて"}, ...watches.map(w => ({key:w.name,label:w.name}))];
+  const tabs = [
+    {key: FAV_WATCH, label: "★ お気に入り", cls: "fav-tab"},
+    ...watches.map(w => ({key: w.name, label: w.name, cls: ""}))
+  ];
   for (const t of tabs) {
     const btn = document.createElement("button");
-    btn.className = "watch-tab" + (currentWatch===t.key?" active":"");
+    btn.className = "watch-tab " + (t.cls||"") + (currentWatch===t.key?" active":"");
     btn.innerHTML = esc(t.label) + `<span class="watch-tab-count">${watchCount(t.key)}</span>`;
-    btn.addEventListener("click", () => { currentWatch=t.key; buildWatchTabs(); updateCondBar(); updateMotaLink(); applyAll(); });
+    btn.addEventListener("click", () => {
+      currentWatch = t.key;
+      buildWatchTabs();
+      updateCondBar();
+      updateMotaLink();
+      applyAll();
+    });
     el.appendChild(btn);
   }
 }
 
+// Conditions bar (from goonet_url params)
 const PREF = {"01":"北海道","02":"青森","03":"岩手","04":"宮城","05":"秋田","06":"山形","07":"福島","08":"茨城","09":"栃木","10":"群馬","11":"埼玉","12":"千葉","13":"東京","14":"神奈川","15":"新潟","16":"富山","17":"石川","18":"福井","19":"山梨","20":"長野","21":"岐阜","22":"静岡","23":"愛知","24":"三重","25":"滋賀","26":"京都","27":"大阪","28":"兵庫","29":"奈良","30":"和歌山","31":"鳥取","32":"島根","33":"岡山","34":"広島","35":"山口","36":"徳島","37":"香川","38":"愛媛","39":"高知","40":"福岡","41":"佐賀","42":"長崎","43":"熊本","44":"大分","45":"宮崎","46":"鹿児島","47":"沖縄"};
 function updateCondBar() {
   const bar = document.getElementById("condBar");
-  const w = watches.find(x => x.name===currentWatch);
+  const w = watches.find(x => x.name === currentWatch);
   if (!w) { bar.style.display="none"; return; }
   const chips = [];
   try {
@@ -208,11 +213,12 @@ function updateCondBar() {
 
 function updateMotaLink() {
   const link = document.getElementById("motaLink");
-  const w = watches.find(x=>x.name===currentWatch);
+  const w = watches.find(x => x.name === currentWatch);
   if (w?.mota_url) { link.href=w.mota_url; link.style.display="inline-flex"; }
   else { link.style.display="none"; }
 }
 
+// Sort
 const SORT_LABELS = {price:"価格",year:"年式",dist:"走行"};
 const SORT_DEFAULTS = {price:"asc",year:"desc",dist:"asc"};
 function initSortBtns() {
@@ -243,53 +249,53 @@ document.querySelectorAll(".sort-btn").forEach(btn => {
   });
 });
 
-document.getElementById("filterGroup").addEventListener("click", e => {
-  const btn = e.target.closest(".filter-btn");
-  if (!btn) return;
-  document.querySelectorAll(".filter-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  currentFilter=btn.dataset.filter;
-  applyAll();
-});
-
+// Apply
 function applyAll() {
   const favs = getFavs();
-  let list = allListings;
-  if (currentWatch!=="__all__") list = list.filter(l=>l.watch_name===currentWatch);
-  if (currentFilter==="fav") list = list.filter(l=>favs.has(l.fingerprint));
-  else if (currentFilter==="multi") list = list.filter(l=>Object.keys(l.sources||{}).length>1);
+  let list;
+  if (currentWatch === FAV_WATCH) {
+    list = allListings.filter(l => favs.has(l.fingerprint));
+  } else {
+    list = allListings.filter(l => l.watch_name === currentWatch);
+  }
   list = sortListings(list);
-  document.getElementById("countBar").textContent = list.length+"件";
+  const empty = document.getElementById("empty");
+  if (currentWatch === FAV_WATCH && list.length === 0) {
+    empty.style.display = "block";
+    empty.innerHTML = `<div style="font-size:2rem;margin-bottom:10px">☆</div><div style="color:var(--muted);font-size:0.9rem">お気に入りはまだありません<br>カードの ☆ をタップして追加しましょう</div>`;
+  } else {
+    empty.style.display = "none";
+    empty.innerHTML = "";
+  }
+  document.getElementById("countBar").textContent = list.length + "件";
   renderCards(list);
 }
 
+// Render
 function renderCards(listings) {
   const grid = document.getElementById("grid");
-  const empty = document.getElementById("empty");
   const favs = getFavs();
-  grid.innerHTML="";
-  if (!listings.length) { empty.style.display="block"; return; }
-  empty.style.display="none";
+  grid.innerHTML = "";
   for (const l of listings) {
     const fp = l.fingerprint;
     const isFav = favs.has(fp);
-    const sources = l.sources||{[l.source]:l.url};
+    const sources = l.sources || {[l.source]: l.url};
     const srcKeys = Object.keys(sources);
-    const isMulti = srcKeys.length>1;
-    const dist = l.distance_km!=null?(l.distance_km/10000).toFixed(1)+"万km":"—";
-    const price = l.price_man!=null?l.price_man.toLocaleString()+"万円":"—";
-    const badges = srcKeys.map(s=>{
-      const label={carsensor:"カーセンサー",goonet:"グーネット"}[s]||s;
-      const cls={carsensor:"cs",goonet:"goo"}[s]||"";
+    const isMulti = srcKeys.length > 1;
+    const dist = l.distance_km!=null ? (l.distance_km/10000).toFixed(1)+"万km" : "—";
+    const price = l.price_man!=null ? l.price_man.toLocaleString()+"万円" : "—";
+    const badges = srcKeys.map(s => {
+      const label = {carsensor:"カーセンサー",goonet:"グーネット"}[s]||s;
+      const cls = {carsensor:"cs",goonet:"goo"}[s]||"";
       return `<span class="src-badge ${cls}">${label}</span>`;
     }).join("");
     const card = document.createElement("div");
-    card.className = "card"+(isMulti?" multi":"");
+    card.className = "card" + (isFav?" is-fav":"");
     card.innerHTML = `
       ${isMulti?'<div class="multi-badge">複数サイト</div>':""}
       <div class="card-top">
         <div class="card-title">${esc(l.title)}</div>
-        <button class="fav-btn ${isFav?"on":""}" data-fp="${esc(fp)}">${isFav?"★":"☆"}</button>
+        <button class="fav-btn ${isFav?"on":""}" data-fp="${esc(fp)}" title="${isFav?"お気に入り解除":"お気に入りに追加"}">${isFav?"★":"☆"}</button>
       </div>
       <div class="specs">
         <div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">${l.year}年</span></div>
@@ -304,66 +310,82 @@ function renderCards(listings) {
     card.addEventListener("click", e => {
       if (e.target.closest(".fav-btn")) return;
       if (isMulti) openPopup(l);
-      else window.open(sources[srcKeys[0]],"_blank","noopener");
+      else window.open(sources[srcKeys[0]], "_blank", "noopener");
     });
     card.querySelector(".fav-btn").addEventListener("click", function(e) {
       e.stopPropagation();
       const on = toggleFav(this.dataset.fp);
-      this.textContent = on?"★":"☆";
-      this.classList.toggle("on",on);
-      if (currentFilter==="fav") applyAll();
+      this.textContent = on ? "★" : "☆";
+      this.classList.toggle("on", on);
+      this.title = on ? "お気に入り解除" : "お気に入りに追加";
+      // update card border
+      card.classList.toggle("is-fav", on);
+      // if on fav tab, re-render (item may disappear when unfaved)
+      if (currentWatch === FAV_WATCH) {
+        buildWatchTabs();
+        applyAll();
+      } else {
+        // just update the count badge on fav tab
+        buildWatchTabs();
+      }
     });
     grid.appendChild(card);
   }
 }
 
+// Popup
 function openPopup(l) {
   document.getElementById("popupCarName").textContent = l.title;
   const linksEl = document.getElementById("popupLinks");
-  linksEl.innerHTML="";
-  const labels={carsensor:"カーセンサー",goonet:"グーネット"};
-  const cls={carsensor:"cs",goonet:"goo"};
-  const icons={carsensor:"🔴",goonet:"🟢"};
+  linksEl.innerHTML = "";
+  const labels = {carsensor:"カーセンサー",goonet:"グーネット"};
+  const cls = {carsensor:"cs",goonet:"goo"};
+  const icons = {carsensor:"🔴",goonet:"🟢"};
   for (const [src,url] of Object.entries(l.sources||{})) {
     const a = document.createElement("a");
     a.href=url; a.target="_blank"; a.rel="noopener";
-    a.className="popup-link "+(cls[src]||"");
-    a.innerHTML=`<span class="popup-link-icon">${icons[src]||"🔗"}</span>${esc(labels[src]||src)}で開く ↗`;
-    a.addEventListener("click",closePopup);
+    a.className = "popup-link "+(cls[src]||"");
+    a.innerHTML = `<span class="popup-link-icon">${icons[src]||"🔗"}</span>${esc(labels[src]||src)}で開く ↗`;
+    a.addEventListener("click", closePopup);
     linksEl.appendChild(a);
   }
   document.getElementById("popup").classList.add("show");
 }
 function closePopup() { document.getElementById("popup").classList.remove("show"); }
-document.getElementById("popupClose").addEventListener("click",closePopup);
-document.getElementById("popup").addEventListener("click",e=>{if(e.target===e.currentTarget)closePopup();});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")closePopup();});
-document.getElementById("refreshBtn").addEventListener("click",loadData);
+document.getElementById("popupClose").addEventListener("click", closePopup);
+document.getElementById("popup").addEventListener("click", e => { if(e.target===e.currentTarget) closePopup(); });
+document.addEventListener("keydown", e => { if(e.key==="Escape") closePopup(); });
+document.getElementById("refreshBtn").addEventListener("click", loadData);
 
+// Load
 async function loadData() {
-  const loading=document.getElementById("loading"), btn=document.getElementById("refreshBtn");
-  loading.style.display="block";
-  loading.textContent="データを読み込んでいます…";
-  document.getElementById("grid").innerHTML="";
-  document.getElementById("empty").style.display="none";
-  document.getElementById("countBar").textContent="";
-  btn.disabled=true; btn.textContent="読み込み中…";
+  const loading = document.getElementById("loading");
+  const btn = document.getElementById("refreshBtn");
+  loading.style.display = "block";
+  loading.textContent = "データを読み込んでいます…";
+  document.getElementById("grid").innerHTML = "";
+  document.getElementById("empty").style.display = "none";
+  document.getElementById("countBar").textContent = "";
+  btn.disabled = true; btn.textContent = "読み込み中…";
   try {
-    const ts="?t="+Date.now();
-    const [cfgRes,datRes] = await Promise.all([fetch(CONFIG_URL+ts),fetch(DATA_URL+ts)]);
-    if (cfgRes.ok) { const cfg=await cfgRes.json(); watches=cfg.watches||[]; }
+    const ts = "?t="+Date.now();
+    const [cfgRes,datRes] = await Promise.all([fetch(CONFIG_URL+ts), fetch(DATA_URL+ts)]);
+    if (cfgRes.ok) { const cfg = await cfgRes.json(); watches = cfg.watches||[]; }
     if (!datRes.ok) throw new Error("HTTP "+datRes.status);
-    const data=await datRes.json();
-    allListings=data.listings||[];
-    const upd=data.updated_at?new Date(data.updated_at).toLocaleString("ja-JP"):"—";
-    document.getElementById("updated").textContent=`最終更新: ${upd}（全${data.total||allListings.length}件）`;
-    buildWatchTabs(); updateCondBar(); updateMotaLink(); initSortBtns();
-    loading.style.display="none";
+    const data = await datRes.json();
+    allListings = data.listings||[];
+    const upd = data.updated_at ? new Date(data.updated_at).toLocaleString("ja-JP") : "—";
+    document.getElementById("updated").textContent = `最終更新: ${upd}（全${data.total||allListings.length}件）`;
+    buildWatchTabs();
+    updateCondBar();
+    updateMotaLink();
+    initSortBtns();
+    loading.style.display = "none";
     applyAll();
   } catch(err) {
-    loading.textContent="⚠ 読み込み失敗: "+err.message;
+    loading.textContent = "⚠ 読み込み失敗: "+err.message;
   } finally {
-    btn.disabled=false; btn.textContent="🔄 更新";
+    btn.disabled = false; btn.textContent = "🔄 更新";
   }
 }
 loadData();
