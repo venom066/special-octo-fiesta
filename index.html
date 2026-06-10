@@ -332,7 +332,7 @@ function renderCards(listings) {
     const srcKeys = Object.keys(sources);
     const isMulti = srcKeys.length > 1;
     const dist    = l.distance_km != null ? (l.distance_km / 10000).toFixed(1) + "万km" : "—";
-    const price   = l.price_man   != null ? l.price_man.toLocaleString() + "万円" : "—";
+    const price   = l.price_man != null && l.price_man > 0 ? l.price_man.toLocaleString() + "万円" : "—";
 
     const badges = srcKeys.map(s => {
       const label = { carsensor: "カーセンサー", goonet: "グーネット" }[s] || s;
