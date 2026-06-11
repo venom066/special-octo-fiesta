@@ -214,6 +214,7 @@ const CONFIG_URL      = "./config.json";
 const FAV_WATCH       = "__fav__";
 const REPO             = "venom066/special-octo-fiesta";
 const FAVS_PATH        = "data/favorites.json";
+const SUPER_FAVS_PATH  = "data/super_favorites.json";
 const CUSTOM_IMGS_PATH = "data/custom_images.json";
 
 let allListings  = [];
@@ -246,7 +247,15 @@ function getSuperFavs() {
   try { return new Set(JSON.parse(localStorage.getItem(SUPER_FAV_KEY) || "[]")); }
   catch { return new Set(); }
 }
-function saveSuperFavs(s) { localStorage.setItem(SUPER_FAV_KEY, JSON.stringify([...s])); }
+function saveSuperFavs(s) { localStorage.setItem(SUPER_FAV_KEY, JSON.stringify([...s])); debouncedSyncSuperFavs(); }
+
+let _sfSyncTimer = null;
+function debouncedSyncSuperFavs() {
+  clearTimeout(_sfSyncTimer);
+  _sfSyncTimer = setTimeout(() => {
+    syncSuperFavsToGitHub(getSuperFavs()).catch(err => console.warn("GitHub super_favs sync:", err.message));
+  }, 1200);
+}
 function getCustomImgs() {
   try { return JSON.parse(localStorage.getItem(CUSTOM_IMG_KEY) || "{}"); }
   catch { return {}; }
@@ -783,6 +792,41 @@ document.getElementById("popupClose").addEventListener("click", closePopup);
 document.getElementById("popup").addEventListener("click", e => { if (e.target === e.currentTarget) closePopup(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closePopup(); });
 
+// 超お気に入り GitHub同期
+async function syncSuperFavsToGitHub(sfSet) {
+  const pat = localStorage.getItem(GITHUB_PAT_KEY);
+  if (!pat) return;
+  const headers = { "Authorization": "token " + pat, "Accept": "application/vnd.github.v3+json" };
+  let sha = null;
+  const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + SUPER_FAVS_PATH, { headers });
+  if (getRes.ok) { sha = (await getRes.json()).sha; }
+  else if (getRes.status !== 404) { throw new Error("GitHub API " + getRes.status); }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify([...sfSet], null, 2))));
+  const body = { message: "update super_favorites", content };
+  if (sha) body.sha = sha;
+  const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + SUPER_FAVS_PATH, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err.message || "GitHub API " + putRes.status);
+  }
+}
+
+async function syncSuperFavsFromRemote() {
+  try {
+    const res = await fetch("./data/super_favorites.json", { cache: "no-cache" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (!Array.isArray(remote) || remote.length === 0) return;
+    const local = getSuperFavs();
+    const merged = new Set([...local, ...remote]);
+    if (merged.size !== local.size) localStorage.setItem(SUPER_FAV_KEY, JSON.stringify([...merged]));
+  } catch(e) { /* silent */ }
+}
+
 // カスタム画像 GitHub同期
 async function syncCustomImgsToGitHub(imgs) {
   const pat = localStorage.getItem(GITHUB_PAT_KEY);
@@ -835,6 +879,7 @@ async function syncFavsFromRemote() {
 async function loadData() {
   migrateStorage();
   await syncFavsFromRemote();
+  await syncSuperFavsFromRemote();
   await syncCustomImgsFromRemote();
   const loading = document.getElementById("loading");
   loading.style.display = "block";
