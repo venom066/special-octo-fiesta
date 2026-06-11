@@ -151,6 +151,8 @@ header { padding: 10px 14px; }
 const FAV_KEY        = "usedcar_favorites";
 const SEEN_CACHE_KEY = "usedcar_seen_cache";
 const DISMISSED_KEY  = "usedcar_dismissed";
+const VERSION_KEY    = "usedcar_version";
+const STORAGE_VERSION = "2"; // ID制fingerprint移行
 const DATA_URL       = "./data/data.json";
 const CONFIG_URL     = "./config.json";
 const FAV_WATCH      = "__fav__";
@@ -178,6 +180,16 @@ function getSeenCache() {
   catch { return {}; }
 }
 function saveSeenCache(c) { localStorage.setItem(SEEN_CACHE_KEY, JSON.stringify(c)); }
+
+// ストレージ移行（ID制fingerprint移行時にキャッシュをクリア）
+function migrateStorage() {
+  if (localStorage.getItem(VERSION_KEY) !== STORAGE_VERSION) {
+    localStorage.removeItem(SEEN_CACHE_KEY);
+    localStorage.removeItem(DISMISSED_KEY);
+    localStorage.removeItem(FAV_KEY);
+    localStorage.setItem(VERSION_KEY, STORAGE_VERSION);
+  }
+}
 
 // Dismissed (永久に削除)
 function getDismissed() {
@@ -342,7 +354,10 @@ function renderCards(listings) {
 
     const actionBtn = isSold
       ? '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="リストから削除">✕</button>'
-      : '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>";
+      : '<div style="display:flex;gap:4px">'
+        + '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>"
+        + '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="このクルマを非表示">✕</button>'
+        + '</div>';
 
     const card = document.createElement("div");
     card.className = "card" + (isSold ? " is-sold" : isFav ? " is-fav" : "");
@@ -361,6 +376,7 @@ function renderCards(listings) {
     if (!isSold) {
       card.addEventListener("click", e => {
         if (e.target.closest(".fav-btn")) return;
+        if (e.target.closest(".dismiss-btn")) return;
         if (isMulti) openPopup(l);
         else window.open(sources[srcKeys[0]], "_blank", "noopener");
       });
@@ -373,6 +389,14 @@ function renderCards(listings) {
         card.className = "card" + (on ? " is-fav" : "");
         if (currentWatch === FAV_WATCH) { buildWatchTabs(); applyAll(); }
         else buildWatchTabs();
+      });
+      card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        const fp = this.dataset.fp;
+        dismissCard(fp);
+        allListings = allListings.filter(x => x.fingerprint !== fp);
+        buildWatchTabs();
+        applyAll();
       });
     } else {
       card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
@@ -413,6 +437,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") closePopup()
 
 // Load
 async function loadData() {
+  migrateStorage();
   const loading = document.getElementById("loading");
   loading.style.display = "block";
   loading.textContent = "データを読み込んでいます…";
@@ -429,11 +454,11 @@ async function loadData() {
     if (cfgRes.ok) { const cfg = await cfgRes.json(); watches = cfg.watches || []; }
     if (!datRes.ok) throw new Error("HTTP " + datRes.status);
     const data = await datRes.json();
-    allListings = data.listings || [];
+    const dismissed = getDismissed();
+    allListings = (data.listings || []).filter(l => !dismissed.has(l.fingerprint));
 
     // seen cache 更新
-    const cache     = getSeenCache();
-    const dismissed = getDismissed();
+    const cache = getSeenCache();
     for (const l of allListings) {
       cache[l.fingerprint] = {
         title: l.title, year: l.year, distance_km: l.distance_km,
@@ -449,14 +474,7 @@ async function loadData() {
       .filter(l => {
         if (activeFps.has(l.fingerprint)) return false;
         if (dismissed.has(l.fingerprint)) return false;
-        // サフィックス解消（衝突が消えてfingerprintが変わっただけ）を除外
-        const renumbered = allListings.some(a =>
-          a.watch_name === l.watch_name &&
-          a.year === l.year &&
-          a.distance_km === l.distance_km &&
-          a.price_man === l.price_man
-        );
-        return !renumbered;
+        return true;
       })
       .map(l => ({ ...l, sold: true }));
 
