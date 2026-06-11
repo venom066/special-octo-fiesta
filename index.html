@@ -57,20 +57,20 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 16px rgba(74,144,226,.12); }
 .card.is-fav { border-color: rgba(243,156,18,.45); }
 .card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.14); }
-.card.is-super-fav { background: linear-gradient(160deg, rgba(46,204,113,.12), rgba(46,204,113,.05)); border-color: rgba(46,204,113,.5); }
-.card.is-super-fav:hover { border-color: #2ecc71; box-shadow: 0 4px 20px rgba(46,204,113,.2); }
+.card.is-super-fav { background: linear-gradient(160deg, rgba(231,76,60,.12), rgba(231,76,60,.05)); border-color: rgba(231,76,60,.5); }
+.card.is-super-fav:hover { border-color: #e74c3c; box-shadow: 0 4px 20px rgba(231,76,60,.2); }
 /* super fav toggle switch */
 .super-fav-btn { position: relative; display: inline-block; width: 38px; height: 21px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; cursor: pointer; margin-left: auto; flex-shrink: 0; padding: 0; transition: background .2s, border-color .2s; }
 .super-fav-btn::before { content: ''; position: absolute; width: 15px; height: 15px; border-radius: 50%; background: var(--muted); top: 2px; left: 2px; transition: transform .2s, background .2s; }
-.super-fav-btn.on { background: rgba(46,204,113,.25); border-color: #2ecc71; }
-.super-fav-btn.on::before { transform: translateX(17px); background: #2ecc71; }
+.super-fav-btn.on { background: rgba(231,76,60,.25); border-color: #e74c3c; }
+.super-fav-btn.on::before { transform: translateX(17px); background: #e74c3c; }
 .card.is-sold { opacity: 0.42; filter: grayscale(0.45); }
 .card.is-sold:hover { border-color: var(--border); box-shadow: none; }
 
 .multi-badge { position: absolute; top: -8px; right: 50px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 .sold-badge { position: absolute; top: -8px; left: 12px; background: #555870; color: #aaa; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .05em; }
 .suspicious-badge { position: absolute; top: -8px; left: 12px; background: rgba(243,156,18,.15); color: #f39c12; border: 1px solid rgba(243,156,18,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; cursor: help; }
-.price-badge { position: absolute; top: -8px; left: 12px; background: rgba(46,204,113,.15); color: #2ecc71; border: 1px solid rgba(46,204,113,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.price-badge { position: absolute; top: -8px; left: 12px; background: rgba(231,76,60,.15); color: #e74c3c; border: 1px solid rgba(231,76,60,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 .price-old { text-decoration: line-through; color: var(--muted); font-size: 0.75em; font-weight: 400; margin-right: 2px; }
 .split-btn { background: none; border: 1px solid rgba(243,156,18,.4); border-radius: 6px; cursor: pointer; font-size: 0.75rem; padding: 3px 8px; color: #f39c12; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
 .split-btn:hover { background: rgba(243,156,18,.15); }
@@ -96,7 +96,7 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .card-sources { display: flex; gap: 5px; flex-wrap: wrap; }
 .src-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 600; }
 .src-badge.cs { background: rgba(231,76,60,.14); color: #e74c3c; }
-.src-badge.goo { background: rgba(39,174,96,.14); color: #2ecc71; }
+.src-badge.goo { background: rgba(39,174,96,.14); color: #e74c3c; }
 .card-arrow { font-size: 0.72rem; color: var(--muted); }
 .card-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; background: var(--surface2); display: block; margin-bottom: 2px; }
 .card-thumb-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: var(--surface2); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 2px; cursor: pointer; border: 1px dashed transparent; transition: background .15s, color .15s, border-color .15s; }
@@ -112,7 +112,7 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .cospa-rank.top1 { color: #f1c40f; }
 .cospa-rank.top2 { color: #aaa; }
 .cospa-rank.top3 { color: #cd7f32; }
-.cospa-diff.cheap { color: #2ecc71; }
+.cospa-diff.cheap { color: #e74c3c; }
 .cospa-diff.pricey { color: #e74c3c; }
 
 #empty { display: none; padding: 60px 20px; text-align: center; color: var(--muted); }
@@ -130,7 +130,7 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .popup-link { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-radius: 10px; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: opacity .15s, transform .1s; }
 .popup-link:hover { opacity: .82; transform: translateX(3px); }
 .popup-link.cs { background: rgba(231,76,60,.14); color: #e74c3c; border: 1px solid rgba(231,76,60,.3); }
-.popup-link.goo { background: rgba(39,174,96,.14); color: #2ecc71; border: 1px solid rgba(39,174,96,.3); }
+.popup-link.goo { background: rgba(39,174,96,.14); color: #e74c3c; border: 1px solid rgba(39,174,96,.3); }
 .popup-close { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 9px; cursor: pointer; font-size: 0.85rem; text-align: center; transition: all .15s; }
 .popup-close:hover { border-color: var(--muted); color: var(--text); }
 
