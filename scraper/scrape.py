@@ -320,6 +320,19 @@ def merge_listings(all_listings: list[dict]) -> list[dict]:
                         or goo["price_man"] < merged["price_man"]
                     ):
                         merged["price_man"] = goo["price_man"]
+                    # 突合の信頼度チェック
+                    dist_diff = abs(cs["distance_km"] - goo["distance_km"])
+                    price_diff = (
+                        abs(cs["price_man"] - goo["price_man"])
+                        if cs["price_man"] and goo["price_man"] else None
+                    )
+                    merged["match_suspicious"] = (
+                        dist_diff > 500
+                        or price_diff is None
+                        or price_diff >= 1
+                    )
+                    # split用に両IDを記録
+                    merged["merged_fps"] = [cs["fingerprint"], goo["fingerprint"]]
                     matched_goo.add(i)
                     break
             result.append(merged)
