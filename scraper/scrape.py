@@ -345,26 +345,52 @@ def merge_listings(all_listings: list[dict]) -> list[dict]:
     return result
 
 # ─────────────────────────────
+FAVORITES_FILE = "data/favorites.json"
+
+def load_favorites() -> set[str]:
+    data = load_json(FAVORITES_FILE, [])
+    return set(data)
+
 # ntfy.sh 通知
 # ─────────────────────────────
-def send_ntfy(new_listings: list[dict]) -> None:
+def send_ntfy(new_listings: list[dict], price_changed_favs: list[dict] | None = None) -> None:
     if not NTFY_TOPIC:
         print("  NTFY_TOPIC not set — skipping")
         return
-    if not new_listings:
+    price_changed_favs = price_changed_favs or []
+    if not new_listings and not price_changed_favs:
         return
 
-    count = len(new_listings)
-    title = f"中古車 新着 {count}件"
+    sections: list[str] = []
 
-    lines = []
-    for l in new_listings[:5]:
-        dist = f"{l['distance_km'] // 10_000:.1f}万km" if l["distance_km"] else ""
-        price = f"{l['price_man']}万円" if l["price_man"] else "価格不明"
-        srcs = "/".join(l.get("sources", {l["source"]: ""}).keys())
-        lines.append(f"{l['year']}年 {dist} {price} [{srcs}] {l['title'][:20]}")
-    if count > 5:
-        lines.append(f"…他{count - 5}件")
+    if new_listings:
+        count = len(new_listings)
+        sections.append(f"【新着 {count}件】")
+        for l in new_listings[:5]:
+            dist = f"{l['distance_km'] // 10_000:.1f}万km" if l["distance_km"] else ""
+            price = f"{l['price_man']}万円" if l["price_man"] else "価格不明"
+            srcs = "/".join(l.get("sources", {l["source"]: ""}).keys())
+            sections.append(f"{l['year']}年 {dist} {price} [{srcs}] {l['title'][:20]}")
+        if count > 5:
+            sections.append(f"…他{count - 5}件")
+
+    if price_changed_favs:
+        if sections:
+            sections.append("")
+        sections.append(f"【★値下がり {len(price_changed_favs)}件】")
+        for l in price_changed_favs[:5]:
+            dist = f"{l['distance_km'] // 10_000:.1f}万km" if l["distance_km"] else ""
+            sections.append(f"{l['year']}年 {dist} {l['prev_price_man']}万→{l['price_man']}万円 {l['title'][:20]}")
+        if len(price_changed_favs) > 5:
+            sections.append(f"…他{len(price_changed_favs) - 5}件")
+
+    parts = []
+    if new_listings:
+        parts.append(f"新着{len(new_listings)}件")
+    if price_changed_favs:
+        parts.append(f"★値下がり{len(price_changed_favs)}件")
+    title = "中古車 " + " / ".join(parts)
+    lines = sections
 
     payload: dict = {
         "topic": NTFY_TOPIC,
@@ -428,6 +454,17 @@ def main() -> None:
     merged = merge_listings(all_raw)
     print(f"\n▶ マージ後: {len(merged)} 件")
 
+    # 前回データとの価格比較
+    prev_data = load_json(DATA_FILE, {})
+    prev_prices: dict[str, int | None] = {
+        l["fingerprint"]: l.get("price_man")
+        for l in prev_data.get("listings", [])
+    }
+    for l in merged:
+        prev = prev_prices.get(l["fingerprint"])
+        if prev is not None and l.get("price_man") is not None and prev != l["price_man"]:
+            l["prev_price_man"] = prev
+
     seen_list: list[str] = load_json(SEEN_FILE, [])
     seen: set[str] = set(seen_list)
     # seen.jsonが空 or 旧format（年式_距離）のみ → 移行初回扱いで通知しない
@@ -435,6 +472,19 @@ def main() -> None:
 
     new_listings = [l for l in merged if l["fingerprint"] not in seen]
     print(f"▶ 新着: {len(new_listings)} 件{'（初回実行のため通知なし）' if first_run else ''}")
+
+    # お気に入り×値下がりの通知対象
+    favorites = load_favorites()
+    price_changed_favs = [
+        l for l in merged
+        if "prev_price_man" in l
+        and l.get("price_man") is not None
+        and l["prev_price_man"] > l["price_man"]
+        and l["fingerprint"] in favorites
+        and not first_run
+    ]
+    if price_changed_favs:
+        print(f"▶ ★値下がり: {len(price_changed_favs)} 件")
 
     save_json(DATA_FILE, {
         "updated_at": datetime.now().isoformat(),
@@ -445,8 +495,8 @@ def main() -> None:
     seen.update(l["fingerprint"] for l in merged)
     save_json(SEEN_FILE, sorted(seen))
 
-    if new_listings and not first_run:
-        send_ntfy(new_listings)
+    if (new_listings or price_changed_favs) and not first_run:
+        send_ntfy(new_listings, price_changed_favs)
 
     print(f"=== Done: {datetime.now().isoformat()} ===")
 
