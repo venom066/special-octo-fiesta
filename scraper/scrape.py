@@ -160,6 +160,12 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
             else:
                 link = ""
 
+            # サムネイル画像URL
+            img_el = item.select_one("img.js-lazy")
+            image_url = img_el.get("src") or img_el.get("data-src") if img_el else None
+            if image_url and image_url.startswith("/"):
+                image_url = "https://www.carsensor.net" + image_url
+
             if year and distance_km and link:
                 listing_id = extract_listing_id(link, "carsensor")
                 listings.append({
@@ -172,6 +178,7 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                     "fingerprint": make_fingerprint("carsensor", listing_id),
                     "watch_name": watch_name,
                     "scraped_at": datetime.now().isoformat(),
+                    "image_url": image_url,
                 })
 
         # 次ページ: 「次へ」リンクのhrefを直接使う
@@ -249,6 +256,16 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
             else:
                 link = ""
 
+            # サムネイル画像URL（.lazy はアイコン類なので除く）
+            img_el = item.select_one("img[onerror]") or next(
+                (i for i in item.select("img") if "lazy" not in i.get("class", [])), None
+            )
+            image_url = None
+            if img_el:
+                raw = img_el.get("src") or img_el.get("data-original", "")
+                if raw and not raw.endswith(("fav_off.png", "fav_on.png")):
+                    image_url = raw if raw.startswith("http") else "https://www.goo-net.com" + raw
+
             if year and distance_km and link:
                 listing_id = extract_listing_id(link, "goonet")
                 listings.append({
@@ -261,6 +278,7 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
                     "fingerprint": make_fingerprint("goonet", listing_id),
                     "watch_name": watch_name,
                     "scraped_at": datetime.now().isoformat(),
+                    "image_url": image_url,
                 })
 
         # 次ページ確認
