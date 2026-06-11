@@ -90,7 +90,7 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .src-badge.cs { background: rgba(231,76,60,.14); color: #e74c3c; }
 .src-badge.goo { background: rgba(39,174,96,.14); color: #2ecc71; }
 .card-arrow { font-size: 0.72rem; color: var(--muted); }
-.card-thumb { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; background: var(--surface2); display: block; margin-bottom: 2px; }
+.card-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; background: var(--surface2); display: block; margin-bottom: 2px; }
 .cospa-row { display: flex; align-items: center; gap: 8px; font-size: 0.68rem; color: var(--muted); margin-top: -2px; }
 .cospa-rank { font-weight: 700; }
 .cospa-rank.top1 { color: #f1c40f; }
@@ -560,7 +560,7 @@ function renderCardsInto(grid, listings) {
         : hasPriceChange ? '<div class="price-badge">価格更新</div>'
         : isSuspicious ? '<div class="suspicious-badge" title="統合の信頼度が低い。実際に確認してください">⚠ 要確認</div>'
         : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
-      '<div class="card-top">' + (currentWatch !== FAV_WATCH ? '<div class="card-title">' + esc(l.title) + "</div>" : "") + actionBtn + "</div>" +
+      '<div class="card-top"><div class="card-title">' + esc(l.watch_name || l.title) + "</div>" + actionBtn + "</div>" +
       '<div class="specs">' +
         '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
         '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
