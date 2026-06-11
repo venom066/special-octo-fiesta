@@ -36,8 +36,25 @@ HEADERS = {
 # ─────────────────────────────
 # ユーティリティ
 # ─────────────────────────────
-def make_fingerprint(year: int, distance_km: int) -> str:
-    return f"{year}_{distance_km}"
+def extract_listing_id(url: str, source: str) -> str:
+    """URLからサイト固有のリスティングIDを抽出"""
+    if source == "carsensor":
+        # /usedcar/detail/AU7077055949/
+        m = re.search(r"/usedcar/detail/([^/?#]+)", url)
+        return m.group(1) if m else url
+    elif source == "goonet":
+        # /usedcar/spread/P032810/0020899607/
+        m = re.search(r"/usedcar/spread/([^/?#]+/[^/?#]+)", url)
+        if m:
+            return m.group(1).replace("/", "_")
+        return url
+    return url
+
+def make_fingerprint(source: str, listing_id: str) -> str:
+    return f"{source}_{listing_id}"
+
+def is_new_format_fp(fp: str) -> bool:
+    return fp.startswith("carsensor_") or fp.startswith("goonet_")
 
 def load_json(path: str, default):
     try:
@@ -143,7 +160,8 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
             else:
                 link = ""
 
-            if year and distance_km:
+            if year and distance_km and link:
+                listing_id = extract_listing_id(link, "carsensor")
                 listings.append({
                     "source": "carsensor",
                     "title": title,
@@ -151,7 +169,7 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                     "distance_km": distance_km,
                     "price_man": price_man,
                     "url": link,
-                    "fingerprint": make_fingerprint(year, distance_km),
+                    "fingerprint": make_fingerprint("carsensor", listing_id),
                     "watch_name": watch_name,
                     "scraped_at": datetime.now().isoformat(),
                 })
@@ -231,7 +249,8 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
             else:
                 link = ""
 
-            if year and distance_km:
+            if year and distance_km and link:
+                listing_id = extract_listing_id(link, "goonet")
                 listings.append({
                     "source": "goonet",
                     "title": title,
@@ -239,7 +258,7 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
                     "distance_km": distance_km,
                     "price_man": price_man,
                     "url": link,
-                    "fingerprint": make_fingerprint(year, distance_km),
+                    "fingerprint": make_fingerprint("goonet", listing_id),
                     "watch_name": watch_name,
                     "scraped_at": datetime.now().isoformat(),
                 })
@@ -256,45 +275,61 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
     return listings
 
 # ─────────────────────────────
-# 重複マージ
+# 同一車両判定・クロスサイト突合
 # ─────────────────────────────
+def is_same_car(a: dict, b: dict) -> bool:
+    """カーセンサー/グーネット間で同一車両かどうかを判定"""
+    if a["year"] != b["year"]:
+        return False
+    if abs(a["distance_km"] - b["distance_km"]) > 1000:
+        return False
+    # 両方価格あり → ±1万で比較
+    if a["price_man"] and b["price_man"]:
+        if abs(a["price_man"] - b["price_man"]) > 1:
+            return False
+    # 片方または両方がnull → 年式・距離だけで突合
+    return True
+
 def merge_listings(all_listings: list[dict]) -> list[dict]:
-    merged: dict[str, dict] = {}
-    for listing in all_listings:
-        key = f"{listing['watch_name']}_{listing['fingerprint']}"
+    """
+    各listingはID由来のユニークfingerprintを持つ。
+    同一watch内でカーセンサー×グーネットの同一車両を突合してsourcesをマージ。
+    """
+    # watch_name ごとにグループ化
+    by_watch: dict[str, list[dict]] = {}
+    for l in all_listings:
+        by_watch.setdefault(l["watch_name"], []).append(l)
 
-        if key not in merged:
-            merged[key] = {
-                **listing,
-                "sources": {listing["source"]: listing["url"]},
-            }
-        else:
-            src = listing["source"]
-            if src not in merged[key]["sources"]:
-                # 別ソース → 追加
-                merged[key]["sources"][src] = listing["url"]
-            else:
-                # 同ソース衝突 → サフィックスで別カード
-                suffix = 2
-                while f"{key}_{suffix}" in merged:
-                    suffix += 1
-                new_key = f"{key}_{suffix}"
-                new_fp  = f"{listing['fingerprint']}_{suffix}"
-                merged[new_key] = {
-                    **listing,
-                    "fingerprint": new_fp,
-                    "sources": {src: listing["url"]},
-                }
-                continue
+    result = []
+    for watch_listings in by_watch.values():
+        cs_list  = [l for l in watch_listings if l["source"] == "carsensor"]
+        goo_list = [l for l in watch_listings if l["source"] == "goonet"]
 
-            # 価格は安い方を採用
-            if listing["price_man"] and (
-                not merged[key]["price_man"]
-                or listing["price_man"] < merged[key]["price_man"]
-            ):
-                merged[key]["price_man"] = listing["price_man"]
+        matched_goo: set[int] = set()
 
-    return list(merged.values())
+        for cs in cs_list:
+            merged = {**cs, "sources": {"carsensor": cs["url"]}}
+            for i, goo in enumerate(goo_list):
+                if i in matched_goo:
+                    continue
+                if is_same_car(cs, goo):
+                    merged["sources"]["goonet"] = goo["url"]
+                    # 価格は安い方を採用
+                    if goo["price_man"] and (
+                        not merged["price_man"]
+                        or goo["price_man"] < merged["price_man"]
+                    ):
+                        merged["price_man"] = goo["price_man"]
+                    matched_goo.add(i)
+                    break
+            result.append(merged)
+
+        # マッチしなかったグーネット単独出品
+        for i, goo in enumerate(goo_list):
+            if i not in matched_goo:
+                result.append({**goo, "sources": {"goonet": goo["url"]}})
+
+    return result
 
 # ─────────────────────────────
 # ntfy.sh 通知
@@ -381,7 +416,8 @@ def main() -> None:
 
     seen_list: list[str] = load_json(SEEN_FILE, [])
     seen: set[str] = set(seen_list)
-    first_run = len(seen) == 0
+    # seen.jsonが空 or 旧format（年式_距離）のみ → 移行初回扱いで通知しない
+    first_run = len(seen) == 0 or not any(is_new_format_fp(fp) for fp in seen)
 
     new_listings = [l for l in merged if l["fingerprint"] not in seen]
     print(f"▶ 新着: {len(new_listings)} 件{'（初回実行のため通知なし）' if first_run else ''}")
