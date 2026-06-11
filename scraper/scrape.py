@@ -160,11 +160,13 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
             else:
                 link = ""
 
-            # サムネイル画像URL
+            # サムネイル画像URL（data-src優先 — srcはlazyプレースホルダーの場合が多い）
             img_el = item.select_one("img.js-lazy")
-            image_url = img_el.get("src") or img_el.get("data-src") if img_el else None
-            if image_url and image_url.startswith("/"):
-                image_url = "https://www.carsensor.net" + image_url
+            image_url = None
+            if img_el:
+                raw = img_el.get("data-src") or img_el.get("src") or ""
+                if raw and not any(x in raw for x in ["noimage", "no_image", "data:", "blank", "spacer", "1x1"]):
+                    image_url = raw if raw.startswith("http") else ("https://www.carsensor.net" + raw if raw.startswith("/") else None)
 
             if year and distance_km and link:
                 listing_id = extract_listing_id(link, "carsensor")
@@ -256,14 +258,15 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
             else:
                 link = ""
 
-            # サムネイル画像URL（.lazy はアイコン類なので除く）
+            # サムネイル画像URL（data-original優先 — srcはlazyプレースホルダーの場合が多い）
             img_el = item.select_one("img[onerror]") or next(
                 (i for i in item.select("img") if "lazy" not in i.get("class", [])), None
             )
             image_url = None
             if img_el:
-                raw = img_el.get("src") or img_el.get("data-original", "")
-                if raw and not raw.endswith(("fav_off.png", "fav_on.png")):
+                raw = img_el.get("data-original") or img_el.get("src") or ""
+                skip_patterns = ("fav_off.png", "fav_on.png", "noimage", "no_image", "data:", "blank", "spacer", "1x1")
+                if raw and not any(x in raw for x in skip_patterns):
                     image_url = raw if raw.startswith("http") else "https://www.goo-net.com" + raw
 
             if year and distance_km and link:
