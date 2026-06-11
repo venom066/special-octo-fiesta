@@ -62,6 +62,9 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 
 .multi-badge { position: absolute; top: -8px; right: 50px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 .sold-badge { position: absolute; top: -8px; left: 12px; background: #555870; color: #aaa; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .05em; }
+.suspicious-badge { position: absolute; top: -8px; left: 12px; background: rgba(243,156,18,.15); color: #f39c12; border: 1px solid rgba(243,156,18,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; cursor: help; }
+.split-btn { background: none; border: 1px solid rgba(243,156,18,.4); border-radius: 6px; cursor: pointer; font-size: 0.75rem; padding: 3px 8px; color: #f39c12; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
+.split-btn:hover { background: rgba(243,156,18,.15); }
 
 .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
 .card-title { font-size: 0.85rem; line-height: 1.4; color: var(--text); flex: 1; }
@@ -153,6 +156,7 @@ const SEEN_CACHE_KEY = "usedcar_seen_cache";
 const DISMISSED_KEY  = "usedcar_dismissed";
 const VERSION_KEY    = "usedcar_version";
 const STORAGE_VERSION = "2"; // ID制fingerprint移行
+const SPLIT_KEY      = "usedcar_split"; // 強制分割ペア Set<"fp1||fp2">
 const DATA_URL       = "./data/data.json";
 const CONFIG_URL     = "./config.json";
 const FAV_WATCH      = "__fav__";
@@ -180,6 +184,18 @@ function getSeenCache() {
   catch { return {}; }
 }
 function saveSeenCache(c) { localStorage.setItem(SEEN_CACHE_KEY, JSON.stringify(c)); }
+
+// Split
+function getSplit() {
+  try { return new Set(JSON.parse(localStorage.getItem(SPLIT_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function saveSplit(s) { localStorage.setItem(SPLIT_KEY, JSON.stringify([...s])); }
+function splitKey(fps) { return [...fps].sort().join("||"); }
+function addSplit(fps) {
+  const s = getSplit(); s.add(splitKey(fps)); saveSplit(s);
+}
+function isSplit(fps) { return getSplit().has(splitKey(fps)); }
 
 // ストレージ移行（ID制fingerprint移行時にキャッシュをクリア）
 function migrateStorage() {
@@ -352,17 +368,21 @@ function renderCards(listings) {
       return '<span class="src-badge ' + cls + '">' + label + "</span>";
     }).join("");
 
+    const isSuspicious = !isSold && l.match_suspicious && l.merged_fps;
     const actionBtn = isSold
       ? '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="リストから削除">✕</button>'
       : '<div style="display:flex;gap:4px">'
-        + '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>"
+        + (isSuspicious ? '<button class="split-btn" title="誤統合の可能性あり。2枚に割る">割る</button>' : '')
         + '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="このクルマを非表示">✕</button>'
+        + '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>"
         + '</div>';
 
     const card = document.createElement("div");
     card.className = "card" + (isSold ? " is-sold" : isFav ? " is-fav" : "");
     card.innerHTML =
-      (isSold ? '<div class="sold-badge">売却済</div>' : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
+      (isSold ? '<div class="sold-badge">売却済</div>'
+        : isSuspicious ? '<div class="suspicious-badge" title="統合の信頼度が低い。実際に確認してください">⚠ 要確認</div>'
+        : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
       '<div class="card-top"><div class="card-title">' + esc(l.title) + "</div>" + actionBtn + "</div>" +
       '<div class="specs">' +
         '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
@@ -377,6 +397,7 @@ function renderCards(listings) {
       card.addEventListener("click", e => {
         if (e.target.closest(".fav-btn")) return;
         if (e.target.closest(".dismiss-btn")) return;
+        if (e.target.closest(".split-btn")) return;
         if (isMulti) openPopup(l);
         else window.open(sources[srcKeys[0]], "_blank", "noopener");
       });
@@ -392,12 +413,29 @@ function renderCards(listings) {
       });
       card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
         e.stopPropagation();
+        if (!confirm("このクルマを非表示にしますか？")) return;
         const fp = this.dataset.fp;
         dismissCard(fp);
         allListings = allListings.filter(x => x.fingerprint !== fp);
         buildWatchTabs();
         applyAll();
       });
+      if (isSuspicious) {
+        card.querySelector(".split-btn").addEventListener("click", function(e) {
+          e.stopPropagation();
+          addSplit(l.merged_fps);
+          // 即時展開: 1枚を2枚に差し替え
+          const idx = allListings.findIndex(x => x.fingerprint === fp);
+          if (idx !== -1) {
+            const orig = allListings[idx];
+            const csCard = { ...orig, sources: { carsensor: orig.sources.carsensor }, match_suspicious: false, merged_fps: null };
+            const gooCard = { ...orig, fingerprint: orig.merged_fps[1], sources: { goonet: orig.sources.goonet }, match_suspicious: false, merged_fps: null };
+            allListings.splice(idx, 1, csCard, gooCard);
+          }
+          buildWatchTabs();
+          applyAll();
+        });
+      }
     } else {
       card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
         e.stopPropagation();
@@ -455,7 +493,20 @@ async function loadData() {
     if (!datRes.ok) throw new Error("HTTP " + datRes.status);
     const data = await datRes.json();
     const dismissed = getDismissed();
-    allListings = (data.listings || []).filter(l => !dismissed.has(l.fingerprint));
+    // split指定されたマージ済みカードを2枚に展開
+    const expanded = [];
+    for (const l of (data.listings || [])) {
+      if (l.merged_fps && isSplit(l.merged_fps)) {
+        // carsensorとgoonetをそれぞれ独立したカードに
+        expanded.push({ ...l, sources: { carsensor: l.sources.carsensor }, match_suspicious: false, merged_fps: null });
+        if (l.sources.goonet) {
+          expanded.push({ ...l, fingerprint: l.merged_fps[1], sources: { goonet: l.sources.goonet }, match_suspicious: false, merged_fps: null });
+        }
+      } else {
+        expanded.push(l);
+      }
+    }
+    allListings = expanded.filter(l => !dismissed.has(l.fingerprint));
 
     // seen cache 更新
     const cache = getSeenCache();
