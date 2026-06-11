@@ -59,9 +59,11 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.14); }
 .card.is-super-fav { background: linear-gradient(160deg, rgba(46,204,113,.12), rgba(46,204,113,.05)); border-color: rgba(46,204,113,.5); }
 .card.is-super-fav:hover { border-color: #2ecc71; box-shadow: 0 4px 20px rgba(46,204,113,.2); }
-.super-fav-btn { align-self: center; background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.82rem; padding: 3px 9px; color: var(--muted); margin-left: auto; transition: all .15s; white-space: nowrap; }
-.super-fav-btn.on { border-color: #2ecc71; color: #2ecc71; background: rgba(46,204,113,.12); }
-.super-fav-btn:hover:not(.on) { border-color: rgba(46,204,113,.5); color: #2ecc71; }
+/* super fav toggle switch */
+.super-fav-btn { position: relative; display: inline-block; width: 38px; height: 21px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; cursor: pointer; margin-left: auto; flex-shrink: 0; padding: 0; transition: background .2s, border-color .2s; }
+.super-fav-btn::before { content: ''; position: absolute; width: 15px; height: 15px; border-radius: 50%; background: var(--muted); top: 2px; left: 2px; transition: transform .2s, background .2s; }
+.super-fav-btn.on { background: rgba(46,204,113,.25); border-color: #2ecc71; }
+.super-fav-btn.on::before { transform: translateX(17px); background: #2ecc71; }
 .card.is-sold { opacity: 0.42; filter: grayscale(0.45); }
 .card.is-sold:hover { border-color: var(--border); box-shadow: none; }
 
@@ -210,8 +212,9 @@ const GITHUB_PAT_KEY  = "usedcar_github_pat";
 const DATA_URL        = "./data/data.json";
 const CONFIG_URL      = "./config.json";
 const FAV_WATCH       = "__fav__";
-const REPO            = "venom066/special-octo-fiesta";
-const FAVS_PATH       = "data/favorites.json";
+const REPO             = "venom066/special-octo-fiesta";
+const FAVS_PATH        = "data/favorites.json";
+const CUSTOM_IMGS_PATH = "data/custom_images.json";
 
 let allListings  = [];
 let soldListings = [];
@@ -252,6 +255,15 @@ function setCustomImg(fp, url) {
   const imgs = getCustomImgs();
   if (url) imgs[fp] = url; else delete imgs[fp];
   localStorage.setItem(CUSTOM_IMG_KEY, JSON.stringify(imgs));
+  debouncedSyncCustomImgs();
+}
+
+let _imgSyncTimer = null;
+function debouncedSyncCustomImgs() {
+  clearTimeout(_imgSyncTimer);
+  _imgSyncTimer = setTimeout(() => {
+    syncCustomImgsToGitHub(getCustomImgs()).catch(err => console.warn("GitHub custom_images sync:", err.message));
+  }, 1200);
 }
 
 
@@ -603,7 +615,7 @@ function renderCardsInto(grid, listings) {
         + '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>"
         + '</div>';
     const superFavBtn = (!isSold && currentWatch === FAV_WATCH)
-      ? '<button class="super-fav-btn ' + (isSuperFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="超お気に入り">⭐ ' + (isSuperFav ? "ON" : "OFF") + '</button>'
+      ? '<button class="super-fav-btn ' + (isSuperFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="超お気に入り" aria-label="超お気に入り ' + (isSuperFav ? "ON" : "OFF") + '"></button>'
       : '';
 
     const card = document.createElement("div");
@@ -675,7 +687,7 @@ function renderCardsInto(grid, listings) {
           saveSuperFavs(sf);
           const isOn = sf.has(fp);
           this.classList.toggle("on", isOn);
-          this.textContent = "⭐ " + (isOn ? "ON" : "OFF");
+          this.setAttribute("aria-label", "超お気に入り " + (isOn ? "ON" : "OFF"));
           card.className = "card" + (isOn ? " is-super-fav" : " is-fav");
         });
       }
@@ -771,6 +783,41 @@ document.getElementById("popupClose").addEventListener("click", closePopup);
 document.getElementById("popup").addEventListener("click", e => { if (e.target === e.currentTarget) closePopup(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closePopup(); });
 
+// カスタム画像 GitHub同期
+async function syncCustomImgsToGitHub(imgs) {
+  const pat = localStorage.getItem(GITHUB_PAT_KEY);
+  if (!pat) return;
+  const headers = { "Authorization": "token " + pat, "Accept": "application/vnd.github.v3+json" };
+  let sha = null;
+  const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + CUSTOM_IMGS_PATH, { headers });
+  if (getRes.ok) { sha = (await getRes.json()).sha; }
+  else if (getRes.status !== 404) { throw new Error("GitHub API " + getRes.status); }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(imgs, null, 2))));
+  const body = { message: "update custom_images", content };
+  if (sha) body.sha = sha;
+  const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + CUSTOM_IMGS_PATH, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err.message || "GitHub API " + putRes.status);
+  }
+}
+
+async function syncCustomImgsFromRemote() {
+  try {
+    const res = await fetch("./data/custom_images.json", { cache: "no-cache" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (typeof remote !== "object" || remote === null || Array.isArray(remote)) return;
+    const local = getCustomImgs();
+    const merged = { ...remote, ...local }; // localを優先
+    localStorage.setItem(CUSTOM_IMG_KEY, JSON.stringify(merged));
+  } catch(e) { /* silent */ }
+}
+
 // リモートお気に入り同期（読み取り専用・PAT不要）
 async function syncFavsFromRemote() {
   try {
@@ -788,6 +835,7 @@ async function syncFavsFromRemote() {
 async function loadData() {
   migrateStorage();
   await syncFavsFromRemote();
+  await syncCustomImgsFromRemote();
   const loading = document.getElementById("loading");
   loading.style.display = "block";
   loading.textContent = "データを読み込んでいます…";
