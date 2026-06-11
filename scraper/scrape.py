@@ -366,19 +366,20 @@ def send_ntfy(new_listings: list[dict]) -> None:
     if count > 5:
         lines.append(f"…他{count - 5}件")
 
-    headers = {
-        "Title": title,
-        "Priority": "default",
-        "Tags": "car",
+    payload: dict = {
+        "topic": NTFY_TOPIC,
+        "title": title,
+        "message": "\n".join(lines),
+        "tags": ["car"],
+        "priority": 3,
     }
     if GITHUB_PAGES_URL:
-        headers["Click"] = GITHUB_PAGES_URL
+        payload["click"] = GITHUB_PAGES_URL
 
     try:
         resp = requests.post(
-            f"https://ntfy.sh/{NTFY_TOPIC}",
-            data="\n".join(lines).encode("utf-8"),
-            headers=headers,
+            "https://ntfy.sh",
+            json=payload,
             timeout=10,
         )
         print(f"  ntfy status: {resp.status_code}")
