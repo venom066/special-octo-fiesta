@@ -57,9 +57,11 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 16px rgba(74,144,226,.12); }
 .card.is-fav { border-color: rgba(243,156,18,.45); }
 .card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.14); }
-.card.is-super-fav { background: linear-gradient(160deg, rgba(243,156,18,.13), rgba(243,156,18,.06)); border-color: var(--fav); }
-.card.is-super-fav:hover { border-color: #f5a623; box-shadow: 0 4px 20px rgba(243,156,18,.28); }
-.fav-btn.super { border-color: #f5c842; color: #f5c842; background: rgba(245,200,66,.15); font-size: 1.25rem; }
+.card.is-super-fav { background: linear-gradient(160deg, rgba(46,204,113,.12), rgba(46,204,113,.05)); border-color: rgba(46,204,113,.5); }
+.card.is-super-fav:hover { border-color: #2ecc71; box-shadow: 0 4px 20px rgba(46,204,113,.2); }
+.super-fav-btn { align-self: center; background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.82rem; padding: 3px 9px; color: var(--muted); margin-left: auto; transition: all .15s; white-space: nowrap; }
+.super-fav-btn.on { border-color: #2ecc71; color: #2ecc71; background: rgba(46,204,113,.12); }
+.super-fav-btn:hover:not(.on) { border-color: rgba(46,204,113,.5); color: #2ecc71; }
 .card.is-sold { opacity: 0.42; filter: grayscale(0.45); }
 .card.is-sold:hover { border-color: var(--border); box-shadow: none; }
 
@@ -95,7 +97,12 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .src-badge.goo { background: rgba(39,174,96,.14); color: #2ecc71; }
 .card-arrow { font-size: 0.72rem; color: var(--muted); }
 .card-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; background: var(--surface2); display: block; margin-bottom: 2px; }
-.card-thumb-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 2px; }
+.card-thumb-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: var(--surface2); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 2px; cursor: pointer; border: 1px dashed transparent; transition: background .15s, color .15s, border-color .15s; }
+.card-thumb-placeholder:hover { background: rgba(74,144,226,.07); color: var(--accent); border-color: rgba(74,144,226,.35); }
+.card-thumb-placeholder .ph-add { font-size: 1.1rem; margin-bottom: 2px; }
+.custom-img-wrap { position: relative; margin-bottom: 2px; }
+.custom-img-wrap .custom-edit-btn { display: none; position: absolute; bottom: 6px; right: 6px; background: rgba(0,0,0,.62); color: #fff; border: none; border-radius: 5px; font-size: 0.68rem; padding: 3px 8px; cursor: pointer; }
+.custom-img-wrap:hover .custom-edit-btn { display: block; }
 .variant-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: -4px; }
 .variant-tag { font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(74,144,226,.15); color: var(--accent); border: 1px solid rgba(74,144,226,.3); letter-spacing: .03em; }
 .cospa-row { display: flex; align-items: center; gap: 8px; font-size: 0.68rem; color: var(--muted); margin-top: -2px; }
@@ -193,6 +200,7 @@ header { padding: 10px 14px; }
 <script>
 const FAV_KEY         = "usedcar_favorites";
 const SUPER_FAV_KEY   = "usedcar_super_favs";
+const CUSTOM_IMG_KEY  = "usedcar_custom_imgs";
 const SEEN_CACHE_KEY  = "usedcar_seen_cache";
 const DISMISSED_KEY   = "usedcar_dismissed";
 const VERSION_KEY     = "usedcar_version";
@@ -223,22 +231,29 @@ function toggleFav(fp) {
   const f = getFavs(); f.has(fp) ? f.delete(fp) : f.add(fp); saveFavs(f); return f.has(fp);
 }
 
+let _syncTimer = null;
+function debouncedSyncFavs() {
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(() => {
+    syncFavsToGitHub(getFavs()).catch(err => console.warn("GitHub sync:", err.message));
+  }, 1200);
+}
+
 function getSuperFavs() {
   try { return new Set(JSON.parse(localStorage.getItem(SUPER_FAV_KEY) || "[]")); }
   catch { return new Set(); }
 }
 function saveSuperFavs(s) { localStorage.setItem(SUPER_FAV_KEY, JSON.stringify([...s])); }
-// ☆→★→⭐→☆ の3ステートサイクル。戻り値: "fav" | "super" | "none"
-function cycleFav(fp) {
-  const f = getFavs(); const sf = getSuperFavs();
-  if (sf.has(fp)) {
-    sf.delete(fp); f.delete(fp); saveSuperFavs(sf); saveFavs(f); return "none";
-  } else if (f.has(fp)) {
-    sf.add(fp); saveSuperFavs(sf); return "super";
-  } else {
-    f.add(fp); saveFavs(f); return "fav";
-  }
+function getCustomImgs() {
+  try { return JSON.parse(localStorage.getItem(CUSTOM_IMG_KEY) || "{}"); }
+  catch { return {}; }
 }
+function setCustomImg(fp, url) {
+  const imgs = getCustomImgs();
+  if (url) imgs[fp] = url; else delete imgs[fp];
+  localStorage.setItem(CUSTOM_IMG_KEY, JSON.stringify(imgs));
+}
+
 
 // GitHub PAT / favorites.json sync
 async function syncFavsToGitHub(favSet) {
@@ -580,26 +595,31 @@ function renderCardsInto(grid, listings) {
     }).join("");
 
     const isSuspicious = !isSold && l.match_suspicious && l.merged_fps;
-    const favBtnCls = isSuperFav ? "fav-btn on super" : isFav ? "fav-btn on" : "fav-btn";
-    const favBtnIcon = isSuperFav ? "⭐" : isFav ? "★" : "☆";
-    const favBtnTitle = isSuperFav ? "クリックでお気に入り解除" : isFav ? "クリックで超お気に入り" : "お気に入りに追加";
     const actionBtn = isSold
       ? '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="リストから削除">✕</button>'
       : '<div style="display:flex;gap:4px">'
         + (isSuspicious ? '<button class="split-btn" title="誤統合の可能性あり。2枚に割る">割る</button>' : '')
         + '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="このクルマを非表示">✕</button>'
-        + '<button class="' + favBtnCls + '" data-fp="' + esc(fp) + '" title="' + favBtnTitle + '">' + favBtnIcon + "</button>"
+        + '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>"
         + '</div>';
+    const superFavBtn = (!isSold && currentWatch === FAV_WATCH)
+      ? '<button class="super-fav-btn ' + (isSuperFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="超お気に入り">⭐ ' + (isSuperFav ? "ON" : "OFF") + '</button>'
+      : '';
 
     const card = document.createElement("div");
     card.className = "card" + (isSold ? " is-sold" : isSuperFav ? " is-super-fav" : isFav ? " is-fav" : "");
-    const thumbSrc = l.image_url || null;
+    const customImgs = getCustomImgs();
+    const thumbSrc = customImgs[fp] || l.image_url || null;
+    const isCustomImg = !!customImgs[fp];
     const isCsOnly = srcKeys.length === 1 && srcKeys[0] === "carsensor";
     const showPlaceholder = !thumbSrc && isCsOnly;
     const vt = extractVariants(l.title);
     card.innerHTML =
-      (thumbSrc ? '<img class="card-thumb" src="' + esc(thumbSrc) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">'
-        : showPlaceholder ? '<div class="card-thumb-placeholder">カーセンサー<br>画像取得不可</div>'
+      (thumbSrc
+        ? '<div class="custom-img-wrap"><img class="card-thumb" src="' + esc(thumbSrc) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">' +
+          (isCustomImg ? '<button class="custom-edit-btn" title="画像を変更・削除">🖊 画像変更</button>' : '') +
+          '</div>'
+        : showPlaceholder ? '<div class="card-thumb-placeholder"><span class="ph-add">＋</span>画像を追加<br><span style="font-size:0.6rem;opacity:.55">カーセンサー 画像取得不可</span></div>'
         : "") +
       (isSold ? '<div class="sold-badge">売却済</div>'
         : hasPriceChange ? '<div class="price-badge">価格更新</div>'
@@ -613,6 +633,7 @@ function renderCardsInto(grid, listings) {
         '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
         '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
         '<div class="spec-item"><span class="spec-label">支払総額</span><span class="spec-value price">' + priceDisplay + "</span></div>" +
+        superFavBtn +
       "</div>" +
       cospaHTML +
       '<div class="card-footer"><div class="card-sources">' + badges + "</div>" +
@@ -627,29 +648,60 @@ function renderCardsInto(grid, listings) {
         if (isMulti) openPopup(l);
         else window.open(sources[srcKeys[0]], "_blank", "noopener");
       });
-      card.querySelector(".fav-btn").addEventListener("click", async function(e) {
+      card.querySelector(".fav-btn").addEventListener("click", function(e) {
         e.stopPropagation();
         const fp = this.dataset.fp;
-        const isCurrentFav = getFavs().has(fp);
-        const isCurrentSuper = getSuperFavs().has(fp);
-        // ⭐(super) → ☆ の時だけ確認
-        if (currentWatch === FAV_WATCH && isCurrentSuper) {
-          if (!confirm("超お気に入りを外しますか？")) return;
-        } else if (currentWatch === FAV_WATCH && isCurrentFav) {
+        if (currentWatch === FAV_WATCH && getFavs().has(fp)) {
           if (!confirm("お気に入りから外しますか？")) return;
         }
-        const state = cycleFav(fp);
-        const icons = { fav: "★", super: "⭐", none: "☆" };
-        const titles = { fav: "クリックで超お気に入り", super: "クリックでお気に入り解除", none: "お気に入りに追加" };
-        this.textContent = icons[state];
-        this.className = "fav-btn" + (state === "super" ? " on super" : state === "fav" ? " on" : "");
-        this.title = titles[state];
-        card.className = "card" + (state === "super" ? " is-super-fav" : state === "fav" ? " is-fav" : "");
+        const on = toggleFav(fp);
+        if (!on) { const sf = getSuperFavs(); sf.delete(fp); saveSuperFavs(sf); }
+        this.textContent = on ? "★" : "☆";
+        this.classList.toggle("on", on);
+        this.title = on ? "お気に入り解除" : "お気に入りに追加";
+        const sfNow = getSuperFavs().has(fp);
+        card.className = "card" + (sfNow ? " is-super-fav" : on ? " is-fav" : "");
         if (currentWatch === FAV_WATCH) { buildWatchTabs(); applyAll(); }
         else buildWatchTabs();
-        try { await syncFavsToGitHub(getFavs()); }
-        catch(err) { alert("★の保存に失敗しました（GitHub同期エラー）。\n" + err.message + "\n\n⚙設定からPATを確認してください。"); }
+        debouncedSyncFavs();
       });
+      const sfBtn = card.querySelector(".super-fav-btn");
+      if (sfBtn) {
+        sfBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          const fp = this.dataset.fp;
+          const sf = getSuperFavs();
+          sf.has(fp) ? sf.delete(fp) : sf.add(fp);
+          saveSuperFavs(sf);
+          const isOn = sf.has(fp);
+          this.classList.toggle("on", isOn);
+          this.textContent = "⭐ " + (isOn ? "ON" : "OFF");
+          card.className = "card" + (isOn ? " is-super-fav" : " is-fav");
+        });
+      }
+      // 画像プレースホルダー → URL入力
+      const placeholder = card.querySelector(".card-thumb-placeholder");
+      if (placeholder) {
+        placeholder.addEventListener("click", function(e) {
+          e.stopPropagation();
+          const url = prompt("画像URLを貼り付けてください\n（カーセンサーのページで画像を右クリック→URLをコピー）");
+          if (url === null) return;
+          setCustomImg(fp, url.trim() || null);
+          applyAll();
+        });
+      }
+      // カスタム画像の変更・削除
+      const editBtn = card.querySelector(".custom-edit-btn");
+      if (editBtn) {
+        editBtn.addEventListener("click", function(e) {
+          e.stopPropagation();
+          const current = getCustomImgs()[fp] || "";
+          const url = prompt("画像URLを変更（空欄で削除）:", current);
+          if (url === null) return;
+          setCustomImg(fp, url.trim() || null);
+          applyAll();
+        });
+      }
       card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
         e.stopPropagation();
         if (!confirm("このクルマを非表示にしますか？")) return;
