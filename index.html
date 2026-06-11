@@ -68,7 +68,8 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .split-btn { background: none; border: 1px solid rgba(243,156,18,.4); border-radius: 6px; cursor: pointer; font-size: 0.75rem; padding: 3px 8px; color: #f39c12; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
 .split-btn:hover { background: rgba(243,156,18,.15); }
 
-.card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.card-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card-top .variant-tags { margin-top: 0; }
 .card-title { font-size: 0.85rem; line-height: 1.4; color: var(--text); flex: 1; }
 
 .fav-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 4px 6px; color: var(--muted); transition: all .15s; flex-shrink: 0; }
@@ -578,8 +579,10 @@ function renderCardsInto(grid, listings) {
         : hasPriceChange ? '<div class="price-badge">価格更新</div>'
         : isSuspicious ? '<div class="suspicious-badge" title="統合の信頼度が低い。実際に確認してください">⚠ 要確認</div>'
         : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
-      '<div class="card-top">' + actionBtn + "</div>" +
-      (vt.length ? '<div class="variant-tags">' + vt.map(v => '<span class="variant-tag">' + esc(v) + '</span>').join("") + '</div>' : "") +
+      '<div class="card-top">' +
+        '<div class="variant-tags">' + vt.map(v => '<span class="variant-tag">' + esc(v) + '</span>').join("") + '</div>' +
+        actionBtn +
+      "</div>" +
       '<div class="specs">' +
         '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
         '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
