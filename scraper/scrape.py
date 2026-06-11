@@ -43,10 +43,10 @@ def extract_listing_id(url: str, source: str) -> str:
         m = re.search(r"/usedcar/detail/([^/?#]+)", url)
         return m.group(1) if m else url
     elif source == "goonet":
-        # /usedcar/spread/P032810/0020899607/
-        m = re.search(r"/usedcar/spread/([^/?#]+/[^/?#]+)", url)
+        # /usedcar/spread/goo/{都道府県コード}/{リスティングID}.html
+        m = re.search(r"/usedcar/spread/goo/\d+/(\d+)", url)
         if m:
-            return m.group(1).replace("/", "_")
+            return m.group(1)
         return url
     return url
 
