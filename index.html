@@ -91,6 +91,7 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .src-badge.goo { background: rgba(39,174,96,.14); color: #2ecc71; }
 .card-arrow { font-size: 0.72rem; color: var(--muted); }
 .card-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; background: var(--surface2); display: block; margin-bottom: 2px; }
+.card-thumb-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--muted); text-align: center; line-height: 1.6; margin-bottom: 2px; }
 .variant-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: -4px; }
 .variant-tag { font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: rgba(74,144,226,.15); color: var(--accent); border: 1px solid rgba(74,144,226,.3); letter-spacing: .03em; }
 .cospa-row { display: flex; align-items: center; gap: 8px; font-size: 0.68rem; color: var(--muted); margin-top: -2px; }
@@ -397,8 +398,10 @@ document.querySelectorAll(".sort-btn").forEach(btn => {
 const VARIANT_RE = /\b(B[2-9]|T[2-9]|D[2-5]|TDI|TFSI|TSI|PHEV|e-POWER|EV|4WD|AWD|2WD|FWD)\b/gi;
 function extractVariants(title) {
   if (!title) return [];
+  // 全角英数字→半角（グーネットタイトル対応）
+  const normalized = title.replace(/[Ａ-Ｚａ-ｚ０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0));
   const found = new Set();
-  for (const m of title.matchAll(VARIANT_RE)) found.add(m[0].replace(/\s+/g, ""));
+  for (const m of normalized.matchAll(VARIANT_RE)) found.add(m[0].replace(/\s+/g, ""));
   return [...found];
 }
 
@@ -563,15 +566,20 @@ function renderCardsInto(grid, listings) {
 
     const card = document.createElement("div");
     card.className = "card" + (isSold ? " is-sold" : isFav ? " is-fav" : "");
-    const thumbSrc = l.image_url || (l.sources && Object.values(l.sources).length === 0 ? null : null);
+    const thumbSrc = l.image_url || null;
+    const isCsOnly = srcKeys.length === 1 && srcKeys[0] === "carsensor";
+    const showPlaceholder = !thumbSrc && isCsOnly;
+    const vt = extractVariants(l.title);
     card.innerHTML =
-      (thumbSrc ? '<img class="card-thumb" src="' + esc(thumbSrc) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">' : "") +
+      (thumbSrc ? '<img class="card-thumb" src="' + esc(thumbSrc) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\'">'
+        : showPlaceholder ? '<div class="card-thumb-placeholder">カーセンサー<br>画像取得不可</div>'
+        : "") +
       (isSold ? '<div class="sold-badge">売却済</div>'
         : hasPriceChange ? '<div class="price-badge">価格更新</div>'
         : isSuspicious ? '<div class="suspicious-badge" title="統合の信頼度が低い。実際に確認してください">⚠ 要確認</div>'
         : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
-      '<div class="card-top"><div class="card-title">' + esc(l.watch_name || l.title) + "</div>" + actionBtn + "</div>" +
-      (() => { const vt = extractVariants(l.title); return vt.length ? '<div class="variant-tags">' + vt.map(v => '<span class="variant-tag">' + esc(v) + '</span>').join("") + '</div>' : ""; })() +
+      '<div class="card-top">' + actionBtn + "</div>" +
+      (vt.length ? '<div class="variant-tags">' + vt.map(v => '<span class="variant-tag">' + esc(v) + '</span>').join("") + '</div>' : "") +
       '<div class="specs">' +
         '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
         '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
