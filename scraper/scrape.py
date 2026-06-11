@@ -160,13 +160,19 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
             else:
                 link = ""
 
-            # サムネイル画像URL（data-src優先 — srcはlazyプレースホルダーの場合が多い）
+            # サムネイル画像URL（data-original優先: CarSensorはdata-originalにリアルURLを格納）
             img_el = item.select_one("img.js-lazy")
             image_url = None
             if img_el:
-                raw = img_el.get("data-src") or img_el.get("src") or ""
-                if raw and not any(x in raw for x in ["noimage", "no_image", "data:", "blank", "spacer", "1x1"]):
-                    image_url = raw if raw.startswith("http") else ("https://www.carsensor.net" + raw if raw.startswith("/") else None)
+                raw = img_el.get("data-original") or img_el.get("data-src") or img_el.get("src") or ""
+                skip_cs = ("noimage", "no_image", "data:", "blank", "spacer", "1x1", "loading", "animation", "static/cmn")
+                if raw and not any(x in raw for x in skip_cs):
+                    if raw.startswith("http"):
+                        image_url = raw
+                    elif raw.startswith("//"):
+                        image_url = "https:" + raw
+                    elif raw.startswith("/"):
+                        image_url = "https://www.carsensor.net" + raw
 
             if year and distance_km and link:
                 listing_id = extract_listing_id(link, "carsensor")
