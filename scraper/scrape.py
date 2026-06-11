@@ -347,6 +347,9 @@ def merge_listings(all_listings: list[dict]) -> list[dict]:
                         or goo["price_man"] < merged["price_man"]
                     ):
                         merged["price_man"] = goo["price_man"]
+                    # 画像はグーネット優先（カーセンサーは取得不可のため）
+                    if not merged.get("image_url") and goo.get("image_url"):
+                        merged["image_url"] = goo["image_url"]
                     # 突合の信頼度チェック
                     dist_diff = abs(cs["distance_km"] - goo["distance_km"])
                     price_diff = (
