@@ -63,6 +63,8 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .multi-badge { position: absolute; top: -8px; right: 50px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 .sold-badge { position: absolute; top: -8px; left: 12px; background: #555870; color: #aaa; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .05em; }
 .suspicious-badge { position: absolute; top: -8px; left: 12px; background: rgba(243,156,18,.15); color: #f39c12; border: 1px solid rgba(243,156,18,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; cursor: help; }
+.price-badge { position: absolute; top: -8px; left: 12px; background: rgba(46,204,113,.15); color: #2ecc71; border: 1px solid rgba(46,204,113,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.price-old { text-decoration: line-through; color: var(--muted); font-size: 0.75em; font-weight: 400; margin-right: 2px; }
 .split-btn { background: none; border: 1px solid rgba(243,156,18,.4); border-radius: 6px; cursor: pointer; font-size: 0.75rem; padding: 3px 8px; color: #f39c12; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
 .split-btn:hover { background: rgba(243,156,18,.15); }
 
@@ -119,6 +121,7 @@ header { padding: 10px 14px; }
 <header>
   <h1>🚗 中古車ウォッチャー</h1>
   <span id="updated">読み込み中…</span>
+  <button id="settingsBtn" title="設定" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;font-size:0.9rem;transition:all .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">⚙</button>
 </header>
 
 <div class="watch-tabs" id="watchTabs"></div>
@@ -150,16 +153,39 @@ header { padding: 10px 14px; }
   </div>
 </div>
 
+<div class="popup-overlay" id="settingsPopup">
+  <div class="popup-box" style="max-width:420px">
+    <div style="font-size:1rem;font-weight:700;color:var(--text)">⚙ 設定</div>
+    <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">
+      GitHub Personal Access Token（Classic）を設定すると、★お気に入りがGitHubに同期され、値下がり時にプッシュ通知が届きます。<br>
+      スコープ: <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">public_repo</code>　有効期限: No expiration
+    </div>
+    <div>
+      <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px">GitHub PAT</label>
+      <input id="patInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:0.85rem;outline:none">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button id="patSave" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.85rem;font-weight:600;padding:10px">保存</button>
+      <button id="patClear" style="background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:10px 14px">クリア</button>
+      <button id="settingsClose" style="background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:10px 14px">閉じる</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const FAV_KEY        = "usedcar_favorites";
-const SEEN_CACHE_KEY = "usedcar_seen_cache";
-const DISMISSED_KEY  = "usedcar_dismissed";
-const VERSION_KEY    = "usedcar_version";
-const STORAGE_VERSION = "2"; // ID制fingerprint移行
-const SPLIT_KEY      = "usedcar_split"; // 強制分割ペア Set<"fp1||fp2">
-const DATA_URL       = "./data/data.json";
-const CONFIG_URL     = "./config.json";
-const FAV_WATCH      = "__fav__";
+const FAV_KEY         = "usedcar_favorites";
+const SEEN_CACHE_KEY  = "usedcar_seen_cache";
+const DISMISSED_KEY   = "usedcar_dismissed";
+const VERSION_KEY     = "usedcar_version";
+const STORAGE_VERSION = "2";
+const SPLIT_KEY       = "usedcar_split";
+const GITHUB_PAT_KEY  = "usedcar_github_pat";
+const DATA_URL        = "./data/data.json";
+const CONFIG_URL      = "./config.json";
+const FAV_WATCH       = "__fav__";
+const REPO            = "venom066/special-octo-fiesta";
+const FAVS_PATH       = "data/favorites.json";
 
 let allListings  = [];
 let soldListings = [];
@@ -177,6 +203,54 @@ function saveFavs(s) { localStorage.setItem(FAV_KEY, JSON.stringify([...s])); }
 function toggleFav(fp) {
   const f = getFavs(); f.has(fp) ? f.delete(fp) : f.add(fp); saveFavs(f); return f.has(fp);
 }
+
+// GitHub PAT / favorites.json sync
+async function syncFavsToGitHub(favSet) {
+  const pat = localStorage.getItem(GITHUB_PAT_KEY);
+  if (!pat) return;
+  const headers = {
+    "Authorization": "token " + pat,
+    "Accept": "application/vnd.github.v3+json",
+  };
+  let sha = null;
+  const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FAVS_PATH, { headers });
+  if (getRes.ok) { sha = (await getRes.json()).sha; }
+  else if (getRes.status !== 404) { throw new Error("GitHub API " + getRes.status); }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify([...favSet], null, 2))));
+  const body = { message: "update favorites", content };
+  if (sha) body.sha = sha;
+  const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FAVS_PATH, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err.message || "GitHub API " + putRes.status);
+  }
+}
+
+// 設定モーダル
+document.getElementById("settingsBtn").addEventListener("click", () => {
+  document.getElementById("patInput").value = localStorage.getItem(GITHUB_PAT_KEY) || "";
+  document.getElementById("settingsPopup").classList.add("show");
+});
+document.getElementById("settingsClose").addEventListener("click", () => {
+  document.getElementById("settingsPopup").classList.remove("show");
+});
+document.getElementById("settingsPopup").addEventListener("click", e => {
+  if (e.target === e.currentTarget) document.getElementById("settingsPopup").classList.remove("show");
+});
+document.getElementById("patSave").addEventListener("click", () => {
+  const v = document.getElementById("patInput").value.trim();
+  if (v) { localStorage.setItem(GITHUB_PAT_KEY, v); alert("保存しました。"); }
+  document.getElementById("settingsPopup").classList.remove("show");
+});
+document.getElementById("patClear").addEventListener("click", () => {
+  localStorage.removeItem(GITHUB_PAT_KEY);
+  document.getElementById("patInput").value = "";
+  alert("クリアしました。");
+});
 
 // Seen cache (sold detection)
 function getSeenCache() {
@@ -361,6 +435,10 @@ function renderCards(listings) {
     const isMulti = srcKeys.length > 1;
     const dist    = l.distance_km != null ? (l.distance_km / 10000).toFixed(1) + "万km" : "—";
     const price   = l.price_man   != null ? l.price_man.toLocaleString() + "万円" : "—";
+    const hasPriceChange = !isSold && l.prev_price_man != null && l.prev_price_man !== l.price_man;
+    const priceDisplay = hasPriceChange
+      ? '<span class="price-old">' + esc(String(l.prev_price_man)) + '万円</span> → ' + esc(price)
+      : esc(price);
 
     const badges = srcKeys.map(s => {
       const label = { carsensor: "カーセンサー", goonet: "グーネット" }[s] || s;
@@ -381,13 +459,14 @@ function renderCards(listings) {
     card.className = "card" + (isSold ? " is-sold" : isFav ? " is-fav" : "");
     card.innerHTML =
       (isSold ? '<div class="sold-badge">売却済</div>'
+        : hasPriceChange ? '<div class="price-badge">価格更新</div>'
         : isSuspicious ? '<div class="suspicious-badge" title="統合の信頼度が低い。実際に確認してください">⚠ 要確認</div>'
         : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
       '<div class="card-top"><div class="card-title">' + esc(l.title) + "</div>" + actionBtn + "</div>" +
       '<div class="specs">' +
         '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
         '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
-        '<div class="spec-item"><span class="spec-label">支払総額</span><span class="spec-value price">' + esc(price) + "</span></div>" +
+        '<div class="spec-item"><span class="spec-label">支払総額</span><span class="spec-value price">' + priceDisplay + "</span></div>" +
       "</div>" +
       '<div class="card-footer"><div class="card-sources">' + badges + "</div>" +
       (isSold ? "" : '<span class="card-arrow">' + (isMulti ? "選択して開く →" : "詳細を見る →") + "</span>") +
@@ -401,7 +480,7 @@ function renderCards(listings) {
         if (isMulti) openPopup(l);
         else window.open(sources[srcKeys[0]], "_blank", "noopener");
       });
-      card.querySelector(".fav-btn").addEventListener("click", function(e) {
+      card.querySelector(".fav-btn").addEventListener("click", async function(e) {
         e.stopPropagation();
         const on = toggleFav(this.dataset.fp);
         this.textContent = on ? "★" : "☆";
@@ -410,6 +489,8 @@ function renderCards(listings) {
         card.className = "card" + (on ? " is-fav" : "");
         if (currentWatch === FAV_WATCH) { buildWatchTabs(); applyAll(); }
         else buildWatchTabs();
+        try { await syncFavsToGitHub(getFavs()); }
+        catch(err) { alert("★の保存に失敗しました（GitHub同期エラー）。\n" + err.message + "\n\n⚙設定からPATを確認してください。"); }
       });
       card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
         e.stopPropagation();
