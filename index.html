@@ -1,525 +1,737 @@
-#!/usr/bin/env python3
-"""
-汎用中古車スクレイパー
-設定: config.json でカーセンサー/グーネットの検索URLを指定するだけ
-"""
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中古車ウォッチャー</title>
+<style>
+:root {
+--bg: #0f1117;
+--surface: #1a1d27;
+--surface2: #22263a;
+--border: #2a2d3a;
+--text: #e8eaf0;
+--muted: #8b8fa8;
+--accent: #4a90e2;
+--fav: #f39c12;
+--cs: #e74c3c;
+--goo: #27ae60;
+--mota: #8e44ad;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; min-height: 100vh; }
 
-import os
-import json
-import time
-import re
-import requests
-from datetime import datetime
-from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
-from bs4 import BeautifulSoup
+header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
+#updated { font-size: 0.75rem; color: var(--muted); }
 
-# ─────────────────────────────
-# 設定
-# ─────────────────────────────
-NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "")
-GITHUB_PAGES_URL = os.environ.get("GITHUB_PAGES_URL", "")
+.watch-tabs { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+.watch-tabs::-webkit-scrollbar { display: none; }
+.watch-tab { background: none; border: none; border-bottom: 3px solid transparent; color: var(--muted); padding: 11px 16px; font-size: 0.85rem; cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s; }
+.watch-tab:hover { color: var(--text); }
+.watch-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+.watch-tab.fav-tab.active { color: var(--fav); border-bottom-color: var(--fav); }
+.tab-count { display: inline-block; background: var(--surface2); border-radius: 10px; font-size: 0.7rem; padding: 1px 6px; margin-left: 5px; color: var(--muted); }
+.watch-tab.active .tab-count { background: rgba(74,144,226,.2); color: var(--accent); }
+.watch-tab.fav-tab.active .tab-count { background: rgba(243,156,18,.2); color: var(--fav); }
 
-CONFIG_FILE = "config.json"
-DATA_FILE = "data/data.json"
-SEEN_FILE = "data/seen.json"
+.cond-bar { background: rgba(74,144,226,.04); border-bottom: 1px solid var(--border); padding: 7px 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.cond-label { font-size: 0.7rem; color: var(--muted); flex-shrink: 0; }
+.cond-chip { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 2px 10px; font-size: 0.72rem; color: var(--muted); }
 
-HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/124.0.0.0 Safari/537.36"
-    ),
-    "Accept-Language": "ja-JP,ja;q=0.9,en;q=0.8",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+.controls { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.sort-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.sort-label { font-size: 0.75rem; color: var(--muted); }
+.sort-btn { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 4px 10px; font-size: 0.75rem; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.sort-btn.active { background: var(--surface2); border-color: var(--accent); color: var(--accent); }
+.sort-btn:hover:not(.active) { color: var(--text); border-color: var(--muted); }
+.source-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+.dot-mota { background: var(--mota); }
+.mota-link-btn { display: inline-flex; align-items: center; gap: 5px; padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; text-decoration: none; background: rgba(142,68,173,.18); border: 1px solid var(--mota); color: #a569bd; transition: all .15s; white-space: nowrap; margin-left: auto; }
+.mota-link-btn:hover { background: rgba(142,68,173,.32); color: #c39bd3; }
+
+.count-bar { padding: 7px 20px 2px; font-size: 0.78rem; color: var(--muted); }
+#grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; padding: 12px 20px 28px; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; cursor: pointer; transition: transform .1s, border-color .15s, box-shadow .15s; }
+.card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 16px rgba(74,144,226,.12); }
+.card.is-fav { border-color: rgba(243,156,18,.45); }
+.card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.14); }
+.card.is-sold { opacity: 0.42; cursor: default; filter: grayscale(0.45); }
+.card.is-sold:hover { transform: none; border-color: var(--border); box-shadow: none; }
+
+.multi-badge { position: absolute; top: -8px; right: 50px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.sold-badge { position: absolute; top: -8px; left: 12px; background: #555870; color: #aaa; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .05em; }
+.suspicious-badge { position: absolute; top: -8px; left: 12px; background: rgba(243,156,18,.15); color: #f39c12; border: 1px solid rgba(243,156,18,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; cursor: help; }
+.price-badge { position: absolute; top: -8px; left: 12px; background: rgba(46,204,113,.15); color: #2ecc71; border: 1px solid rgba(46,204,113,.4); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.price-old { text-decoration: line-through; color: var(--muted); font-size: 0.75em; font-weight: 400; margin-right: 2px; }
+.split-btn { background: none; border: 1px solid rgba(243,156,18,.4); border-radius: 6px; cursor: pointer; font-size: 0.75rem; padding: 3px 8px; color: #f39c12; transition: all .15s; white-space: nowrap; flex-shrink: 0; }
+.split-btn:hover { background: rgba(243,156,18,.15); }
+
+.card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.card-title { font-size: 0.85rem; line-height: 1.4; color: var(--text); flex: 1; }
+
+.fav-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 1.1rem; line-height: 1; padding: 4px 6px; color: var(--muted); transition: all .15s; flex-shrink: 0; }
+.fav-btn:hover { border-color: var(--fav); color: var(--fav); transform: scale(1.1); }
+.fav-btn.on { border-color: var(--fav); color: var(--fav); background: rgba(243,156,18,.1); }
+
+.dismiss-btn { background: none; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; line-height: 1; padding: 4px 7px; color: var(--muted); transition: all .15s; flex-shrink: 0; }
+.dismiss-btn:hover { border-color: #e74c3c; color: #e74c3c; transform: scale(1.1); }
+
+.specs { display: flex; gap: 14px; flex-wrap: wrap; }
+.spec-item { display: flex; flex-direction: column; gap: 2px; }
+.spec-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.spec-value { font-size: 1rem; font-weight: 700; }
+.spec-value.price { color: var(--accent); }
+
+.card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
+.card-sources { display: flex; gap: 5px; flex-wrap: wrap; }
+.src-badge { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: 600; }
+.src-badge.cs { background: rgba(231,76,60,.14); color: #e74c3c; }
+.src-badge.goo { background: rgba(39,174,96,.14); color: #2ecc71; }
+.card-arrow { font-size: 0.72rem; color: var(--muted); }
+.card-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; background: var(--surface2); display: block; margin-bottom: 2px; }
+.cospa-row { display: flex; align-items: center; gap: 8px; font-size: 0.68rem; color: var(--muted); margin-top: -2px; }
+.cospa-rank { font-weight: 700; }
+.cospa-rank.top1 { color: #f1c40f; }
+.cospa-rank.top2 { color: #aaa; }
+.cospa-rank.top3 { color: #cd7f32; }
+.cospa-diff.cheap { color: #2ecc71; }
+.cospa-diff.pricey { color: #e74c3c; }
+
+#empty { display: none; padding: 60px 20px; text-align: center; color: var(--muted); }
+#loading { padding: 60px 20px; text-align: center; color: var(--muted); }
+.section-header { grid-column: 1 / -1; padding: 14px 20px 4px; font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; border-top: 1px solid var(--border); margin-top: 4px; }
+.section-header.first { border-top: none; margin-top: 0; }
+
+.popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
+.popup-overlay.show { display: flex; }
+.popup-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; max-width: 360px; width: 100%; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.6); animation: popIn .15s ease; }
+@keyframes popIn { from { opacity:0; transform:scale(.92) } to { opacity:1; transform:scale(1) } }
+.popup-title { font-size: 0.82rem; color: var(--muted); text-align: center; }
+.popup-car-name { font-size: 0.83rem; color: var(--text); line-height: 1.4; text-align: center; font-weight: 600; background: var(--surface2); border-radius: 8px; padding: 8px 12px; }
+.popup-links { display: flex; flex-direction: column; gap: 8px; }
+.popup-link { display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-radius: 10px; text-decoration: none; font-size: 0.88rem; font-weight: 600; transition: opacity .15s, transform .1s; }
+.popup-link:hover { opacity: .82; transform: translateX(3px); }
+.popup-link.cs { background: rgba(231,76,60,.14); color: #e74c3c; border: 1px solid rgba(231,76,60,.3); }
+.popup-link.goo { background: rgba(39,174,96,.14); color: #2ecc71; border: 1px solid rgba(39,174,96,.3); }
+.popup-close { background: transparent; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 9px; cursor: pointer; font-size: 0.85rem; text-align: center; transition: all .15s; }
+.popup-close:hover { border-color: var(--muted); color: var(--text); }
+
+@media (max-width: 480px) {
+header { padding: 10px 14px; }
+.watch-tabs, .controls, .cond-bar { padding-left: 14px; padding-right: 14px; }
+#grid { padding: 10px 14px 24px; gap: 12px; }
+.card { padding: 12px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🚗 中古車ウォッチャー</h1>
+  <span id="updated">読み込み中…</span>
+  <button id="settingsBtn" title="設定" style="background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;padding:4px 8px;font-size:0.9rem;transition:all .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--muted)'">⚙</button>
+</header>
+
+<div class="watch-tabs" id="watchTabs"></div>
+<div class="cond-bar" id="condBar" style="display:none"></div>
+
+<div class="controls">
+  <div class="sort-group">
+    <span class="sort-label">並び替え</span>
+    <button class="sort-btn active" data-sort="price">価格 ↑</button>
+    <button class="sort-btn" data-sort="year">年式 ↓</button>
+    <button class="sort-btn" data-sort="dist">走行 ↑</button>
+  </div>
+  <a id="motaLink" href="#" target="_blank" rel="noopener" class="mota-link-btn" style="display:none">
+    <span class="source-dot dot-mota"></span>MOTAで確認 ↗
+  </a>
+</div>
+
+<div class="count-bar" id="countBar"></div>
+<div id="loading">データを読み込んでいます…</div>
+<div id="empty"></div>
+<div id="grid"></div>
+
+<div class="popup-overlay" id="popup">
+  <div class="popup-box">
+    <div class="popup-title">どのサイトで確認しますか？</div>
+    <div class="popup-car-name" id="popupCarName"></div>
+    <div class="popup-links" id="popupLinks"></div>
+    <button class="popup-close" id="popupClose">閉じる</button>
+  </div>
+</div>
+
+<div class="popup-overlay" id="settingsPopup">
+  <div class="popup-box" style="max-width:420px">
+    <div style="font-size:1rem;font-weight:700;color:var(--text)">⚙ 設定</div>
+    <div style="font-size:0.82rem;color:var(--muted);line-height:1.6">
+      GitHub Personal Access Token（Classic）を設定すると、★お気に入りがGitHubに同期され、値下がり時にプッシュ通知が届きます。<br>
+      スコープ: <code style="background:var(--surface2);padding:1px 5px;border-radius:4px">public_repo</code>　有効期限: No expiration
+    </div>
+    <div>
+      <label style="font-size:0.75rem;color:var(--muted);display:block;margin-bottom:4px">GitHub PAT</label>
+      <input id="patInput" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+        style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:0.85rem;outline:none">
+    </div>
+    <div style="display:flex;gap:8px">
+      <button id="patSave" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:0.85rem;font-weight:600;padding:10px">保存</button>
+      <button id="patClear" style="background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:10px 14px">クリア</button>
+      <button id="settingsClose" style="background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);cursor:pointer;font-size:0.85rem;padding:10px 14px">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const FAV_KEY         = "usedcar_favorites";
+const SEEN_CACHE_KEY  = "usedcar_seen_cache";
+const DISMISSED_KEY   = "usedcar_dismissed";
+const VERSION_KEY     = "usedcar_version";
+const STORAGE_VERSION = "2";
+const SPLIT_KEY       = "usedcar_split";
+const GITHUB_PAT_KEY  = "usedcar_github_pat";
+const DATA_URL        = "./data/data.json";
+const CONFIG_URL      = "./config.json";
+const FAV_WATCH       = "__fav__";
+const REPO            = "venom066/special-octo-fiesta";
+const FAVS_PATH       = "data/favorites.json";
+
+let allListings  = [];
+let soldListings = [];
+let watches      = [];
+let currentWatch = FAV_WATCH;
+let sortKey      = "price";
+let sortDir      = "asc";
+let cospaScores  = {}; // fp -> {rank, total, avgPriceDiff}
+
+// Favorites
+function getFavs() {
+  try { return new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function saveFavs(s) { localStorage.setItem(FAV_KEY, JSON.stringify([...s])); }
+function toggleFav(fp) {
+  const f = getFavs(); f.has(fp) ? f.delete(fp) : f.add(fp); saveFavs(f); return f.has(fp);
 }
 
-# ─────────────────────────────
-# ユーティリティ
-# ─────────────────────────────
-def extract_listing_id(url: str, source: str) -> str:
-    """URLからサイト固有のリスティングIDを抽出"""
-    if source == "carsensor":
-        # /usedcar/detail/AU7077055949/
-        m = re.search(r"/usedcar/detail/([^/?#]+)", url)
-        return m.group(1) if m else url
-    elif source == "goonet":
-        # /usedcar/spread/goo/{都道府県コード}/{リスティングID}.html
-        m = re.search(r"/usedcar/spread/goo/\d+/(\d+)", url)
-        if m:
-            return m.group(1)
-        return url
-    return url
+// GitHub PAT / favorites.json sync
+async function syncFavsToGitHub(favSet) {
+  const pat = localStorage.getItem(GITHUB_PAT_KEY);
+  if (!pat) return;
+  const headers = {
+    "Authorization": "token " + pat,
+    "Accept": "application/vnd.github.v3+json",
+  };
+  let sha = null;
+  const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FAVS_PATH, { headers });
+  if (getRes.ok) { sha = (await getRes.json()).sha; }
+  else if (getRes.status !== 404) { throw new Error("GitHub API " + getRes.status); }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify([...favSet], null, 2))));
+  const body = { message: "update favorites", content };
+  if (sha) body.sha = sha;
+  const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + FAVS_PATH, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err.message || "GitHub API " + putRes.status);
+  }
+}
 
-def make_fingerprint(source: str, listing_id: str) -> str:
-    return f"{source}_{listing_id}"
+// 設定モーダル
+document.getElementById("settingsBtn").addEventListener("click", () => {
+  document.getElementById("patInput").value = localStorage.getItem(GITHUB_PAT_KEY) || "";
+  document.getElementById("settingsPopup").classList.add("show");
+});
+document.getElementById("settingsClose").addEventListener("click", () => {
+  document.getElementById("settingsPopup").classList.remove("show");
+});
+document.getElementById("settingsPopup").addEventListener("click", e => {
+  if (e.target === e.currentTarget) document.getElementById("settingsPopup").classList.remove("show");
+});
+document.getElementById("patSave").addEventListener("click", () => {
+  const v = document.getElementById("patInput").value.trim();
+  if (v) { localStorage.setItem(GITHUB_PAT_KEY, v); alert("保存しました。"); }
+  document.getElementById("settingsPopup").classList.remove("show");
+});
+document.getElementById("patClear").addEventListener("click", () => {
+  localStorage.removeItem(GITHUB_PAT_KEY);
+  document.getElementById("patInput").value = "";
+  alert("クリアしました。");
+});
 
-def is_new_format_fp(fp: str) -> bool:
-    return fp.startswith("carsensor_") or fp.startswith("goonet_")
+// Seen cache (sold detection)
+function getSeenCache() {
+  try { return JSON.parse(localStorage.getItem(SEEN_CACHE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function saveSeenCache(c) { localStorage.setItem(SEEN_CACHE_KEY, JSON.stringify(c)); }
 
-def load_json(path: str, default):
-    try:
-        with open(path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return default
+// Split
+function getSplit() {
+  try { return new Set(JSON.parse(localStorage.getItem(SPLIT_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function saveSplit(s) { localStorage.setItem(SPLIT_KEY, JSON.stringify([...s])); }
+function splitKey(fps) { return [...fps].sort().join("||"); }
+function addSplit(fps) {
+  const s = getSplit(); s.add(splitKey(fps)); saveSplit(s);
+}
+function isSplit(fps) { return getSplit().has(splitKey(fps)); }
 
-def save_json(path: str, data) -> None:
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+// ストレージ移行（ID制fingerprint移行時にキャッシュをクリア）
+function migrateStorage() {
+  if (localStorage.getItem(VERSION_KEY) !== STORAGE_VERSION) {
+    localStorage.removeItem(SEEN_CACHE_KEY);
+    localStorage.removeItem(DISMISSED_KEY);
+    localStorage.removeItem(FAV_KEY);
+    localStorage.setItem(VERSION_KEY, STORAGE_VERSION);
+  }
+}
 
-def parse_year(text: str):
-    m = re.search(r"(\d{4})", text)
-    return int(m.group(1)) if m else None
+// Dismissed (永久に削除)
+function getDismissed() {
+  try { return new Set(JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function saveDismissed(s) { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...s])); }
+function dismissCard(fp) {
+  const d = getDismissed(); d.add(fp); saveDismissed(d);
+  const c = getSeenCache(); delete c[fp]; saveSeenCache(c);
+  const f = getFavs(); f.delete(fp); saveFavs(f);
+}
 
-def parse_distance_km(text: str):
-    m = re.search(r"([\d.]+)\s*万\s*km", text)
-    if m:
-        return int(float(m.group(1)) * 10_000)
-    m = re.search(r"([\d,]+)\s*km", text)
-    if m:
-        return int(m.group(1).replace(",", ""))
-    return None
+function esc(s) {
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
 
-def parse_price_man(text: str):
-    m = re.search(r"([\d.]+)\s*万円", text.replace("\n", ""))
-    return int(float(m.group(1))) if m else None
+// Watch tabs
+function buildWatchTabs() {
+  const el = document.getElementById("watchTabs");
+  el.innerHTML = "";
+  const tabs = [
+    { key: FAV_WATCH, label: "★ お気に入り", extra: "fav-tab" },
+    ...watches.map(w => ({ key: w.name, label: w.name, extra: "" }))
+  ];
+  for (const t of tabs) {
+    const count = t.key === FAV_WATCH
+      ? getFavs().size
+      : allListings.filter(l => l.watch_name === t.key).length;
+    const btn = document.createElement("button");
+    btn.className = "watch-tab " + t.extra + (currentWatch === t.key ? " active" : "");
+    btn.innerHTML = esc(t.label) + '<span class="tab-count">' + count + "</span>";
+    btn.addEventListener("click", () => {
+      currentWatch = t.key;
+      buildWatchTabs();
+      updateCondBar();
+      updateMotaLink();
+      applyAll();
+    });
+    el.appendChild(btn);
+  }
+}
 
-def url_set_param(url: str, key: str, value: str) -> str:
-    """URLの特定パラメータを書き換えて返す"""
-    parsed = urlparse(url)
-    params = {k: v[0] for k, v in parse_qs(parsed.query, keep_blank_values=True).items()}
-    params[key] = value
-    return urlunparse(parsed._replace(query=urlencode(params)))
+// Conditions bar
+const PREF = {"01":"北海道","02":"青森","03":"岩手","04":"宮城","05":"秋田","06":"山形","07":"福島","08":"茨城","09":"栃木","10":"群馬","11":"埼玉","12":"千葉","13":"東京","14":"神奈川","15":"新潟","16":"富山","17":"石川","18":"福井","19":"山梨","20":"長野","21":"岐阜","22":"静岡","23":"愛知","24":"三重","25":"滋賀","26":"京都","27":"大阪","28":"兵庫","29":"奈良","30":"和歌山","31":"鳥取","32":"島根","33":"岡山","34":"広島","35":"山口","36":"徳島","37":"香川","38":"愛媛","39":"高知","40":"福岡","41":"佐賀","42":"長崎","43":"熊本","44":"大分","45":"宮崎","46":"鹿児島","47":"沖縄"};
 
-# ─────────────────────────────
-# カーセンサー
-# ─────────────────────────────
-def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
-    listings = []
-    session = requests.Session()
-    session.headers.update(HEADERS)
-
-    url = base_url
-    page = 1
-
-    while True:
-        resp = session.get(url, timeout=30)
-        resp.raise_for_status()
-        soup = BeautifulSoup(resp.content, "html.parser")
-
-        items = soup.select(".cassetteMain")
-        if not items:
-            break
-
-        for item in items:
-            # タイトル（バッジ・注記テキストを除去）
-            car_info = item.select_one(".cassetteMain__carInfoContainer")
-            if car_info:
-                # バッジ類（保証表示など）を除いた純粋な車名部分を取得
-                for badge in car_info.select(".badge, .cassetteMain__badges, .cassetteMain__label"):
-                    badge.decompose()
-                raw = car_info.get_text(" ", strip=True)
-                # 既知のノイズ文字列を除去
-                for noise in ["保証の種類を表示しています", "保証の種類について", "360° 画像付", "オンライン相談可", "車両品質評価書付", "販売店保証", "ディーラー保証"]:
-                    raw = raw.replace(noise, "")
-                title = " ".join(raw.split())[:100]
-            else:
-                title = ""
-
-            # 年式・走行距離
-            year = distance_km = None
-            for spec in item.select(".specList__detailBox"):
-                t = spec.get_text(strip=True)
-                if "年式" in t:
-                    year = parse_year(t)
-                elif "走行距離" in t:
-                    distance_km = parse_distance_km(t)
-
-            # 支払総額
-            num_el = item.select_one(".totalPrice__mainPriceNum")
-            if num_el:
-                try:
-                    price_man = int(float(num_el.get_text(strip=True).replace(",", "")))
-                except ValueError:
-                    price_man = None
-            else:
-                price_el = item.select_one(".cassetteMain__priceInfo")
-                price_text = price_el.get_text(" ", strip=True) if price_el else ""
-                price_man = parse_price_man(price_text)
-
-            # ASK（要相談）= 0円扱いを除外
-            if price_man == 0:
-                price_man = None
-
-            # 詳細リンク
-            link_el = item.select_one('a[href*="/usedcar/detail/"]')
-            if link_el:
-                href = link_el.get("href", "")
-                link = href if href.startswith("http") else "https://www.carsensor.net" + href
-            else:
-                link = ""
-
-            # サムネイル画像URL（data-src優先 — srcはlazyプレースホルダーの場合が多い）
-            img_el = item.select_one("img.js-lazy")
-            image_url = None
-            if img_el:
-                raw = img_el.get("data-src") or img_el.get("src") or ""
-                if raw and not any(x in raw for x in ["noimage", "no_image", "data:", "blank", "spacer", "1x1"]):
-                    image_url = raw if raw.startswith("http") else ("https://www.carsensor.net" + raw if raw.startswith("/") else None)
-
-            if year and distance_km and link:
-                listing_id = extract_listing_id(link, "carsensor")
-                listings.append({
-                    "source": "carsensor",
-                    "title": title,
-                    "year": year,
-                    "distance_km": distance_km,
-                    "price_man": price_man,
-                    "url": link,
-                    "fingerprint": make_fingerprint("carsensor", listing_id),
-                    "watch_name": watch_name,
-                    "scraped_at": datetime.now().isoformat(),
-                    "image_url": image_url,
-                })
-
-        # 次ページ: 「次へ」リンクのhrefを直接使う
-        next_btn = soup.select_one(".pager__item--next:not(.pager__item--disabled) a")
-        if not next_btn or page >= 10:
-            break
-
-        href = next_btn.get("href", "")
-        url = href if href.startswith("http") else "https://www.carsensor.net" + href
-        page += 1
-        time.sleep(1.5)
-
-    return listings
-
-# ─────────────────────────────
-# グーネット（GET対応）
-# ─────────────────────────────
-def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
-    listings = []
-    session = requests.Session()
-    session.headers.update(HEADERS)
-
-    # offset=0 から開始、limit は URL に含まれていれば使う（デフォルト50）
-    parsed_base = urlparse(base_url)
-    base_params = {k: v[0] for k, v in parse_qs(parsed_base.query, keep_blank_values=True).items()}
-    limit = int(base_params.get("limit", "50"))
-
-    offset = 0
-    page = 1
-
-    while True:
-        params = {**base_params, "offset": str(offset)}
-        url = urlunparse(parsed_base._replace(query=urlencode(params)))
-
-        resp = session.get(url, timeout=30)
-        resp.raise_for_status()
-        html = resp.content.decode("euc-jp", errors="replace")
-        soup = BeautifulSoup(html, "html.parser")
-
-        items = soup.select(".box_item_detail")
-        if not items:
-            break
-
-        for item in items:
-            heading = item.select_one(".heading_inner")
-            title = heading.get_text(" ", strip=True)[:100] if heading else "Unknown"
-
-            dw = item.select_one(".data-wrapper")
-            dw_text = dw.get_text(" ", strip=True) if dw else ""
-            dw_text = dw_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
-
-            year_m = re.search(r"年式\s*(\d{4})\s*年", dw_text)
-            dist_m = re.search(r"走行距離\s*([\d.]+)\s*万\s*km", dw_text)
-
-            year = int(year_m.group(1)) if year_m else None
-            distance_km = int(float(dist_m.group(1)) * 10_000) if dist_m else None
-
-            # 支払総額: .hontai-price .num-red（赤字）→ fallback .hontai-price .num
-            price_el = item.select_one(".hontai-price .num-red")
-            if not price_el:
-                price_el = item.select_one(".hontai-price .num")
-            price_text = price_el.get_text(strip=True) if price_el else ""
-            price_text = price_text.translate(str.maketrans("０１２３４５６７８９．", "0123456789."))
-            price_m = re.search(r"([\d.]+)", price_text)
-            price_man = int(float(price_m.group(1))) if price_m else None
-
-            # ASK（要相談）= 0円扱いを除外
-            if price_man == 0:
-                price_man = None
-
-            link_el = item.select_one('a[href*="/usedcar/spread/"]')
-            if link_el:
-                href = link_el.get("href", "").split("#")[0]
-                link = href if href.startswith("http") else "https://www.goo-net.com" + href
-            else:
-                link = ""
-
-            # サムネイル画像URL（data-original優先 — srcはlazyプレースホルダーの場合が多い）
-            img_el = item.select_one("img[onerror]") or next(
-                (i for i in item.select("img") if "lazy" not in i.get("class", [])), None
-            )
-            image_url = None
-            if img_el:
-                raw = img_el.get("data-original") or img_el.get("src") or ""
-                skip_patterns = ("fav_off.png", "fav_on.png", "noimage", "no_image", "data:", "blank", "spacer", "1x1")
-                if raw and not any(x in raw for x in skip_patterns):
-                    image_url = raw if raw.startswith("http") else "https://www.goo-net.com" + raw
-
-            if year and distance_km and link:
-                listing_id = extract_listing_id(link, "goonet")
-                listings.append({
-                    "source": "goonet",
-                    "title": title,
-                    "year": year,
-                    "distance_km": distance_km,
-                    "price_man": price_man,
-                    "url": link,
-                    "fingerprint": make_fingerprint("goonet", listing_id),
-                    "watch_name": watch_name,
-                    "scraped_at": datetime.now().isoformat(),
-                    "image_url": image_url,
-                })
-
-        # 次ページ確認
-        next_link = soup.select_one(".pager_next a, .pager a.next")
-        if not next_link or page >= 10:
-            break
-
-        offset += limit
-        page += 1
-        time.sleep(1.5)
-
-    return listings
-
-# ─────────────────────────────
-# 同一車両判定・クロスサイト突合
-# ─────────────────────────────
-def is_same_car(a: dict, b: dict) -> bool:
-    """カーセンサー/グーネット間で同一車両かどうかを判定"""
-    if a["year"] != b["year"]:
-        return False
-    if abs(a["distance_km"] - b["distance_km"]) > 1000:
-        return False
-    # 両方価格あり → ±1万で比較
-    if a["price_man"] and b["price_man"]:
-        if abs(a["price_man"] - b["price_man"]) > 1:
-            return False
-    # 片方または両方がnull → 年式・距離だけで突合
-    return True
-
-def merge_listings(all_listings: list[dict]) -> list[dict]:
-    """
-    各listingはID由来のユニークfingerprintを持つ。
-    同一watch内でカーセンサー×グーネットの同一車両を突合してsourcesをマージ。
-    """
-    # watch_name ごとにグループ化
-    by_watch: dict[str, list[dict]] = {}
-    for l in all_listings:
-        by_watch.setdefault(l["watch_name"], []).append(l)
-
-    result = []
-    for watch_listings in by_watch.values():
-        cs_list  = [l for l in watch_listings if l["source"] == "carsensor"]
-        goo_list = [l for l in watch_listings if l["source"] == "goonet"]
-
-        matched_goo: set[int] = set()
-
-        for cs in cs_list:
-            merged = {**cs, "sources": {"carsensor": cs["url"]}}
-            for i, goo in enumerate(goo_list):
-                if i in matched_goo:
-                    continue
-                if is_same_car(cs, goo):
-                    merged["sources"]["goonet"] = goo["url"]
-                    # 価格は安い方を採用
-                    if goo["price_man"] and (
-                        not merged["price_man"]
-                        or goo["price_man"] < merged["price_man"]
-                    ):
-                        merged["price_man"] = goo["price_man"]
-                    # 突合の信頼度チェック
-                    dist_diff = abs(cs["distance_km"] - goo["distance_km"])
-                    price_diff = (
-                        abs(cs["price_man"] - goo["price_man"])
-                        if cs["price_man"] and goo["price_man"] else None
-                    )
-                    merged["match_suspicious"] = (
-                        dist_diff > 500
-                        or price_diff is None
-                        or price_diff >= 1
-                    )
-                    # split用に両IDを記録
-                    merged["merged_fps"] = [cs["fingerprint"], goo["fingerprint"]]
-                    matched_goo.add(i)
-                    break
-            result.append(merged)
-
-        # マッチしなかったグーネット単独出品
-        for i, goo in enumerate(goo_list):
-            if i not in matched_goo:
-                result.append({**goo, "sources": {"goonet": goo["url"]}})
-
-    return result
-
-# ─────────────────────────────
-FAVORITES_FILE = "data/favorites.json"
-
-def load_favorites() -> set[str]:
-    data = load_json(FAVORITES_FILE, [])
-    return set(data)
-
-# ntfy.sh 通知
-# ─────────────────────────────
-def send_ntfy(new_listings: list[dict], price_changed_favs: list[dict] | None = None) -> None:
-    if not NTFY_TOPIC:
-        print("  NTFY_TOPIC not set — skipping")
-        return
-    price_changed_favs = price_changed_favs or []
-    if not new_listings and not price_changed_favs:
-        return
-
-    sections: list[str] = []
-
-    if new_listings:
-        count = len(new_listings)
-        sections.append(f"【新着 {count}件】")
-        for l in new_listings[:5]:
-            dist = f"{l['distance_km'] // 10_000:.1f}万km" if l["distance_km"] else ""
-            price = f"{l['price_man']}万円" if l["price_man"] else "価格不明"
-            srcs = "/".join(l.get("sources", {l["source"]: ""}).keys())
-            sections.append(f"{l['year']}年 {dist} {price} [{srcs}] {l['title'][:20]}")
-        if count > 5:
-            sections.append(f"…他{count - 5}件")
-
-    if price_changed_favs:
-        if sections:
-            sections.append("")
-        sections.append(f"【★値下がり {len(price_changed_favs)}件】")
-        for l in price_changed_favs[:5]:
-            dist = f"{l['distance_km'] // 10_000:.1f}万km" if l["distance_km"] else ""
-            sections.append(f"{l['year']}年 {dist} {l['prev_price_man']}万→{l['price_man']}万円 {l['title'][:20]}")
-        if len(price_changed_favs) > 5:
-            sections.append(f"…他{len(price_changed_favs) - 5}件")
-
-    parts = []
-    if new_listings:
-        parts.append(f"新着{len(new_listings)}件")
-    if price_changed_favs:
-        parts.append(f"★値下がり{len(price_changed_favs)}件")
-    title = "中古車 " + " / ".join(parts)
-    lines = sections
-
-    payload: dict = {
-        "topic": NTFY_TOPIC,
-        "title": title,
-        "message": "\n".join(lines),
-        "tags": ["car"],
-        "priority": 3,
+function updateCondBar() {
+  const bar = document.getElementById("condBar");
+  const w = watches.find(x => x.name === currentWatch);
+  if (!w) { bar.style.display = "none"; return; }
+  const chips = [];
+  try {
+    const p = new URL(w.goonet_url).searchParams;
+    const price2 = p.get("price2");
+    if (price2) chips.push("価格 〜" + price2 + "万円");
+    const dist2 = p.get("distance2");
+    if (dist2) chips.push("走行 〜" + (parseInt(dist2) / 10000).toFixed(0) + "万km");
+    const nen1 = p.get("nen1");
+    if (nen1) chips.push(nen1 + "年〜");
+    const prefC = p.get("pref_c");
+    if (prefC) {
+      const names = prefC.split(",").map(c => PREF[c]).filter(Boolean);
+      if (names.length) chips.push("地域: " + (names.length <= 7 ? names.join(" ") : names.slice(0, 6).join(" ") + " 他" + (names.length - 6) + "県"));
     }
-    if GITHUB_PAGES_URL:
-        payload["click"] = GITHUB_PAGES_URL
+  } catch(e) {}
+  if (!chips.length) { bar.style.display = "none"; return; }
+  bar.innerHTML = '<span class="cond-label">絞り込み条件</span>' + chips.map(c => '<span class="cond-chip">' + esc(c) + "</span>").join("");
+  bar.style.display = "flex";
+}
 
-    try:
-        resp = requests.post(
-            "https://ntfy.sh",
-            json=payload,
-            timeout=10,
-        )
-        print(f"  ntfy status: {resp.status_code}")
-    except Exception as e:
-        print(f"  ntfy error (skipping): {e}")
+function updateMotaLink() {
+  const link = document.getElementById("motaLink");
+  const w = watches.find(x => x.name === currentWatch);
+  if (w && w.mota_url) { link.href = w.mota_url; link.style.display = "inline-flex"; }
+  else { link.style.display = "none"; }
+}
 
-# ─────────────────────────────
-# メイン
-# ─────────────────────────────
-def main() -> None:
-    print(f"=== Scrape started: {datetime.now().isoformat()} ===")
+// Sort
+const SORT_LABELS   = { price: "価格", year: "年式", dist: "走行" };
+const SORT_DEFAULTS = { price: "asc", year: "desc", dist: "asc" };
 
-    config = load_json(CONFIG_FILE, {"watches": []})
-    watches = config.get("watches", [])
+function updateSortBtns() {
+  document.querySelectorAll(".sort-btn").forEach(btn => {
+    const k = btn.dataset.sort;
+    const isActive = k === sortKey;
+    btn.classList.toggle("active", isActive);
+    const dir = isActive ? sortDir : SORT_DEFAULTS[k];
+    btn.textContent = SORT_LABELS[k] + " " + (dir === "asc" ? "↑" : "↓");
+  });
+}
 
-    if not watches:
-        print("config.json に watches が設定されていません")
-        return
+document.querySelectorAll(".sort-btn").forEach(btn => {
+  btn.addEventListener("click", function() {
+    const k = this.dataset.sort;
+    if (sortKey === k) sortDir = sortDir === "asc" ? "desc" : "asc";
+    else { sortKey = k; sortDir = SORT_DEFAULTS[k]; }
+    updateSortBtns();
+    applyAll();
+  });
+});
 
-    all_raw: list[dict] = []
+function computeCospaScores() {
+  const result = {};
+  const byWatch = {};
+  for (const l of allListings) {
+    if (!l.watch_name) continue;
+    (byWatch[l.watch_name] = byWatch[l.watch_name] || []).push(l);
+  }
+  for (const wListings of Object.values(byWatch)) {
+    const vp = wListings.filter(l => l.price_man != null);
+    if (vp.length < 3) continue; // 3件未満は非表示
+    const prices = vp.map(l => l.price_man);
+    const years  = wListings.filter(l => l.year != null).map(l => l.year);
+    const dists  = wListings.filter(l => l.distance_km != null).map(l => l.distance_km);
+    const minP = Math.min(...prices), maxP = Math.max(...prices);
+    const minY = years.length > 1 ? Math.min(...years) : null;
+    const maxY = years.length > 1 ? Math.max(...years) : null;
+    const minD = dists.length > 1 ? Math.min(...dists) : null;
+    const maxD = dists.length > 1 ? Math.max(...dists) : null;
+    const avgP = prices.reduce((a, b) => a + b, 0) / prices.length;
+    const scored = wListings.map(l => {
+      let s = 0, w = 0;
+      if (l.price_man != null && maxP !== minP) { s += (1 - (l.price_man - minP) / (maxP - minP)) * 0.5; w += 0.5; }
+      if (l.year != null && minY != null && maxY !== minY) { s += ((l.year - minY) / (maxY - minY)) * 0.3; w += 0.3; }
+      if (l.distance_km != null && minD != null && maxD !== minD) { s += (1 - (l.distance_km - minD) / (maxD - minD)) * 0.2; w += 0.2; }
+      const score = w > 0 ? s / w : 0;
+      const avgPriceDiff = l.price_man != null ? Math.round(avgP - l.price_man) : null;
+      return { fp: l.fingerprint, score, avgPriceDiff, total: wListings.length };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    scored.forEach((item, i) => {
+      result[item.fp] = { rank: i + 1, total: item.total, avgPriceDiff: item.avgPriceDiff };
+    });
+  }
+  return result;
+}
 
-    for watch in watches:
-        name = watch.get("name", "Unknown")
-        print(f"\n▶ {name}")
+function sortList(list) {
+  return [...list].sort((a, b) => {
+    let va, vb;
+    if      (sortKey === "price") { va = a.price_man   ?? 9999;   vb = b.price_man   ?? 9999; }
+    else if (sortKey === "year")  { va = a.year        ?? 0;      vb = b.year        ?? 0; }
+    else                          { va = a.distance_km ?? 999999; vb = b.distance_km ?? 999999; }
+    return sortDir === "asc" ? va - vb : vb - va;
+  });
+}
 
-        cs_url = watch.get("carsensor_url", "")
-        if cs_url:
-            print("  [カーセンサー]")
-            try:
-                cs = scrape_carsensor(cs_url, watch_name=name)
-                all_raw.extend(cs)
-                print(f"  → {len(cs)} 件")
-            except Exception as e:
-                print(f"  ERROR: {e}")
+// Apply
+function applyAll() {
+  const favs = getFavs();
+  let active, sold;
+  if (currentWatch === FAV_WATCH) {
+    active = allListings.filter(l => favs.has(l.fingerprint));
+    sold   = soldListings.filter(l => favs.has(l.fingerprint));
+  } else {
+    active = allListings.filter(l => l.watch_name === currentWatch);
+    sold   = soldListings.filter(l => l.watch_name === currentWatch);
+  }
 
-        goo_url = watch.get("goonet_url", "")
-        if goo_url:
-            print("  [グーネット]")
-            try:
-                goo = scrape_goonet(goo_url, watch_name=name)
-                all_raw.extend(goo)
-                print(f"  → {len(goo)} 件")
-            except Exception as e:
-                print(f"  ERROR: {e}")
+  const empty = document.getElementById("empty");
+  const total = active.length + sold.length;
+  if (total === 0) {
+    empty.style.display = "block";
+    empty.innerHTML = currentWatch === FAV_WATCH
+      ? '<div style="font-size:2rem;margin-bottom:10px">☆</div><div style="color:var(--muted);font-size:0.9rem">お気に入りはまだありません<br>カードの ☆ をタップして追加しましょう</div>'
+      : '<div style="color:var(--muted);font-size:0.9rem">該当車両がありません</div>';
+  } else {
+    empty.style.display = "none";
+  }
 
-    merged = merge_listings(all_raw)
-    print(f"\n▶ マージ後: {len(merged)} 件")
+  document.getElementById("countBar").textContent =
+    active.length + "件" + (sold.length > 0 ? "　売却済 " + sold.length + "件" : "");
 
-    # 前回データとの価格比較
-    prev_data = load_json(DATA_FILE, {})
-    prev_prices: dict[str, int | None] = {
-        l["fingerprint"]: l.get("price_man")
-        for l in prev_data.get("listings", [])
+  if (currentWatch === FAV_WATCH) {
+    renderFavGrouped(active, sold);
+  } else {
+    renderCards([...sortList(active), ...sortList(sold)]);
+  }
+}
+
+function renderFavGrouped(active, sold) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  // watches の順番でグループ化（登録外watchはまとめて末尾）
+  const watchOrder = watches.map(w => w.name);
+  const groupedActive = {}, groupedSold = {};
+  for (const l of active) { const k = l.watch_name || "その他"; (groupedActive[k] = groupedActive[k] || []).push(l); }
+  for (const l of sold)   { const k = l.watch_name || "その他"; (groupedSold[k]   = groupedSold[k]   || []).push(l); }
+  const allKeys = new Set([...Object.keys(groupedActive), ...Object.keys(groupedSold)]);
+  const keys = [
+    ...watchOrder.filter(k => allKeys.has(k)),
+    ...[...allKeys].filter(k => !watchOrder.includes(k)),
+  ];
+  let first = true;
+  for (const key of keys) {
+    const header = document.createElement("div");
+    header.className = "section-header" + (first ? " first" : "");
+    header.textContent = key;
+    grid.appendChild(header);
+    const sectionListings = [
+      ...sortList(groupedActive[key] || []),
+      ...sortList(groupedSold[key]   || []),
+    ];
+    renderCardsInto(grid, sectionListings);
+    first = false;
+  }
+}
+
+// Render
+function renderCards(listings) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  renderCardsInto(grid, listings);
+}
+
+function renderCardsInto(grid, listings) {
+  const favs = getFavs();
+
+  for (const l of listings) {
+    const fp      = l.fingerprint;
+    const isFav   = favs.has(fp);
+    const isSold  = !!l.sold;
+    const sources = l.sources || { [l.source]: l.url };
+    const srcKeys = Object.keys(sources);
+    const isMulti = srcKeys.length > 1;
+    const dist    = l.distance_km != null ? (l.distance_km / 10000).toFixed(1) + "万km" : "—";
+    const price   = l.price_man   != null ? l.price_man.toLocaleString() + "万円" : "—";
+    const hasPriceChange = !isSold && l.prev_price_man != null && l.prev_price_man !== l.price_man;
+    const priceDisplay = hasPriceChange
+      ? '<span class="price-old">' + esc(String(l.prev_price_man)) + '万円</span> → ' + esc(price)
+      : esc(price);
+    const cospa = !isSold ? cospaScores[fp] : null;
+    const cospaHTML = cospa ? (() => {
+      const medals = ['', '🥇', '🥈', '🥉'];
+      const rankCls = cospa.rank <= 3 ? ' top' + cospa.rank : '';
+      const rankLabel = (medals[cospa.rank] || '') + (cospa.rank <= 3 ? '' : '#' + cospa.rank) + '/' + cospa.total + '件';
+      let diffHTML = '';
+      if (cospa.avgPriceDiff != null) {
+        const d = cospa.avgPriceDiff;
+        if (d > 0) diffHTML = '<span class="cospa-diff cheap">avg比 -' + d + '万</span>';
+        else if (d < 0) diffHTML = '<span class="cospa-diff pricey">avg比 +' + Math.abs(d) + '万</span>';
+      }
+      return '<div class="cospa-row"><span class="cospa-rank' + rankCls + '">' + rankLabel + '</span>' + diffHTML + '</div>';
+    })() : '';
+
+    const badges = srcKeys.map(s => {
+      const label = { carsensor: "カーセンサー", goonet: "グーネット" }[s] || s;
+      const cls   = { carsensor: "cs", goonet: "goo" }[s] || "";
+      return '<span class="src-badge ' + cls + '">' + label + "</span>";
+    }).join("");
+
+    const isSuspicious = !isSold && l.match_suspicious && l.merged_fps;
+    const actionBtn = isSold
+      ? '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="リストから削除">✕</button>'
+      : '<div style="display:flex;gap:4px">'
+        + (isSuspicious ? '<button class="split-btn" title="誤統合の可能性あり。2枚に割る">割る</button>' : '')
+        + '<button class="dismiss-btn" data-fp="' + esc(fp) + '" title="このクルマを非表示">✕</button>'
+        + '<button class="fav-btn ' + (isFav ? "on" : "") + '" data-fp="' + esc(fp) + '" title="' + (isFav ? "お気に入り解除" : "お気に入りに追加") + '">' + (isFav ? "★" : "☆") + "</button>"
+        + '</div>';
+
+    const card = document.createElement("div");
+    card.className = "card" + (isSold ? " is-sold" : isFav ? " is-fav" : "");
+    const thumbSrc = l.image_url || (l.sources && Object.values(l.sources).length === 0 ? null : null);
+    card.innerHTML =
+      (thumbSrc ? '<img class="card-thumb" src="' + esc(thumbSrc) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : "") +
+      (isSold ? '<div class="sold-badge">売却済</div>'
+        : hasPriceChange ? '<div class="price-badge">価格更新</div>'
+        : isSuspicious ? '<div class="suspicious-badge" title="統合の信頼度が低い。実際に確認してください">⚠ 要確認</div>'
+        : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
+      '<div class="card-top"><div class="card-title">' + esc(l.watch_name || l.title) + "</div>" + actionBtn + "</div>" +
+      '<div class="specs">' +
+        '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
+        '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
+        '<div class="spec-item"><span class="spec-label">支払総額</span><span class="spec-value price">' + priceDisplay + "</span></div>" +
+      "</div>" +
+      cospaHTML +
+      '<div class="card-footer"><div class="card-sources">' + badges + "</div>" +
+      (isSold ? "" : '<span class="card-arrow">' + (isMulti ? "選択して開く →" : "詳細を見る →") + "</span>") +
+      "</div>";
+
+    if (!isSold) {
+      card.addEventListener("click", e => {
+        if (e.target.closest(".fav-btn")) return;
+        if (e.target.closest(".dismiss-btn")) return;
+        if (e.target.closest(".split-btn")) return;
+        if (isMulti) openPopup(l);
+        else window.open(sources[srcKeys[0]], "_blank", "noopener");
+      });
+      card.querySelector(".fav-btn").addEventListener("click", async function(e) {
+        e.stopPropagation();
+        const isCurrent = getFavs().has(this.dataset.fp);
+        if (currentWatch === FAV_WATCH && isCurrent) {
+          if (!confirm("お気に入りから外しますか？")) return;
+        }
+        const on = toggleFav(this.dataset.fp);
+        this.textContent = on ? "★" : "☆";
+        this.classList.toggle("on", on);
+        this.title = on ? "お気に入り解除" : "お気に入りに追加";
+        card.className = "card" + (on ? " is-fav" : "");
+        if (currentWatch === FAV_WATCH) { buildWatchTabs(); applyAll(); }
+        else buildWatchTabs();
+        try { await syncFavsToGitHub(getFavs()); }
+        catch(err) { alert("★の保存に失敗しました（GitHub同期エラー）。\n" + err.message + "\n\n⚙設定からPATを確認してください。"); }
+      });
+      card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        if (!confirm("このクルマを非表示にしますか？")) return;
+        const fp = this.dataset.fp;
+        dismissCard(fp);
+        allListings = allListings.filter(x => x.fingerprint !== fp);
+        cospaScores = computeCospaScores();
+        buildWatchTabs();
+        applyAll();
+      });
+      if (isSuspicious) {
+        card.querySelector(".split-btn").addEventListener("click", function(e) {
+          e.stopPropagation();
+          addSplit(l.merged_fps);
+          // 即時展開: 1枚を2枚に差し替え
+          const idx = allListings.findIndex(x => x.fingerprint === fp);
+          if (idx !== -1) {
+            const orig = allListings[idx];
+            const csCard = { ...orig, sources: { carsensor: orig.sources.carsensor }, match_suspicious: false, merged_fps: null };
+            const gooCard = { ...orig, fingerprint: orig.merged_fps[1], sources: { goonet: orig.sources.goonet }, match_suspicious: false, merged_fps: null };
+            allListings.splice(idx, 1, csCard, gooCard);
+          }
+          cospaScores = computeCospaScores();
+          buildWatchTabs();
+          applyAll();
+        });
+      }
+    } else {
+      card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
+        e.stopPropagation();
+        dismissCard(this.dataset.fp);
+        soldListings = soldListings.filter(x => x.fingerprint !== this.dataset.fp);
+        buildWatchTabs();
+        applyAll();
+      });
     }
-    for l in merged:
-        prev = prev_prices.get(l["fingerprint"])
-        if prev is not None and l.get("price_man") is not None and prev != l["price_man"]:
-            l["prev_price_man"] = prev
 
-    seen_list: list[str] = load_json(SEEN_FILE, [])
-    seen: set[str] = set(seen_list)
-    # seen.jsonが空 or 旧format（年式_距離）のみ → 移行初回扱いで通知しない
-    first_run = len(seen) == 0 or not any(is_new_format_fp(fp) for fp in seen)
+    grid.appendChild(card);
+  }
+}
 
-    new_listings = [l for l in merged if l["fingerprint"] not in seen]
-    print(f"▶ 新着: {len(new_listings)} 件{'（初回実行のため通知なし）' if first_run else ''}")
+// Popup
+function openPopup(l) {
+  document.getElementById("popupCarName").textContent = l.title;
+  const linksEl = document.getElementById("popupLinks");
+  linksEl.innerHTML = "";
+  const labels = { carsensor: "カーセンサー", goonet: "グーネット" };
+  const cls    = { carsensor: "cs", goonet: "goo" };
+  const icons  = { carsensor: "🔴", goonet: "🟢" };
+  for (const [src, url] of Object.entries(l.sources || {})) {
+    const a = document.createElement("a");
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    a.className = "popup-link " + (cls[src] || "");
+    a.innerHTML = "<span>" + (icons[src] || "🔗") + "</span>" + esc(labels[src] || src) + "で開く ↗";
+    a.addEventListener("click", closePopup);
+    linksEl.appendChild(a);
+  }
+  document.getElementById("popup").classList.add("show");
+}
+function closePopup() { document.getElementById("popup").classList.remove("show"); }
+document.getElementById("popupClose").addEventListener("click", closePopup);
+document.getElementById("popup").addEventListener("click", e => { if (e.target === e.currentTarget) closePopup(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePopup(); });
 
-    # お気に入り×値下がりの通知対象
-    favorites = load_favorites()
-    price_changed_favs = [
-        l for l in merged
-        if "prev_price_man" in l
-        and l.get("price_man") is not None
-        and l["prev_price_man"] > l["price_man"]
-        and l["fingerprint"] in favorites
-        and not first_run
-    ]
-    if price_changed_favs:
-        print(f"▶ ★値下がり: {len(price_changed_favs)} 件")
+// Load
+async function loadData() {
+  migrateStorage();
+  const loading = document.getElementById("loading");
+  loading.style.display = "block";
+  loading.textContent = "データを読み込んでいます…";
+  document.getElementById("grid").innerHTML = "";
+  document.getElementById("empty").style.display = "none";
+  document.getElementById("countBar").textContent = "";
 
-    save_json(DATA_FILE, {
-        "updated_at": datetime.now().isoformat(),
-        "total": len(merged),
-        "listings": merged,
-    })
+  try {
+    const ts = "?t=" + Date.now();
+    const [cfgRes, datRes] = await Promise.all([
+      fetch(CONFIG_URL + ts),
+      fetch(DATA_URL + ts)
+    ]);
+    if (cfgRes.ok) { const cfg = await cfgRes.json(); watches = cfg.watches || []; }
+    if (!datRes.ok) throw new Error("HTTP " + datRes.status);
+    const data = await datRes.json();
+    const dismissed = getDismissed();
+    // split指定されたマージ済みカードを2枚に展開
+    const expanded = [];
+    for (const l of (data.listings || [])) {
+      if (l.merged_fps && isSplit(l.merged_fps)) {
+        // carsensorとgoonetをそれぞれ独立したカードに
+        expanded.push({ ...l, sources: { carsensor: l.sources.carsensor }, match_suspicious: false, merged_fps: null });
+        if (l.sources.goonet) {
+          expanded.push({ ...l, fingerprint: l.merged_fps[1], sources: { goonet: l.sources.goonet }, match_suspicious: false, merged_fps: null });
+        }
+      } else {
+        expanded.push(l);
+      }
+    }
+    allListings = expanded.filter(l => !dismissed.has(l.fingerprint));
 
-    seen.update(l["fingerprint"] for l in merged)
-    save_json(SEEN_FILE, sorted(seen))
+    // seen cache 更新
+    const cache = getSeenCache();
+    for (const l of allListings) {
+      cache[l.fingerprint] = {
+        title: l.title, year: l.year, distance_km: l.distance_km,
+        price_man: l.price_man, sources: l.sources, source: l.source,
+        url: l.url, watch_name: l.watch_name, fingerprint: l.fingerprint
+      };
+    }
+    saveSeenCache(cache);
 
-    if (new_listings or price_changed_favs) and not first_run:
-        send_ntfy(new_listings, price_changed_favs)
+    // 売却済み検出
+    const activeFps = new Set(allListings.map(l => l.fingerprint));
+    soldListings = Object.values(cache)
+      .filter(l => {
+        if (activeFps.has(l.fingerprint)) return false;
+        if (dismissed.has(l.fingerprint)) return false;
+        return true;
+      })
+      .map(l => ({ ...l, sold: true }));
 
-    print(f"=== Done: {datetime.now().isoformat()} ===")
+    const upd = data.updated_at ? new Date(data.updated_at).toLocaleString("ja-JP") : "—";
+    document.getElementById("updated").textContent =
+      "最終更新: " + upd + "（全" + (data.total || allListings.length) + "件）";
 
-if __name__ == "__main__":
-    main()
+    cospaScores = computeCospaScores();
+    buildWatchTabs();
+    updateCondBar();
+    updateMotaLink();
+    updateSortBtns();
+    loading.style.display = "none";
+    applyAll();
+  } catch(err) {
+    loading.textContent = "⚠ 読み込み失敗: " + err.message;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
