@@ -93,6 +93,8 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 
 #empty { display: none; padding: 60px 20px; text-align: center; color: var(--muted); }
 #loading { padding: 60px 20px; text-align: center; color: var(--muted); }
+.section-header { grid-column: 1 / -1; padding: 14px 20px 4px; font-size: 0.78rem; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; border-top: 1px solid var(--border); margin-top: 4px; }
+.section-header.first { border-top: none; margin-top: 0; }
 
 .popup-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 200; align-items: center; justify-content: center; padding: 16px; }
 .popup-overlay.show { display: flex; }
@@ -402,10 +404,10 @@ function applyAll() {
     active = allListings.filter(l => l.watch_name === currentWatch);
     sold   = soldListings.filter(l => l.watch_name === currentWatch);
   }
-  const combined = [...sortList(active), ...sortList(sold)];
 
   const empty = document.getElementById("empty");
-  if (combined.length === 0) {
+  const total = active.length + sold.length;
+  if (total === 0) {
     empty.style.display = "block";
     empty.innerHTML = currentWatch === FAV_WATCH
       ? '<div style="font-size:2rem;margin-bottom:10px">☆</div><div style="color:var(--muted);font-size:0.9rem">お気に入りはまだありません<br>カードの ☆ をタップして追加しましょう</div>'
@@ -417,14 +419,50 @@ function applyAll() {
   document.getElementById("countBar").textContent =
     active.length + "件" + (sold.length > 0 ? "　売却済 " + sold.length + "件" : "");
 
-  renderCards(combined);
+  if (currentWatch === FAV_WATCH) {
+    renderFavGrouped(active, sold);
+  } else {
+    renderCards([...sortList(active), ...sortList(sold)]);
+  }
+}
+
+function renderFavGrouped(active, sold) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  // watches の順番でグループ化（登録外watchはまとめて末尾）
+  const watchOrder = watches.map(w => w.name);
+  const groupedActive = {}, groupedSold = {};
+  for (const l of active) { const k = l.watch_name || "その他"; (groupedActive[k] = groupedActive[k] || []).push(l); }
+  for (const l of sold)   { const k = l.watch_name || "その他"; (groupedSold[k]   = groupedSold[k]   || []).push(l); }
+  const allKeys = new Set([...Object.keys(groupedActive), ...Object.keys(groupedSold)]);
+  const keys = [
+    ...watchOrder.filter(k => allKeys.has(k)),
+    ...[...allKeys].filter(k => !watchOrder.includes(k)),
+  ];
+  let first = true;
+  for (const key of keys) {
+    const header = document.createElement("div");
+    header.className = "section-header" + (first ? " first" : "");
+    header.textContent = key;
+    grid.appendChild(header);
+    const sectionListings = [
+      ...sortList(groupedActive[key] || []),
+      ...sortList(groupedSold[key]   || []),
+    ];
+    renderCardsInto(grid, sectionListings);
+    first = false;
+  }
 }
 
 // Render
 function renderCards(listings) {
   const grid = document.getElementById("grid");
-  const favs = getFavs();
   grid.innerHTML = "";
+  renderCardsInto(grid, listings);
+}
+
+function renderCardsInto(grid, listings) {
+  const favs = getFavs();
 
   for (const l of listings) {
     const fp      = l.fingerprint;
@@ -482,6 +520,10 @@ function renderCards(listings) {
       });
       card.querySelector(".fav-btn").addEventListener("click", async function(e) {
         e.stopPropagation();
+        const isCurrent = getFavs().has(this.dataset.fp);
+        if (currentWatch === FAV_WATCH && isCurrent) {
+          if (!confirm("お気に入りから外しますか？")) return;
+        }
         const on = toggleFav(this.dataset.fp);
         this.textContent = on ? "★" : "☆";
         this.classList.toggle("on", on);
