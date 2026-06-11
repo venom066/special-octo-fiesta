@@ -57,8 +57,8 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 4px 16px rgba(74,144,226,.12); }
 .card.is-fav { border-color: rgba(243,156,18,.45); }
 .card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.14); }
-.card.is-sold { opacity: 0.42; cursor: default; filter: grayscale(0.45); }
-.card.is-sold:hover { transform: none; border-color: var(--border); box-shadow: none; }
+.card.is-sold { opacity: 0.42; filter: grayscale(0.45); }
+.card.is-sold:hover { border-color: var(--border); box-shadow: none; }
 
 .multi-badge { position: absolute; top: -8px; right: 50px; background: var(--surface2); color: var(--muted); border: 1px solid var(--border); font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
 .sold-badge { position: absolute; top: -8px; left: 12px; background: #555870; color: #aaa; font-size: 0.63rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; letter-spacing: .05em; }
@@ -645,6 +645,11 @@ function renderCardsInto(grid, listings) {
         });
       }
     } else {
+      card.addEventListener("click", e => {
+        if (e.target.closest(".dismiss-btn")) return;
+        const url = sources.goonet || sources.carsensor || sources[srcKeys[0]];
+        if (url) window.open(url, "_blank", "noopener");
+      });
       card.querySelector(".dismiss-btn").addEventListener("click", function(e) {
         e.stopPropagation();
         dismissCard(this.dataset.fp);
