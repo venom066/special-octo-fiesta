@@ -160,6 +160,7 @@ header { padding: 10px 14px; }
     <button class="sort-btn" data-sort="year">年式 ↓</button>
     <button class="sort-btn" data-sort="dist">走行 ↑</button>
   </div>
+  <button id="superOnlyBtn" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;color:var(--muted);cursor:pointer;font-size:0.75rem;padding:4px 10px;transition:all .15s;white-space:nowrap">⭐ 超お気のみ</button>
   <a id="motaLink" href="#" target="_blank" rel="noopener" class="mota-link-btn" style="display:none">
     <span class="source-dot dot-mota"></span>MOTAで確認 ↗
   </a>
@@ -223,7 +224,8 @@ let watches      = [];
 let currentWatch = FAV_WATCH;
 let sortKey      = "price";
 let sortDir      = "asc";
-let cospaScores  = {}; // fp -> {rank, total, avgPriceDiff}
+let cospaScores  = {}; // fp -> {rank, total, priceDiff}
+let showSuperOnly = false;
 
 // Favorites
 function getFavs() {
@@ -389,6 +391,7 @@ function buildWatchTabs() {
       buildWatchTabs();
       updateCondBar();
       updateMotaLink();
+      updateSuperOnlyBtn();
       applyAll();
     });
     el.appendChild(btn);
@@ -428,6 +431,21 @@ function updateMotaLink() {
   if (w && w.mota_url) { link.href = w.mota_url; link.style.display = "inline-flex"; }
   else { link.style.display = "none"; }
 }
+
+function updateSuperOnlyBtn() {
+  const btn = document.getElementById("superOnlyBtn");
+  if (currentWatch !== FAV_WATCH) { btn.style.display = "none"; return; }
+  btn.style.display = "inline-block";
+  btn.style.borderColor = showSuperOnly ? "#e74c3c" : "var(--border)";
+  btn.style.color = showSuperOnly ? "#e74c3c" : "var(--muted)";
+  btn.style.background = showSuperOnly ? "rgba(231,76,60,.1)" : "none";
+}
+
+document.getElementById("superOnlyBtn").addEventListener("click", function() {
+  showSuperOnly = !showSuperOnly;
+  updateSuperOnlyBtn();
+  applyAll();
+});
 
 // Sort
 const SORT_LABELS   = { price: "価格", year: "年式", dist: "走行" };
@@ -572,11 +590,17 @@ function sortList(list) {
 // Apply
 function applyAll() {
   const favs = getFavs();
+  const superFavsSet = getSuperFavs();
   let active, sold;
   if (currentWatch === FAV_WATCH) {
     active = allListings.filter(l => favs.has(l.fingerprint));
     sold   = soldListings.filter(l => favs.has(l.fingerprint));
+    if (showSuperOnly) {
+      active = active.filter(l => superFavsSet.has(l.fingerprint));
+      sold   = sold.filter(l => superFavsSet.has(l.fingerprint));
+    }
   } else {
+    showSuperOnly = false; // 他タブに移ったらリセット
     active = allListings.filter(l => l.watch_name === currentWatch);
     sold   = soldListings.filter(l => l.watch_name === currentWatch);
   }
@@ -1003,6 +1027,7 @@ async function loadData() {
     buildWatchTabs();
     updateCondBar();
     updateMotaLink();
+    updateSuperOnlyBtn();
     updateSortBtns();
     loading.style.display = "none";
     applyAll();
