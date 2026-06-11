@@ -678,9 +678,23 @@ document.getElementById("popupClose").addEventListener("click", closePopup);
 document.getElementById("popup").addEventListener("click", e => { if (e.target === e.currentTarget) closePopup(); });
 document.addEventListener("keydown", e => { if (e.key === "Escape") closePopup(); });
 
+// リモートお気に入り同期（読み取り専用・PAT不要）
+async function syncFavsFromRemote() {
+  try {
+    const res = await fetch("./data/favorites.json", { cache: "no-cache" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (!Array.isArray(remote) || remote.length === 0) return;
+    const local = getFavs();
+    const merged = new Set([...local, ...remote]);
+    if (merged.size !== local.size) saveFavs(merged);
+  } catch(e) { /* silent */ }
+}
+
 // Load
 async function loadData() {
   migrateStorage();
+  await syncFavsFromRemote();
   const loading = document.getElementById("loading");
   loading.style.display = "block";
   loading.textContent = "データを読み込んでいます…";
