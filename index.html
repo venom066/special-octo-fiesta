@@ -90,6 +90,14 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .src-badge.cs { background: rgba(231,76,60,.14); color: #e74c3c; }
 .src-badge.goo { background: rgba(39,174,96,.14); color: #2ecc71; }
 .card-arrow { font-size: 0.72rem; color: var(--muted); }
+.card-thumb { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 6px; background: var(--surface2); display: block; margin-bottom: 2px; }
+.cospa-row { display: flex; align-items: center; gap: 8px; font-size: 0.68rem; color: var(--muted); margin-top: -2px; }
+.cospa-rank { font-weight: 700; }
+.cospa-rank.top1 { color: #f1c40f; }
+.cospa-rank.top2 { color: #aaa; }
+.cospa-rank.top3 { color: #cd7f32; }
+.cospa-diff.cheap { color: #2ecc71; }
+.cospa-diff.pricey { color: #e74c3c; }
 
 #empty { display: none; padding: 60px 20px; text-align: center; color: var(--muted); }
 #loading { padding: 60px 20px; text-align: center; color: var(--muted); }
@@ -195,6 +203,7 @@ let watches      = [];
 let currentWatch = FAV_WATCH;
 let sortKey      = "price";
 let sortDir      = "asc";
+let cospaScores  = {}; // fp -> {rank, total, avgPriceDiff}
 
 // Favorites
 function getFavs() {
@@ -383,6 +392,42 @@ document.querySelectorAll(".sort-btn").forEach(btn => {
   });
 });
 
+function computeCospaScores() {
+  const result = {};
+  const byWatch = {};
+  for (const l of allListings) {
+    if (!l.watch_name) continue;
+    (byWatch[l.watch_name] = byWatch[l.watch_name] || []).push(l);
+  }
+  for (const wListings of Object.values(byWatch)) {
+    const vp = wListings.filter(l => l.price_man != null);
+    if (vp.length < 3) continue; // 3件未満は非表示
+    const prices = vp.map(l => l.price_man);
+    const years  = wListings.filter(l => l.year != null).map(l => l.year);
+    const dists  = wListings.filter(l => l.distance_km != null).map(l => l.distance_km);
+    const minP = Math.min(...prices), maxP = Math.max(...prices);
+    const minY = years.length > 1 ? Math.min(...years) : null;
+    const maxY = years.length > 1 ? Math.max(...years) : null;
+    const minD = dists.length > 1 ? Math.min(...dists) : null;
+    const maxD = dists.length > 1 ? Math.max(...dists) : null;
+    const avgP = prices.reduce((a, b) => a + b, 0) / prices.length;
+    const scored = wListings.map(l => {
+      let s = 0, w = 0;
+      if (l.price_man != null && maxP !== minP) { s += (1 - (l.price_man - minP) / (maxP - minP)) * 0.5; w += 0.5; }
+      if (l.year != null && minY != null && maxY !== minY) { s += ((l.year - minY) / (maxY - minY)) * 0.3; w += 0.3; }
+      if (l.distance_km != null && minD != null && maxD !== minD) { s += (1 - (l.distance_km - minD) / (maxD - minD)) * 0.2; w += 0.2; }
+      const score = w > 0 ? s / w : 0;
+      const avgPriceDiff = l.price_man != null ? Math.round(avgP - l.price_man) : null;
+      return { fp: l.fingerprint, score, avgPriceDiff, total: wListings.length };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    scored.forEach((item, i) => {
+      result[item.fp] = { rank: i + 1, total: item.total, avgPriceDiff: item.avgPriceDiff };
+    });
+  }
+  return result;
+}
+
 function sortList(list) {
   return [...list].sort((a, b) => {
     let va, vb;
@@ -477,6 +522,19 @@ function renderCardsInto(grid, listings) {
     const priceDisplay = hasPriceChange
       ? '<span class="price-old">' + esc(String(l.prev_price_man)) + '万円</span> → ' + esc(price)
       : esc(price);
+    const cospa = !isSold ? cospaScores[fp] : null;
+    const cospaHTML = cospa ? (() => {
+      const medals = ['', '🥇', '🥈', '🥉'];
+      const rankCls = cospa.rank <= 3 ? ' top' + cospa.rank : '';
+      const rankLabel = (medals[cospa.rank] || '') + (cospa.rank <= 3 ? '' : '#' + cospa.rank) + '/' + cospa.total + '件';
+      let diffHTML = '';
+      if (cospa.avgPriceDiff != null) {
+        const d = cospa.avgPriceDiff;
+        if (d > 0) diffHTML = '<span class="cospa-diff cheap">avg比 -' + d + '万</span>';
+        else if (d < 0) diffHTML = '<span class="cospa-diff pricey">avg比 +' + Math.abs(d) + '万</span>';
+      }
+      return '<div class="cospa-row"><span class="cospa-rank' + rankCls + '">' + rankLabel + '</span>' + diffHTML + '</div>';
+    })() : '';
 
     const badges = srcKeys.map(s => {
       const label = { carsensor: "カーセンサー", goonet: "グーネット" }[s] || s;
@@ -495,17 +553,20 @@ function renderCardsInto(grid, listings) {
 
     const card = document.createElement("div");
     card.className = "card" + (isSold ? " is-sold" : isFav ? " is-fav" : "");
+    const thumbSrc = l.image_url || (l.sources && Object.values(l.sources).length === 0 ? null : null);
     card.innerHTML =
+      (thumbSrc ? '<img class="card-thumb" src="' + esc(thumbSrc) + '" alt="" loading="lazy" onerror="this.style.display=\'none\'">' : "") +
       (isSold ? '<div class="sold-badge">売却済</div>'
         : hasPriceChange ? '<div class="price-badge">価格更新</div>'
         : isSuspicious ? '<div class="suspicious-badge" title="統合の信頼度が低い。実際に確認してください">⚠ 要確認</div>'
         : isMulti ? '<div class="multi-badge">複数サイト</div>' : "") +
-      '<div class="card-top"><div class="card-title">' + esc(l.title) + "</div>" + actionBtn + "</div>" +
+      '<div class="card-top">' + (currentWatch !== FAV_WATCH ? '<div class="card-title">' + esc(l.title) + "</div>" : "") + actionBtn + "</div>" +
       '<div class="specs">' +
         '<div class="spec-item"><span class="spec-label">年式</span><span class="spec-value">' + esc(String(l.year)) + "年</span></div>" +
         '<div class="spec-item"><span class="spec-label">走行</span><span class="spec-value">' + esc(dist) + "</span></div>" +
         '<div class="spec-item"><span class="spec-label">支払総額</span><span class="spec-value price">' + priceDisplay + "</span></div>" +
       "</div>" +
+      cospaHTML +
       '<div class="card-footer"><div class="card-sources">' + badges + "</div>" +
       (isSold ? "" : '<span class="card-arrow">' + (isMulti ? "選択して開く →" : "詳細を見る →") + "</span>") +
       "</div>";
@@ -540,6 +601,7 @@ function renderCardsInto(grid, listings) {
         const fp = this.dataset.fp;
         dismissCard(fp);
         allListings = allListings.filter(x => x.fingerprint !== fp);
+        cospaScores = computeCospaScores();
         buildWatchTabs();
         applyAll();
       });
@@ -555,6 +617,7 @@ function renderCardsInto(grid, listings) {
             const gooCard = { ...orig, fingerprint: orig.merged_fps[1], sources: { goonet: orig.sources.goonet }, match_suspicious: false, merged_fps: null };
             allListings.splice(idx, 1, csCard, gooCard);
           }
+          cospaScores = computeCospaScores();
           buildWatchTabs();
           applyAll();
         });
@@ -656,6 +719,7 @@ async function loadData() {
     document.getElementById("updated").textContent =
       "最終更新: " + upd + "（全" + (data.total || allListings.length) + "件）";
 
+    cospaScores = computeCospaScores();
     buildWatchTabs();
     updateCondBar();
     updateMotaLink();
