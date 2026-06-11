@@ -69,6 +69,7 @@ def parse_price_man(text: str):
     return int(float(m.group(1))) if m else None
 
 def url_set_param(url: str, key: str, value: str) -> str:
+    """URLの特定パラメータを書き換えて返す"""
     parsed = urlparse(url)
     params = {k: v[0] for k, v in parse_qs(parsed.query, keep_blank_values=True).items()}
     params[key] = value
@@ -95,17 +96,21 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
             break
 
         for item in items:
+            # タイトル（バッジ・注記テキストを除去）
             car_info = item.select_one(".cassetteMain__carInfoContainer")
             if car_info:
+                # バッジ類（保証表示など）を除いた純粋な車名部分を取得
                 for badge in car_info.select(".badge, .cassetteMain__badges, .cassetteMain__label"):
                     badge.decompose()
                 raw = car_info.get_text(" ", strip=True)
+                # 既知のノイズ文字列を除去
                 for noise in ["保証の種類を表示しています", "保証の種類について", "360° 画像付", "オンライン相談可", "車両品質評価書付", "販売店保証", "ディーラー保証"]:
                     raw = raw.replace(noise, "")
                 title = " ".join(raw.split())[:100]
             else:
                 title = ""
 
+            # 年式・走行距離
             year = distance_km = None
             for spec in item.select(".specList__detailBox"):
                 t = spec.get_text(strip=True)
@@ -114,6 +119,7 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                 elif "走行距離" in t:
                     distance_km = parse_distance_km(t)
 
+            # 支払総額
             num_el = item.select_one(".totalPrice__mainPriceNum")
             if num_el:
                 try:
@@ -129,6 +135,7 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
             if price_man == 0:
                 price_man = None
 
+            # 詳細リンク
             link_el = item.select_one('a[href*="/usedcar/detail/"]')
             if link_el:
                 href = link_el.get("href", "")
@@ -149,6 +156,7 @@ def scrape_carsensor(base_url: str, watch_name: str = "") -> list[dict]:
                     "scraped_at": datetime.now().isoformat(),
                 })
 
+        # 次ページ: 「次へ」リンクのhrefを直接使う
         next_btn = soup.select_one(".pager__item--next:not(.pager__item--disabled) a")
         if not next_btn or page >= 10:
             break
@@ -168,6 +176,7 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
     session = requests.Session()
     session.headers.update(HEADERS)
 
+    # offset=0 から開始、limit は URL に含まれていれば使う（デフォルト50）
     parsed_base = urlparse(base_url)
     base_params = {k: v[0] for k, v in parse_qs(parsed_base.query, keep_blank_values=True).items()}
     limit = int(base_params.get("limit", "50"))
@@ -235,6 +244,7 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
                     "scraped_at": datetime.now().isoformat(),
                 })
 
+        # 次ページ確認
         next_link = soup.select_one(".pager_next a, .pager a.next")
         if not next_link or page >= 10:
             break
@@ -251,21 +261,39 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
 def merge_listings(all_listings: list[dict]) -> list[dict]:
     merged: dict[str, dict] = {}
     for listing in all_listings:
-        fp = listing["fingerprint"]
-        if fp not in merged:
-            merged[fp] = {
+        key = f"{listing['watch_name']}_{listing['fingerprint']}"
+
+        if key not in merged:
+            merged[key] = {
                 **listing,
                 "sources": {listing["source"]: listing["url"]},
             }
         else:
-            merged[fp]["sources"][listing["source"]] = listing["url"]
-            if not merged[fp].get("watch_name") and listing.get("watch_name"):
-                merged[fp]["watch_name"] = listing["watch_name"]
+            src = listing["source"]
+            if src not in merged[key]["sources"]:
+                # 別ソース → 追加
+                merged[key]["sources"][src] = listing["url"]
+            else:
+                # 同ソース衝突 → サフィックスで別カード
+                suffix = 2
+                while f"{key}_{suffix}" in merged:
+                    suffix += 1
+                new_key = f"{key}_{suffix}"
+                new_fp  = f"{listing['fingerprint']}_{suffix}"
+                merged[new_key] = {
+                    **listing,
+                    "fingerprint": new_fp,
+                    "sources": {src: listing["url"]},
+                }
+                continue
+
+            # 価格は安い方を採用
             if listing["price_man"] and (
-                not merged[fp]["price_man"]
-                or listing["price_man"] < merged[fp]["price_man"]
+                not merged[key]["price_man"]
+                or listing["price_man"] < merged[key]["price_man"]
             ):
-                merged[fp]["price_man"] = listing["price_man"]
+                merged[key]["price_man"] = listing["price_man"]
+
     return list(merged.values())
 
 # ─────────────────────────────
