@@ -732,6 +732,7 @@ function renderCardsInto(grid, listings) {
 
     const card = document.createElement("div");
     card.className = "card" + (isSold ? " is-sold" : isSuperFav ? " is-super-fav" : isFav ? " is-fav" : "");
+    card.dataset.fp = fp;
     const customImgs = getCustomImgs();
     const thumbSrc = customImgs[fp] || l.image_url || null;
     const isCustomImg = !!customImgs[fp];
