@@ -305,16 +305,11 @@ def scrape_goonet(base_url: str, watch_name: str = "") -> list[dict]:
 # 同一車両判定・クロスサイト突合
 # ─────────────────────────────
 def is_same_car(a: dict, b: dict) -> bool:
-    """カーセンサー/グーネット間で同一車両かどうかを判定"""
+    """カーセンサー/グーネット間で同一車両かどうかを判定（年式+距離のみ）"""
     if a["year"] != b["year"]:
         return False
     if abs(a["distance_km"] - b["distance_km"]) > 1000:
         return False
-    # 両方価格あり → ±1万で比較
-    if a["price_man"] and b["price_man"]:
-        if abs(a["price_man"] - b["price_man"]) > 1:
-            return False
-    # 片方または両方がnull → 年式・距離だけで突合
     return True
 
 def merge_listings(all_listings: list[dict]) -> list[dict]:
@@ -358,8 +353,7 @@ def merge_listings(all_listings: list[dict]) -> list[dict]:
                     )
                     merged["match_suspicious"] = (
                         dist_diff > 500
-                        or price_diff is None
-                        or price_diff >= 1
+                        or (price_diff is not None and price_diff > 10)
                     )
                     # split用に両IDを記録
                     merged["merged_fps"] = [cs["fingerprint"], goo["fingerprint"]]
@@ -397,7 +391,7 @@ def send_ntfy(new_listings: list[dict], price_changed_favs: list[dict] | None = 
         count = len(new_listings)
         sections.append(f"【新着 {count}件】")
         for l in new_listings[:5]:
-            dist = f"{l['distance_km'] // 10_000:.1f}万km" if l["distance_km"] else ""
+            dist = f"{l['distance_km'] / 10_000:.1f}万km" if l["distance_km"] else ""
             price = f"{l['price_man']}万円" if l["price_man"] else "価格不明"
             srcs = "/".join(l.get("sources", {l["source"]: ""}).keys())
             sections.append(f"{l['year']}年 {dist} {price} [{srcs}] {l['title'][:20]}")
@@ -409,7 +403,7 @@ def send_ntfy(new_listings: list[dict], price_changed_favs: list[dict] | None = 
             sections.append("")
         sections.append(f"【★値下がり {len(price_changed_favs)}件】")
         for l in price_changed_favs[:5]:
-            dist = f"{l['distance_km'] // 10_000:.1f}万km" if l["distance_km"] else ""
+            dist = f"{l['distance_km'] / 10_000:.1f}万km" if l["distance_km"] else ""
             sections.append(f"{l['year']}年 {dist} {l['prev_price_man']}万→{l['price_man']}万円 {l['title'][:20]}")
         if len(price_changed_favs) > 5:
             sections.append(f"…他{len(price_changed_favs) - 5}件")
@@ -430,7 +424,9 @@ def send_ntfy(new_listings: list[dict], price_changed_favs: list[dict] | None = 
         "priority": 3,
     }
     if GITHUB_PAGES_URL:
-        payload["click"] = GITHUB_PAGES_URL
+        all_fps = [l["fingerprint"] for l in new_listings] + [l["fingerprint"] for l in price_changed_favs]
+        fps_param = ",".join(all_fps[:10])
+        payload["click"] = f"{GITHUB_PAGES_URL}?fps={fps_param}" if fps_param else GITHUB_PAGES_URL
 
     try:
         resp = requests.post(
