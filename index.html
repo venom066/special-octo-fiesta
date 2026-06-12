@@ -59,6 +59,8 @@ header h1 { font-size: 1.1rem; font-weight: 700; flex: 1; min-width: 150px; }
 .card.is-fav:hover { border-color: var(--fav); box-shadow: 0 4px 16px rgba(243,156,18,.14); }
 .card.is-super-fav { background: linear-gradient(160deg, rgba(231,76,60,.12), rgba(231,76,60,.05)); border-color: rgba(231,76,60,.5); }
 .card.is-super-fav:hover { border-color: #e74c3c; box-shadow: 0 4px 20px rgba(231,76,60,.2); }
+@keyframes notif-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(74,144,226,.6); } 50% { box-shadow: 0 0 0 8px rgba(74,144,226,0); } }
+.card.is-notif-highlight { border-color: var(--accent) !important; animation: notif-pulse 1s ease 2; }
 /* super fav toggle switch */
 .super-fav-btn { position: relative; display: inline-block; width: 38px; height: 21px; background: var(--surface2); border: 1px solid var(--border); border-radius: 11px; cursor: pointer; margin-left: auto; flex-shrink: 0; padding: 0; transition: background .2s, border-color .2s; }
 .super-fav-btn::before { content: ''; position: absolute; width: 15px; height: 15px; border-radius: 50%; background: var(--muted); top: 2px; left: 2px; transition: transform .2s, background .2s; }
@@ -217,6 +219,8 @@ const REPO             = "venom066/special-octo-fiesta";
 const FAVS_PATH        = "data/favorites.json";
 const SUPER_FAVS_PATH  = "data/super_favorites.json";
 const CUSTOM_IMGS_PATH = "data/custom_images.json";
+const DISMISSED_PATH   = "data/dismissed.json";
+const SPLIT_PATH       = "data/split.json";
 
 let allListings  = [];
 let soldListings = [];
@@ -338,7 +342,14 @@ function getSplit() {
   try { return new Set(JSON.parse(localStorage.getItem(SPLIT_KEY) || "[]")); }
   catch { return new Set(); }
 }
-function saveSplit(s) { localStorage.setItem(SPLIT_KEY, JSON.stringify([...s])); }
+let _splitSyncTimer = null;
+function debouncedSyncSplit() {
+  clearTimeout(_splitSyncTimer);
+  _splitSyncTimer = setTimeout(() => {
+    syncSplitToGitHub(getSplit()).catch(err => console.warn("GitHub split sync:", err.message));
+  }, 1200);
+}
+function saveSplit(s) { localStorage.setItem(SPLIT_KEY, JSON.stringify([...s])); debouncedSyncSplit(); }
 function splitKey(fps) { return [...fps].sort().join("||"); }
 function addSplit(fps) {
   const s = getSplit(); s.add(splitKey(fps)); saveSplit(s);
@@ -360,7 +371,14 @@ function getDismissed() {
   try { return new Set(JSON.parse(localStorage.getItem(DISMISSED_KEY) || "[]")); }
   catch { return new Set(); }
 }
-function saveDismissed(s) { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...s])); }
+let _dismissedSyncTimer = null;
+function debouncedSyncDismissed() {
+  clearTimeout(_dismissedSyncTimer);
+  _dismissedSyncTimer = setTimeout(() => {
+    syncDismissedToGitHub(getDismissed()).catch(err => console.warn("GitHub dismissed sync:", err.message));
+  }, 1200);
+}
+function saveDismissed(s) { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...s])); debouncedSyncDismissed(); }
 function dismissCard(fp) {
   const d = getDismissed(); d.add(fp); saveDismissed(d);
   const c = getSeenCache(); delete c[fp]; saveSeenCache(c);
@@ -947,6 +965,76 @@ async function syncCustomImgsFromRemote() {
   } catch(e) { /* silent */ }
 }
 
+// 割る GitHub同期
+async function syncSplitToGitHub(sSet) {
+  const pat = localStorage.getItem(GITHUB_PAT_KEY);
+  if (!pat) return;
+  const headers = { "Authorization": "token " + pat, "Accept": "application/vnd.github.v3+json" };
+  let sha = null;
+  const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + SPLIT_PATH, { headers });
+  if (getRes.ok) { sha = (await getRes.json()).sha; }
+  else if (getRes.status !== 404) { throw new Error("GitHub API " + getRes.status); }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify([...sSet], null, 2))));
+  const body = { message: "update split", content };
+  if (sha) body.sha = sha;
+  const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + SPLIT_PATH, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err.message || "GitHub API " + putRes.status);
+  }
+}
+
+async function syncSplitFromRemote() {
+  try {
+    const res = await fetch("./data/split.json", { cache: "no-cache" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (!Array.isArray(remote) || remote.length === 0) return;
+    const local = getSplit();
+    const merged = new Set([...local, ...remote]);
+    if (merged.size !== local.size) localStorage.setItem(SPLIT_KEY, JSON.stringify([...merged]));
+  } catch(e) { /* silent */ }
+}
+
+// 非表示 GitHub同期
+async function syncDismissedToGitHub(dSet) {
+  const pat = localStorage.getItem(GITHUB_PAT_KEY);
+  if (!pat) return;
+  const headers = { "Authorization": "token " + pat, "Accept": "application/vnd.github.v3+json" };
+  let sha = null;
+  const getRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + DISMISSED_PATH, { headers });
+  if (getRes.ok) { sha = (await getRes.json()).sha; }
+  else if (getRes.status !== 404) { throw new Error("GitHub API " + getRes.status); }
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify([...dSet], null, 2))));
+  const body = { message: "update dismissed", content };
+  if (sha) body.sha = sha;
+  const putRes = await fetch("https://api.github.com/repos/" + REPO + "/contents/" + DISMISSED_PATH, {
+    method: "PUT",
+    headers: { ...headers, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!putRes.ok) {
+    const err = await putRes.json().catch(() => ({}));
+    throw new Error(err.message || "GitHub API " + putRes.status);
+  }
+}
+
+async function syncDismissedFromRemote() {
+  try {
+    const res = await fetch("./data/dismissed.json", { cache: "no-cache" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (!Array.isArray(remote) || remote.length === 0) return;
+    const local = getDismissed();
+    const merged = new Set([...local, ...remote]);
+    if (merged.size !== local.size) localStorage.setItem(DISMISSED_KEY, JSON.stringify([...merged]));
+  } catch(e) { /* silent */ }
+}
+
 // リモートお気に入り同期（読み取り専用・PAT不要）
 async function syncFavsFromRemote() {
   try {
@@ -966,6 +1054,8 @@ async function loadData() {
   await syncFavsFromRemote();
   await syncSuperFavsFromRemote();
   await syncCustomImgsFromRemote();
+  await syncDismissedFromRemote();
+  await syncSplitFromRemote();
   const loading = document.getElementById("loading");
   loading.style.display = "block";
   loading.textContent = "データを読み込んでいます…";
@@ -1031,9 +1121,40 @@ async function loadData() {
     updateSortBtns();
     loading.style.display = "none";
     applyAll();
+    handleNotifDeepLink();
   } catch(err) {
     loading.textContent = "⚠ 読み込み失敗: " + err.message;
   }
+}
+
+function handleNotifDeepLink() {
+  const params = new URLSearchParams(location.search);
+  const fpsParam = params.get("fps");
+  if (!fpsParam) return;
+  const targetFps = new Set(fpsParam.split(",").filter(Boolean));
+  if (targetFps.size === 0) return;
+  history.replaceState(null, "", location.pathname);
+  // 対象fpがどのウォッチに属するか特定してタブ切り替え
+  const firstListing = allListings.find(l => targetFps.has(l.fingerprint));
+  if (firstListing) {
+    const watchName = firstListing.watch_name;
+    // お気に入りに入ってればお気に入りタブ、なければそのウォッチタブ
+    if (getFavs().has(firstListing.fingerprint)) {
+      if (currentWatch !== FAV_WATCH) { currentWatch = FAV_WATCH; buildWatchTabs(); applyAll(); }
+    } else if (currentWatch !== watchName) {
+      currentWatch = watchName; buildWatchTabs(); applyAll();
+    }
+  }
+  requestAnimationFrame(() => {
+    let firstCard = null;
+    document.querySelectorAll(".card[data-fp]").forEach(card => {
+      if (targetFps.has(card.dataset.fp)) {
+        card.classList.add("is-notif-highlight");
+        if (!firstCard) firstCard = card;
+      }
+    });
+    if (firstCard) firstCard.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 }
 
 loadData();
