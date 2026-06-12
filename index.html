@@ -1145,7 +1145,7 @@ function handleNotifDeepLink() {
       currentWatch = watchName; buildWatchTabs(); applyAll();
     }
   }
-  requestAnimationFrame(() => {
+  setTimeout(() => {
     let firstCard = null;
     document.querySelectorAll(".card[data-fp]").forEach(card => {
       if (targetFps.has(card.dataset.fp)) {
@@ -1154,7 +1154,7 @@ function handleNotifDeepLink() {
       }
     });
     if (firstCard) firstCard.scrollIntoView({ behavior: "smooth", block: "center" });
-  });
+  }, 100);
 }
 
 loadData();
