@@ -64,6 +64,29 @@
 .tag-ninniku{background:#fff8e1;color:#c45c00;}
 .tag-komatsu{background:#e0f2f1;color:#00695c;}
 .tag-shinhata{background:#ede0d4;color:#5d3a1a;}
+#water-btn{display:none!important;}
+.veggie-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center;}
+.veggie-overlay.show{display:flex;}
+.veggie-modal{background:#fff;border-radius:14px;padding:22px 24px;max-width:400px;width:92%;max-height:85vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+.veggie-modal-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.veggie-modal-hd h3{margin:0;font-size:1rem;}
+.modal-x{background:none;border:none;font-size:1.2rem;cursor:pointer;padding:4px 8px;border-radius:4px;color:#555;}
+.modal-x:hover{background:#f0f0f0;}
+.veggie-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px;}
+.veggie-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;font-size:.87rem;border:1.5px solid transparent;}
+.veggie-row:hover{border-color:#ccc;}
+.veggie-row input{cursor:pointer;width:15px;height:15px;flex-shrink:0;}
+.veggie-modal-ft{display:flex;gap:8px;padding-top:10px;border-top:1px solid #eee;}
+.veggie-modal-ft button{font-size:.82rem;padding:5px 14px;border-radius:6px;cursor:pointer;border:1px solid #ddd;background:#f8f8f8;}
+.veggie-modal-ft button:last-child{margin-left:auto;}
+.veggie-modal-ft button:hover{background:#efefef;}
+.gear-btn{float:right;background:none;border:none;font-size:1rem;cursor:pointer;padding:4px 8px;border-radius:6px;margin-top:4px;}
+.gear-btn:hover{background:rgba(0,0,0,.07);}
+.tf-add-btn{background:#f0f7ff;border:1.5px dashed #6aabde;color:#3377aa;border-radius:20px;padding:4px 12px;font-size:.8rem;cursor:pointer;margin-left:4px;}
+.tf-add-btn:hover{background:#ddeeff;}
+.water-cb-wrap{position:fixed;bottom:20px;right:20px;background:#fff;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.15);padding:9px 14px;z-index:200;display:flex;align-items:center;gap:8px;font-size:.85rem;cursor:pointer;user-select:none;}
+.water-cb-wrap:hover{box-shadow:0 3px 16px rgba(0,0,0,.2);}
+.water-cb-wrap input{cursor:pointer;width:14px;height:14px;}
 .tl-body{font-size:.88em;line-height:1.5;color:#333;}
 .tl-body strong{color:#222;}
 .tl-checked .tl-tag,.tl-checked .tl-body{opacity:.4;text-decoration:line-through;}.tl-rec{font-size:.72em;color:#4a90d9;background:#e8f4fd;border-radius:10px;padding:1px 6px;margin-left:4px;vertical-align:middle;font-weight:normal;}.water-btn{font-size:.8em;border:1px solid #90caf9;background:#e3f2fd;color:#1565c0;border-radius:14px;padding:3px 10px;cursor:pointer;white-space:nowrap;}.water-btn.hidden-mode{background:#f5f5f5;color:#aaa;border-color:#ddd;}
@@ -75,7 +98,7 @@
   <a class="nav-link" href="./index.html">← 中古車ウォッチャー</a>
 </div>
 
-<h1>🌱 家庭菜園ログ</h1>
+<h1>🌱 家庭菜園ログ<button class="gear-btn" onclick="openVeggieModal()" title="野菜の管理">⚙️</button></h1>
 <div class="tab-bar">
   <button class="tab-btn active" id="tabbtn-overview" onclick="switchTab('overview')">概要</button>
   <button class="tab-btn" id="tabbtn-timeline" onclick="switchTab('timeline')">タイムライン</button>
@@ -617,14 +640,90 @@ function filterTL(btn,tag){
   }
 
   loadLogs();
+
+// ==== 野菜管理モーダル ====
+const VEGGIES_ALL=[
+  {tag:'kyuri',label:'キュウリ'},{tag:'nasu',label:'ナス'},{tag:'okura',label:'オクラ'},
+  {tag:'piman',label:'ピーマン'},{tag:'basil',label:'バジル'},{tag:'shiso',label:'シソ'},
+  {tag:'daikon',label:'ダイコン'},{tag:'broc',label:'ブロッコリー'},{tag:'cab',label:'キャベツ'},
+  {tag:'ninniku',label:'ニンニク'},{tag:'komatsu',label:'コマツナ'},{tag:'shinhata',label:'新畑準備'},
+];
+let _actVeg=new Set(JSON.parse(localStorage.getItem('g_act_veg')||'null')||VEGGIES_ALL.map(v=>v.tag));
+function _saveVeg(){localStorage.setItem('g_act_veg',JSON.stringify([..._actVeg]));}
+function openVeggieModal(){
+  const grid=document.querySelector('#veggie-grid');
+  grid.innerHTML=VEGGIES_ALL.map(v=>`<label class="veggie-row tag-${v.tag}"><input type="checkbox" value="${v.tag}" ${_actVeg.has(v.tag)?'checked':''} onchange="toggleVeggieItem(this)">${v.label}</label>`).join('');
+  document.querySelector('#veggie-overlay').classList.add('show');
+}
+function closeVeggieModal(){document.querySelector('#veggie-overlay').classList.remove('show');}
+function toggleVeggieItem(cb){
+  if(cb.checked)_actVeg.add(cb.value); else _actVeg.delete(cb.value);
+  _saveVeg(); applyVeggieFilter();
+}
+function selectAllVeggies(){
+  VEGGIES_ALL.forEach(v=>_actVeg.add(v.tag)); _saveVeg();
+  document.querySelectorAll('#veggie-grid input').forEach(cb=>cb.checked=true);
+  applyVeggieFilter();
+}
+function clearAllVeggies(){
+  _actVeg.clear(); _saveVeg();
+  document.querySelectorAll('#veggie-grid input').forEach(cb=>cb.checked=false);
+  applyVeggieFilter();
+}
+function applyVeggieFilter(){
+  const tlb=document.querySelector('#tl-body');
+  if(!tlb)return;
+  let lastDate=null,lastHasVis=false;
+  [...tlb.children].forEach(el=>{
+    if(el.classList.contains('tl-date')){
+      if(lastDate)lastDate.style.display=lastHasVis?'':'none';
+      lastDate=el; lastHasVis=false;
+    } else if(el.classList.contains('tl-item')){
+      const sp=el.querySelector('.tl-tag');
+      if(!sp){lastHasVis=true;return;}
+      const cls=[...sp.classList].find(c=>c.startsWith('tag-'));
+      const tag=cls?cls.replace('tag-',''):null;
+      const hide=tag&&!_actVeg.has(tag);
+      el.style.display=hide?'none':'';
+      if(!hide)lastHasVis=true;
+    }
+  });
+  if(lastDate)lastDate.style.display=lastHasVis?'':'none';
+}
+function toggleWaterCb(cb){
+  const btn=document.querySelector('#water-btn');
+  const isShowing=btn&&btn.textContent.includes('非表示');
+  if(cb.checked!==isShowing)toggleWater();
+}
+(function(){
+  const orig=renderTimeline;
+  renderTimeline=function(a,b){orig.call(this,a,b);applyVeggieFilter();};
+})();
+setTimeout(applyVeggieFilter,200);
 </script>
 </div><!-- /tab-overview -->
 <div id="tab-timeline" style="display:none">
 <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
-<div class="tag-filter" style="margin-bottom:0"><button class="tf-btn active" onclick="filterTL(this,'all')">すべて</button><button class="tf-btn" onclick="filterTL(this,'nasu')">ナス</button><button class="tf-btn" onclick="filterTL(this,'kyuri')">キュウリ</button><button class="tf-btn" onclick="filterTL(this,'okura')">オクラ</button><button class="tf-btn" onclick="filterTL(this,'piman')">ピーマン</button><button class="tf-btn" onclick="filterTL(this,'basil')">バジル</button><button class="tf-btn" onclick="filterTL(this,'shiso')">シソ</button><button class="tf-btn" onclick="filterTL(this,'daikon')">ダイコン</button><button class="tf-btn" onclick="filterTL(this,'broc')">ブロッコリー</button><button class="tf-btn" onclick="filterTL(this,'cab')">キャベツ</button><button class="tf-btn" onclick="filterTL(this,'ninniku')">ニンニク</button><button class="tf-btn" onclick="filterTL(this,'komatsu')">コマツナ</button></div>
+<div class="tag-filter" style="margin-bottom:0"><button class="tf-btn active" onclick="filterTL(this,'all')">すべて</button><button class="tf-btn" onclick="filterTL(this,'nasu')">ナス</button><button class="tf-btn" onclick="filterTL(this,'kyuri')">キュウリ</button><button class="tf-btn" onclick="filterTL(this,'okura')">オクラ</button><button class="tf-btn" onclick="filterTL(this,'piman')">ピーマン</button><button class="tf-btn" onclick="filterTL(this,'basil')">バジル</button><button class="tf-btn" onclick="filterTL(this,'shiso')">シソ</button><button class="tf-btn" onclick="filterTL(this,'daikon')">ダイコン</button><button class="tf-btn" onclick="filterTL(this,'broc')">ブロッコリー</button><button class="tf-btn" onclick="filterTL(this,'cab')">キャベツ</button><button class="tf-btn" onclick="filterTL(this,'ninniku')">ニンニク</button><button class="tf-btn" onclick="filterTL(this,'komatsu')">コマツナ</button><button class="tf-add-btn" onclick="openVeggieModal()">＋</button></div>
 <button id="water-btn" class="water-btn" onclick="toggleWater()">💧 水やり非表示</button>
+<label class="water-cb-wrap"><input type="checkbox" id="water-cb" checked onchange="toggleWaterCb(this)">💧 水やり表示</label>
 </div>
 <div id="tl-body"></div>
+</div>
+
+<div class="veggie-overlay" id="veggie-overlay" onclick="if(event.target===this)closeVeggieModal()">
+  <div class="veggie-modal">
+    <div class="veggie-modal-hd">
+      <h3>🌱 野菜の管理</h3>
+      <button class="modal-x" onclick="closeVeggieModal()">✕</button>
+    </div>
+    <div class="veggie-grid" id="veggie-grid"></div>
+    <div class="veggie-modal-ft">
+      <button onclick="selectAllVeggies()">すべて選択</button>
+      <button onclick="clearAllVeggies()">すべて解除</button>
+      <button onclick="closeVeggieModal()">閉じる</button>
+    </div>
+  </div>
 </div>
 </body>
 </html>
