@@ -171,7 +171,7 @@ function switchTab(tab){
   document.getElementById('tab-timeline').style.display=tab==='timeline'?'':'none';
   document.getElementById('tabbtn-overview').classList.toggle('active',tab==='overview');
   document.getElementById('tabbtn-timeline').classList.toggle('active',tab==='timeline');
-  if(tab==='timeline')renderTimeline();
+  if(tab==='timeline')renderTimeline(true);
 }
 
 // ===== Timeline data =====
@@ -249,7 +249,21 @@ function saveTLChecked(o){localStorage.setItem(TL_CHK,JSON.stringify(o));}
 function fmtDate(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';}
 function parseJPDate(s){return new Date(s.replace('年','-').replace('月','-').replace('日',''));}
 
-// recurring タスクを60日分自動展開（チェック不要で最初から全日付生成）
+function getTodayJST(){
+  const jst=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Tokyo'}));
+  return fmtDate(jst);
+}
+
+function scrollToToday(){
+  const today=parseJPDate(getTodayJST());
+  const dateEls=document.querySelectorAll('.tl-date');
+  let target=null;
+  for(let i=0;i<dateEls.length;i++){
+    if(parseJPDate(dateEls[i].textContent)>=today){target=dateEls[i];break;}
+  }
+  if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
 function generateRecurringTasks(){
   const horizon=new Date();
   horizon.setDate(horizon.getDate()+60);
@@ -262,13 +276,7 @@ function generateRecurringTasks(){
       const yr=d.getFullYear();
       const mo=String(d.getMonth()+1).padStart(2,'0');
       const dy=String(d.getDate()).padStart(2,'0');
-      const copy={
-        id:task.id+'_'+yr+mo+dy,
-        date:fmtDate(d),
-        tag:task.tag,label:task.label,
-        title:task.title,desc:task.desc,
-        recurring:task.recurring
-      };
+      const copy={id:task.id+'_'+yr+mo+dy,date:fmtDate(d),tag:task.tag,label:task.label,title:task.title,desc:task.desc,recurring:task.recurring};
       if(task.type)copy.type=task.type;
       result.push(copy);
       d.setDate(d.getDate()+task.recurring);
@@ -283,10 +291,10 @@ function toggleWater(){
   _tlShowWater=!_tlShowWater;
   const btn=document.getElementById('water-btn');
   if(btn){btn.textContent=_tlShowWater?'💧 水やり非表示':'💧 水やり表示';btn.classList.toggle('hidden-mode',!_tlShowWater);}
-  renderTimeline();
+  renderTimeline(false);
 }
 
-function renderTimeline(){
+function renderTimeline(autoScroll){
   const checked=getTLChecked();
   const body=document.getElementById('tl-body');
   if(!body)return;
@@ -316,6 +324,7 @@ function renderTimeline(){
     });
   });
   body.innerHTML=out;
+  if(autoScroll)setTimeout(scrollToToday,80);
 }
 
 function tlToggle(taskId,cb){
@@ -330,7 +339,7 @@ function filterTL(btn,tag){
   document.querySelectorAll('.tf-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   _tlFilter=tag;
-  renderTimeline();
+  renderTimeline(false);
 }
 
 // 日数カウント
