@@ -38,6 +38,29 @@
   .pat-label { font-size: 0.85em; color: #666; }
   .nav-link { font-size: 0.85em; color: #4a7c4e; text-decoration: none; }
   .nav-link:hover { text-decoration: underline; }
+/* Tabs */
+.tab-bar{display:flex;gap:2px;margin:14px 0 0;border-bottom:2px solid #4a7c4e;}
+.tab-btn{background:none;border:none;padding:8px 22px;font-size:.95em;cursor:pointer;border-radius:4px 4px 0 0;color:#555;font-family:sans-serif;}
+.tab-btn.active{background:#4a7c4e;color:#fff;font-weight:bold;}
+.tab-btn:not(.active):hover{background:#e8f5e9;}
+/* Tag filter */
+.tag-filter{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px;}
+.tf-btn{border:1px solid #ccc;background:#f5f5f5;border-radius:20px;padding:4px 12px;font-size:.82em;cursor:pointer;font-family:sans-serif;}
+.tf-btn.active{background:#4a7c4e;color:#fff;border-color:#4a7c4e;}
+/* Timeline */
+.tl-date{font-weight:bold;color:#4a7c4e;margin:20px 0 6px;font-size:.92em;border-bottom:1px solid #ddd;padding-bottom:4px;}
+.tl-item{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid #f0f0f0;}
+.tl-item input[type=checkbox]{margin-top:3px;flex-shrink:0;width:16px;height:16px;accent-color:#4a7c4e;cursor:pointer;}
+.tl-tag{display:inline-block;font-size:.75em;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:1px;font-weight:bold;}
+.tag-nasu{background:#ead5f5;color:#6a3d8f;}
+.tag-kyuri{background:#d5f5e3;color:#1a7a3a;}
+.tag-okura{background:#fff3cd;color:#856404;}
+.tag-piman{background:#d5f0e8;color:#1a5e3a;}
+.tag-basil{background:#e8f5d5;color:#4a6e1a;}
+.tag-shiso{background:#f5d5e8;color:#8f3d6a;}
+.tl-body{font-size:.88em;line-height:1.5;color:#333;}
+.tl-body strong{color:#222;}
+.tl-checked .tl-tag,.tl-checked .tl-body{opacity:.4;text-decoration:line-through;}
 </style>
 </head>
 <body>
@@ -47,6 +70,11 @@
 </div>
 
 <h1>🌱 家庭菜園ログ</h1>
+<div class="tab-bar">
+  <button class="tab-btn active" id="tabbtn-overview" onclick="switchTab('overview')">概要</button>
+  <button class="tab-btn" id="tabbtn-timeline" onclick="switchTab('timeline')">タイムライン</button>
+</div>
+<div id="tab-overview">
 
 <h2>植え付け経過</h2>
 <div class="section">
@@ -137,7 +165,90 @@
   let logs = [];
   let currentSha = undefined;
 
-  // 日数カウント
+  // ===== Tab =====
+function switchTab(tab){
+  document.getElementById("tab-overview").style.display=tab==="overview"?"":"none";
+  document.getElementById("tab-timeline").style.display=tab==="timeline"?"":"none";
+  document.getElementById("tabbtn-overview").classList.toggle("active",tab==="overview");
+  document.getElementById("tabbtn-timeline").classList.toggle("active",tab==="timeline");
+  if(tab==="timeline")renderTimeline();
+}
+// ===== Timeline data =====
+const tlData=[
+  {date:"2026年6月25日",tag:"nasu",label:"ナス",title:"初回追肥",desc:"化成肥料888を1株あたり40g、株元から20cm離してまく（植え付け後20〜30日が目安）"},
+  {date:"2026年6月25日",tag:"nasu",label:"ナス",title:"支柱・誘引確認",desc:"伸びている枝に支柱を立て、麻ひもで8の字に緩く誘引する"},
+  {date:"2026年6月25日",tag:"kyuri",label:"キュウリ",title:"下5〜6節の子づる・雌花を全て摘む",desc:"親づるを早く伸ばすために、下節の子づると雌花は全て摘除する"},
+  {date:"2026年6月25日",tag:"kyuri",label:"キュウリ",title:"支柱・ネット確認と誘引",desc:"つるが伸びているのでネットに絡ませて誘引する"},
+  {date:"2026年6月25日",tag:"kyuri",label:"キュウリ",title:"再植え株：根付き確認・水やり重視",desc:"植え付けから2週間は根が張る時期。乾燥させないよう毎日水やりする"},
+  {date:"2026年6月25日",tag:"piman",label:"ピーマン",title:"整枝確認",desc:"4本仕立て確認。1番花の下の脇芽以外は全て摘む"},
+  {date:"2026年6月25日",tag:"piman",label:"ピーマン",title:"支柱立て・誘引",desc:"ピーマンは風で折れやすいので各枝に支柱を立てる"},
+  {date:"2026年6月25日",tag:"basil",label:"バジル",title:"摘心",desc:"草丈20cm超えていれば最上部の葉を茎ごと摘む。わき芽が増えて収穫量が倍になる"},
+  {date:"2026年6月25日",tag:"shiso",label:"シソ",title:"収穫開始確認",desc:"本葉が10枚以上なら下の葉から順番に収穫できる"},
+  {date:"2026年6月25日",tag:"okura",label:"オクラ",title:"下葉の摘葉",desc:"収穫した節から下の葉を2枚残し、それ以下を摘む。風通しと光の透過を良くする"},
+  {date:"2026年6月25日",tag:"okura",label:"オクラ",title:"支柱立て",desc:"背が高くなるので（1m超）早めに支柱を立てる"},
+  {date:"2026年7月5日",tag:"nasu",label:"ナス",title:"2回目の追肥",desc:"化成肥料888を40g/株（初回から2〜3週間後）"},
+  {date:"2026年7月5日",tag:"nasu",label:"ナス",title:"1番果は小さいうちに収穫",desc:"5〜6cmのうちに収穫して株の負担を軽減する"},
+  {date:"2026年7月5日",tag:"kyuri",label:"キュウリ",title:"初収穫",desc:"20〜22cmで若どり。収穫が遅れると株が疲弊する"},
+  {date:"2026年7月5日",tag:"kyuri",label:"キュウリ",title:"初回追肥",desc:"化成肥料888を30g/m²を株周りに施す"},
+  {date:"2026年7月5日",tag:"kyuri",label:"キュウリ",title:"子づる摘心",desc:"親づる以外の子づるは葉を2枚残して先端を摘む"},
+  {date:"2026年7月5日",tag:"piman",label:"ピーマン",title:"初回追肥",desc:"化成肥料888（1番果収穫始め頃から10〜14日ごとに継続）"},
+  {date:"2026年7月5日",tag:"piman",label:"ピーマン",title:"初収穫",desc:"開花後15〜20日、30g程度の緑色果を収穫"},
+  {date:"2026年7月5日",tag:"okura",label:"オクラ",title:"開花確認・初回追肥",desc:"開花が始まったら追肥開始。化成肥料888を10〜14日ごと"},
+  {date:"2026年7月5日",tag:"okura",label:"オクラ",title:"初収穫確認",desc:"開花後4〜5日、5〜8cmのうちに収穫。7月は開花4日後が目安。収穫遅れると固くなる"},
+  {date:"2026年7月15日",tag:"nasu",label:"ナス",title:"3回目の追肥",desc:"化成肥料888を40g/株"},
+  {date:"2026年7月15日",tag:"nasu",label:"ナス",title:"本格収穫開始",desc:"12〜15cmの若いうちに収穫する"},
+  {date:"2026年7月15日",tag:"nasu",label:"ナス",title:"花の状態で肥料チェック",desc:"柱頭（雌しべ）が雄しべより短い→肥料切れのサイン。追肥を増やす"},
+  {date:"2026年7月15日",tag:"kyuri",label:"キュウリ",title:"2回目の追肥",desc:"化成肥料888を30g/m²（以降2週間ごと継続）"},
+  {date:"2026年7月15日",tag:"kyuri",label:"キュウリ",title:"再植え株：初収穫・初回追肥",desc:"メイン株の約3週間遅れ。20〜22cmで収穫、同時に初回追肥"},
+  {date:"2026年7月15日",tag:"piman",label:"ピーマン",title:"2回目の追肥",desc:"10〜14日ごとの追肥を継続"},
+  {date:"2026年7月15日",tag:"shiso",label:"シソ",title:"摘心",desc:"草丈25〜30cmになっていれば最上部の葉を茎ごと摘む。わき芽が増える"},
+  {date:"2026年7月15日",tag:"basil",label:"バジル",title:"花芽確認・摘み取り",desc:"花芽（茎のてっぺんに出る穂状のもの）が見えたら早めに摘み取る"},
+  {date:"2026年7月25日",tag:"nasu",label:"ナス",title:"更新剪定",desc:"各主枝を1/3〜1/2に切り戻す。直後にたっぷり水やりと追肥。秋ナスを目指す場合に実施"},
+  {date:"2026年8月25日",tag:"shiso",label:"シソ",title:"花穂の収穫",desc:"花が咲き始めた花穂を収穫。刺身のあしらいや天ぷらに"},
+  {date:"2026年8月25日",tag:"shiso",label:"シソ",title:"葉の収穫を急ぐ",desc:"花穂が出たら葉が硬くなるため、積極的に使い切る"},
+];
+const TL_KEY="garden_tl_checked";
+function getTLChecked(){try{return JSON.parse(localStorage.getItem(TL_KEY)||"{}");}catch(e){return {};}}
+function saveTLChecked(obj){localStorage.setItem(TL_KEY,JSON.stringify(obj));}
+let _tlFilter="all";
+function renderTimeline(){
+  const checked=getTLChecked();
+  const body=document.getElementById("tl-body");
+  if(!body)return;
+  const grouped={};
+  tlData.forEach(function(item,i){if(!grouped[item.date])grouped[item.date]=[];grouped[item.date].push({idx:i,tag:item.tag,label:item.label,title:item.title,desc:item.desc});});
+  let out="";
+  for(const date in grouped){
+    const items=grouped[date];
+    const visible=_tlFilter==="all"?items:items.filter(function(it){return it.tag===_tlFilter;});
+    if(visible.length===0)continue;
+    out+="<div class=\"tl-date\">"+date+"</div>";
+    visible.forEach(function(item){
+      const ck=checked[item.idx]?" checked":"";
+      const dc=checked[item.idx]?" tl-checked":"";
+      out+="<div class=\"tl-item"+dc+"\" data-idx=\""+item.idx+"\">";
+      out+="<input type=\"checkbox\""+ck+" onchange=\"tlToggle("+item.idx+",this)\">";
+      out+="<span class=\"tl-tag tag-"+item.tag+"\">"+item.label+"</span>";
+      out+="<div class=\"tl-body\"><strong>"+item.title+"</strong>："+item.desc+"</div>";
+      out+="</div>";
+    });
+  }
+  body.innerHTML=out;
+}
+function tlToggle(idx,cb){
+  const obj=getTLChecked();
+  if(cb.checked){obj[idx]=true;}else{delete obj[idx];}
+  saveTLChecked(obj);
+  const item=cb.closest(".tl-item");
+  if(cb.checked){item.classList.add("tl-checked");}else{item.classList.remove("tl-checked");}
+}
+function filterTL(btn,tag){
+  document.querySelectorAll(".tf-btn").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");
+  _tlFilter=tag;
+  renderTimeline();
+}
+// 日数カウント
   const today = new Date(); today.setHours(0,0,0,0);
   const todayStr = today.toISOString().split('T')[0];
   const p1 = new Date('2026-05-27'); p1.setHours(0,0,0,0);
@@ -269,5 +380,18 @@
 
   loadLogs();
 </script>
+</div><!-- /tab-overview -->
+<div id="tab-timeline" style="display:none">
+  <div class="tag-filter">
+    <button class="tf-btn active" onclick="filterTL(this,'all')">すべて</button>
+    <button class="tf-btn" onclick="filterTL(this,'nasu')">🍆 ナス</button>
+    <button class="tf-btn" onclick="filterTL(this,'kyuri')">🥒 キュウリ</button>
+    <button class="tf-btn" onclick="filterTL(this,'okura')">オクラ</button>
+    <button class="tf-btn" onclick="filterTL(this,'piman')">🫑 ピーマン</button>
+    <button class="tf-btn" onclick="filterTL(this,'basil')">🌿 バジル</button>
+    <button class="tf-btn" onclick="filterTL(this,'shiso')">🌿 シソ</button>
+  </div>
+  <div id="tl-body"></div>
+</div>
 </body>
 </html>
