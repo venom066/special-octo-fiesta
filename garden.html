@@ -648,8 +648,18 @@ const VEGGIES_ALL=[
   {tag:'daikon',label:'ダイコン'},{tag:'broc',label:'ブロッコリー'},{tag:'cab',label:'キャベツ'},
   {tag:'ninniku',label:'ニンニク'},{tag:'komatsu',label:'コマツナ'},{tag:'shinhata',label:'新畑準備'},
 ];
-let _actVeg=new Set(JSON.parse(localStorage.getItem('g_act_veg')||'null')||VEGGIES_ALL.map(v=>v.tag));
-function _saveVeg(){localStorage.setItem('g_act_veg',JSON.stringify([..._actVeg]));}
+const _storedVeg=JSON.parse(localStorage.getItem('g_act_veg')||'null');
+const _allVegTags=VEGGIES_ALL.map(v=>v.tag);
+let _actVeg;
+if(!_storedVeg){
+  _actVeg=new Set(_allVegTags);
+} else {
+  const {active=[],known=[]}=_storedVeg;
+  const _as=new Set(active);
+  // Tags active in stored OR new to this version (not in known list) = active by default
+  _actVeg=new Set(_allVegTags.filter(t=>_as.has(t)||!known.includes(t)));
+}
+function _saveVeg(){localStorage.setItem('g_act_veg',JSON.stringify({active:[..._actVeg],known:_allVegTags}));}
 function openVeggieModal(){
   const grid=document.querySelector('#veggie-grid');
   grid.innerHTML=VEGGIES_ALL.map(v=>`<label class="veggie-row tag-${v.tag}"><input type="checkbox" value="${v.tag}" ${_actVeg.has(v.tag)?'checked':''} onchange="toggleVeggieItem(this)">${v.label}</label>`).join('');
@@ -670,6 +680,27 @@ function clearAllVeggies(){
   document.querySelectorAll('#veggie-grid input').forEach(cb=>cb.checked=false);
   applyVeggieFilter();
 }
+function syncTagButtons(){
+  document.querySelectorAll('.tf-btn').forEach(btn=>{
+    const m=btn.getAttribute('onclick')&&btn.getAttribute('onclick').match(/'([^']+)'/);
+    const tag=m?m[1]:null;
+    if(!tag||tag==='all')return;
+    const active=_actVeg.has(tag);
+    btn.style.opacity=active?'':'0.3';
+    btn.style.pointerEvents=active?'':'none';
+    btn.title=active?'':'野菜の管理で非表示中';
+  });
+  // If current active filter is a hidden veggie, reset to all
+  const activeBtn=document.querySelector('.tf-btn.active');
+  if(activeBtn){
+    const m=activeBtn.getAttribute('onclick')&&activeBtn.getAttribute('onclick').match(/'([^']+)'/);
+    const t=m?m[1]:null;
+    if(t&&t!=='all'&&!_actVeg.has(t)){
+      const allBtn=document.querySelector('.tf-btn');
+      if(allBtn)filterTL(allBtn,'all');
+    }
+  }
+}
 function applyVeggieFilter(){
   const tlb=document.querySelector('#tl-body');
   if(!tlb)return;
@@ -689,6 +720,7 @@ function applyVeggieFilter(){
     }
   });
   if(lastDate)lastDate.style.display=lastHasVis?'':'none';
+  syncTagButtons();
 }
 function toggleWaterCb(cb){
   const btn=document.querySelector('#water-btn');
