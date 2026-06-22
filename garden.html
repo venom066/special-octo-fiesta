@@ -248,7 +248,7 @@ const tlData=[
   // 7/31（オクラ追肥③）
   {id:'okura_fert3',date:'2026年7月31日',tag:'okura',label:'オクラ',title:'追肥③',desc:'化成肥料888'},
   // 8/1（ナス更新剪定）
-  {id:'nasu_cut1',date:'2026年8月1日',tag:'nasu',label:'ナス',title:'更新剪定',desc:'各主枝を1/3〜1/2に切り戻す。直後にたっぷり水やりと追肥。秋ナスを目指す場合に実施'},
+  {id:'nasu_cut1',date:'2026年8月1日',tag:'nasu',label:'ナス',title:'更新剪定',desc:'各主枝を1/3〜1/2に切り戻す。同時に株元から30cm離した場所でスコップを入れ根切りも行う。直後にたっぷり水やりと追肥。秋ナスを収穫するために必須の作業'},
   // 8/3（ピーマン追肥③）
   {id:'piman_fert3',date:'2026年8月3日',tag:'piman',label:'ピーマン',title:'追肥③',desc:'化成肥料888'},
   // 8/4（キュウリ再植え追肥②・バジル追肥③）
@@ -275,6 +275,54 @@ const tlData=[
   {id:'piman_fert5',date:'2026年8月27日',tag:'piman',label:'ピーマン',title:'追肥⑤',desc:'化成肥料888'},
   {id:'shiso_spk1',date:'2026年8月27日',tag:'shiso',label:'シソ',title:'花穂の収穫',desc:'花が咲き始めた花穂を収穫。刺身のあしらいや天ぷらに'},
   {id:'shiso_rush',date:'2026年8月27日',tag:'shiso',label:'シソ',title:'葉の収穫を急ぐ',desc:'花穂が出たら葉が硬くなるため、積極的に使い切る'},
+  // ===== 秋管理・終了タスク =====
+  // 8/4・8/18 バジル花芽摘み（7/21の続き）
+  {id:'basil_flw2',date:'2026年8月4日',tag:'basil',label:'バジル',title:'花芽摘み取り',desc:'花芽（穂状）が出てきたら随時摘み取る。摘み続けることで葉の収穫期間が延びる'},
+  {id:'basil_flw3',date:'2026年8月18日',tag:'basil',label:'バジル',title:'花芽摘み取り',desc:'花芽が出てきたら随時摘み取る。これを怠ると急に葉が硬くなる'},
+  // 8/10 ピーマン秋に向けた枝整理
+  {id:'piman_prune2',date:'2026年8月10日',tag:'piman',label:'ピーマン',title:'秋に向けた枝整理',desc:'混み合った枝を切り詰めて風通しを良くする。秋もよい実をならすための準備'},
+  // 8/25 キュウリメイン終わりサイン確認
+  {id:'kyuri_end1',date:'2026年8月25日',tag:'kyuri',label:'キュウリ',title:'メイン株：終わりのサイン確認',desc:'収穫量が激減・葉が黄化・うどんこ病がひどい場合は撤去のタイミング。無理に続けない'},
+  // 9/1 秋ナス収穫開始・オクラ秋剪定・バジル追肥⑤
+  {id:'nasu_harv3',date:'2026年9月1日',tag:'nasu',label:'ナス',title:'秋ナス収穫開始',desc:'更新剪定・根切りから約1ヶ月。新しい枝から若い実が採れる。秋ナスは皮が柔らかく美味しい'},
+  {id:'okura_cut1',date:'2026年9月1日',tag:'okura',label:'オクラ',title:'秋剪定（切り戻し）',desc:'株元から50〜60cmの高さで切り戻す。新しい芽が出て10月頃まで収穫が続く'},
+  {id:'basil_fert5',date:'2026年9月1日',tag:'basil',label:'バジル',title:'追肥⑤・花芽摘み',desc:'化成肥料888を10g程度。花芽も引き続き摘み取る'},
+  // 9/3 ナス追肥⑥
+  {id:'nasu_fert6',date:'2026年9月3日',tag:'nasu',label:'ナス',title:'追肥⑥',desc:'化成肥料888を40g/株（14日ごと継続）'},
+  // 9/5 キュウリメイン撤去・オクラ追肥⑥
+  {id:'kyuri_end2',date:'2026年9月5日',tag:'kyuri',label:'キュウリ',title:'メイン株撤去・片付け',desc:'実がほぼつかなくなったら撤去。支柱・ネットも片付ける。連作障害に注意、来年は別の場所に'},
+  {id:'okura_fert6',date:'2026年9月5日',tag:'okura',label:'オクラ',title:'追肥⑥',desc:'化成肥料888（切り戻し後の回復促進）'},
+  // 9/8 ピーマン追肥⑥
+  {id:'piman_fert6',date:'2026年9月8日',tag:'piman',label:'ピーマン',title:'追肥⑥',desc:'化成肥料888（12日ごと継続）'},
+  // 9/15 シソ種取り・バジル追肥⑥・オクラ秋収穫確認・キュウリ再植え終わりサイン
+  {id:'shiso_seed',date:'2026年9月15日',tag:'shiso',label:'シソ',title:'種取り',desc:'乾燥し始めた花穂を切り取り、紙袋で乾燥させて種を採取。来年自然発芽に備える'},
+  {id:'basil_fert6',date:'2026年9月15日',tag:'basil',label:'バジル',title:'追肥⑥（最終）',desc:'化成肥料888を10g程度。気温が下がってきたら追肥終了'},
+  {id:'okura_harv2',date:'2026年9月15日',tag:'okura',label:'オクラ',title:'秋収穫・毎日確認継続',desc:'切り戻し後の新しい実は気温が低く成長がゆっくり。夏より固くなりにくく味が濃い'},
+  {id:'kyuri2_end1',date:'2026年9月15日',tag:'kyuri',label:'キュウリ',title:'再植え株：終わりのサイン確認',desc:'収穫量が激減してきたら撤去を検討'},
+  // 9/17 ナス追肥⑦・オクラ追肥⑦（最終）
+  {id:'nasu_fert7',date:'2026年9月17日',tag:'nasu',label:'ナス',title:'追肥⑦',desc:'化成肥料888を40g/株'},
+  {id:'okura_fert7',date:'2026年9月17日',tag:'okura',label:'オクラ',title:'追肥⑦（最終）',desc:'化成肥料888'},
+  // 9/20 ピーマン追肥⑦
+  {id:'piman_fert7',date:'2026年9月20日',tag:'piman',label:'ピーマン',title:'追肥⑦',desc:'化成肥料888'},
+  // 9/25 キュウリ再植え撤去
+  {id:'kyuri2_end2',date:'2026年9月25日',tag:'kyuri',label:'キュウリ',title:'再植え株撤去・片付け',desc:'実がほぼつかなくなったら撤去。10月を目安に'},
+  // 9/30 シソ撤去
+  {id:'shiso_end',date:'2026年9月30日',tag:'shiso',label:'シソ',title:'撤去・片付け',desc:'花穂が全部終わったら株ごと撤去。種をこぼした場所から来年自然発芽することがある'},
+  // 10/1 ナス追肥⑧・バジル種取り
+  {id:'nasu_fert8',date:'2026年10月1日',tag:'nasu',label:'ナス',title:'追肥⑧',desc:'化成肥料888を40g/株'},
+  {id:'basil_seed',date:'2026年10月1日',tag:'basil',label:'バジル',title:'種取り（任意）',desc:'来年用に一部の花穂を残して種を採取。茶色く乾燥した花穂から種を取る'},
+  // 10/2 ピーマン追肥⑧
+  {id:'piman_fert8',date:'2026年10月2日',tag:'piman',label:'ピーマン',title:'追肥⑧',desc:'化成肥料888'},
+  // 10/14 ピーマン追肥⑨（最終）
+  {id:'piman_fert9',date:'2026年10月14日',tag:'piman',label:'ピーマン',title:'追肥⑨（最終）',desc:'化成肥料888。この後気温が下がるため追肥終了'},
+  // 10/15 ナス追肥⑨（最終）・バジル撤去
+  {id:'nasu_fert9',date:'2026年10月15日',tag:'nasu',label:'ナス',title:'追肥⑨（最終）',desc:'化成肥料888を40g/株。この後気温が下がるため追肥終了'},
+  {id:'basil_end',date:'2026年10月15日',tag:'basil',label:'バジル',title:'撤去・片付け',desc:'気温10℃以下になると一気に黒くなって枯れる。その前に撤去か室内へ移動'},
+  // 10/20 オクラ撤去
+  {id:'okura_end',date:'2026年10月20日',tag:'okura',label:'オクラ',title:'撤去・片付け',desc:'気温10℃以下が続くようになったら収穫終了・撤去'},
+  // 11/1 ナス・ピーマン撤去
+  {id:'nasu_end',date:'2026年11月1日',tag:'nasu',label:'ナス',title:'撤去・片付け',desc:'霜が降りる前（最低気温5℃以下になる前）に撤去。根を残さず抜き取る'},
+  {id:'piman_end',date:'2026年11月1日',tag:'piman',label:'ピーマン',title:'撤去・片付け',desc:'最低気温が5〜8℃を下回るようになったら収穫終了・撤去'},
 ];
 const TL_CHK='garden_tl_checked';
 const YOUBI=['日','月','火','水','木','金','土'];
