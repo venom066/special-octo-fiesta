@@ -190,7 +190,7 @@
       } else {
         const json = await res.json();
         currentSha = json.sha;
-        logs = JSON.parse(atob(json.content.replace(/\n/g, '')));
+        logs = JSON.parse(decodeURIComponent(escape(atob(json.content.replace(/\n/g, '')))));
         setStatus('GitHubから読み込みました ✓');
       }
     } catch(e) {
