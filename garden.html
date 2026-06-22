@@ -176,12 +176,16 @@ function switchTab(tab){
 
 // ===== Timeline data =====
 // 植え付け5/27、キュウリ再植え6/16、今日6/22から各日付を計算
+// 水やり頻度: キュウリ/ナス/オクラ=毎日、ピーマン=2日おき(過湿注意)、バジル/シソ=2日おき
 const tlData=[
   // === 6/22（今日） ===
-  {id:'water_all1',date:'2026年6月22日',tag:'water',label:'水やり',title:'全体水やり（毎朝確認）',desc:'土の表面が乾いていたら全株に水やり。特にキュウリ・ピーマンは水分要求が高い。元田んぼなので過湿注意',type:'water',recurring:1},
-  {id:'kyuri2_wat1',date:'2026年6月22日',tag:'kyuri',label:'キュウリ',title:'再植え株：毎日水やり必須（根付きまで）',desc:'植え付けから2週間（〜6/30）は乾燥させないよう毎日水やり。夕方も確認',type:'water',recurring:1},
+  {id:'water_kyuri',date:'2026年6月22日',tag:'kyuri',label:'キュウリ',title:'水やり',desc:'水分要求が非常に高い。毎日水やり必須。再植え株（〜6/30）は特に乾燥厳禁。夏場は朝夕2回が理想',type:'water',recurring:1},
   {id:'kyuri2_sup1',date:'2026年6月22日',tag:'kyuri',label:'キュウリ',title:'再植え株：仮支柱の確認',desc:'倒れないよう仮支柱でしっかり支える'},
   // === 6/23 ===
+  {id:'water_nasu',date:'2026年6月23日',tag:'nasu',label:'ナス',title:'水やり',desc:'ナスは水分要求が高い。毎日朝に根元へ。乾燥すると落花・つやなし果の原因になる',type:'water',recurring:1},
+  {id:'water_okura',date:'2026年6月23日',tag:'okura',label:'オクラ',title:'水やり',desc:'土の表面が乾いたら水やり。乾燥させると実が固くなる原因になる',type:'water',recurring:1},
+  {id:'water_basil',date:'2026年6月23日',tag:'basil',label:'バジル',title:'水やり',desc:'土が乾いたら水やり（2日おき目安）。過湿注意。葉が萎れてきたらすぐに水やり',type:'water',recurring:2},
+  {id:'water_shiso',date:'2026年6月23日',tag:'shiso',label:'シソ',title:'水やり',desc:'土が乾いたら水やり（2日おき目安）。乾燥しすぎると葉が硬くなる',type:'water',recurring:2},
   {id:'kyuri_pinch1',date:'2026年6月23日',tag:'kyuri',label:'キュウリ',title:'下5〜6節の子づる・雌花を摘む',desc:'親づるを早く伸ばすために、下節の子づると雌花は全て摘除する'},
   {id:'kyuri_sup1',date:'2026年6月23日',tag:'kyuri',label:'キュウリ',title:'支柱・ネット確認と誘引',desc:'つるが伸びているのでネットに絡ませて誘引する'},
   {id:'basil_pinch1',date:'2026年6月23日',tag:'basil',label:'バジル',title:'摘心',desc:'草丈20cm超えていれば最上部の葉を茎ごと摘む。わき芽が増えて収穫量が倍になる'},
@@ -190,6 +194,7 @@ const tlData=[
   {id:'okura_leaf1',date:'2026年6月23日',tag:'okura',label:'オクラ',title:'下葉の摘葉',desc:'収穫した節から下の葉を2枚残し、それ以下を摘む。風通しと光の透過を良くする'},
   {id:'okura_sup1',date:'2026年6月23日',tag:'okura',label:'オクラ',title:'支柱立て',desc:'背が高くなるので（1m超）早めに支柱を立てる'},
   // === 6/24 ===
+  {id:'water_piman',date:'2026年6月24日',tag:'piman',label:'ピーマン',title:'水やり',desc:'2日おき目安。元田んぼなので過湿注意。午前中に根元へ。土が乾いたら忘れずに',type:'water',recurring:2},
   {id:'piman_prune1',date:'2026年6月24日',tag:'piman',label:'ピーマン',title:'整枝確認',desc:'4本仕立て確認。1番花の下の脇芽以外は全て摘む'},
   {id:'piman_flw1',date:'2026年6月24日',tag:'piman',label:'ピーマン',title:'1番花を摘む（任意）',desc:'株が小さいうちは1番花を摘んで株を充実させる。すでに咲いているなら放置でもOK'},
   {id:'piman_sup1',date:'2026年6月24日',tag:'piman',label:'ピーマン',title:'支柱立て・誘引',desc:'ピーマンは風で折れやすいので各枝に支柱を立てる'},
@@ -202,12 +207,11 @@ const tlData=[
   {id:'kyuri_harv1',date:'2026年7月1日',tag:'kyuri',label:'キュウリ',title:'初収穫',desc:'20〜22cmで若どり。収穫が遅れると株が疲弊する'},
   {id:'kyuri_fert1',date:'2026年7月1日',tag:'kyuri',label:'キュウリ',title:'追肥（初回）',desc:'化成肥料888を30g/m²を株周りに施す',recurring:14},
   {id:'kyuri_side1',date:'2026年7月1日',tag:'kyuri',label:'キュウリ',title:'子づる摘心',desc:'子づるは葉を2枚残して先端を摘む'},
-  {id:'kyuri_wat1',date:'2026年7月1日',tag:'kyuri',label:'キュウリ',title:'水やり（毎日必須）',desc:'キュウリは水分要求が非常に高い。乾いていたら毎日水やり。夏場は朝夕2回が理想',type:'water',recurring:1},
   {id:'kyuri_leaf1',date:'2026年7月1日',tag:'kyuri',label:'キュウリ',title:'下葉の摘葉',desc:'黄化した下葉や病気の葉は随時摘葉。病気予防と風通し改善'},
   // === 7/5（植え付け39日目）===
   {id:'nasu_harv1',date:'2026年7月5日',tag:'nasu',label:'ナス',title:'1番果を小さいうちに収穫',desc:'5〜6cmのうちに収穫して株の負担を軽減する'},
   {id:'kyuri_thin1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'変形果の摘果',desc:'曲がり果・変形果は小さいうちに摘果して株の負担を減らす'},
-  // === 7/7（バジル摘心から14日、オクラ植え付け41日目：開花期）===
+  // === 7/7（バジル摘心から14日、オクラ開花期）===
   {id:'basil_fert1',date:'2026年7月7日',tag:'basil',label:'バジル',title:'追肥',desc:'液肥または固形肥料（少量）。下葉が黄色くなったら肥料切れのサイン',recurring:14},
   {id:'kyuri_main1',date:'2026年7月7日',tag:'kyuri',label:'キュウリ',title:'親づる摘心',desc:'支柱の一番上まで伸びたら親づるの先端を摘む'},
   {id:'okura_fert1',date:'2026年7月7日',tag:'okura',label:'オクラ',title:'開花確認・追肥（初回）',desc:'開花が始まったら追肥開始。化成肥料888を10〜14日ごと',recurring:12},
@@ -216,24 +220,23 @@ const tlData=[
   // === 7/10（ピーマン植え付け44日目：初収穫期）===
   {id:'piman_harv1',date:'2026年7月10日',tag:'piman',label:'ピーマン',title:'初収穫',desc:'開花後15〜20日、30g程度の緑色果を収穫'},
   {id:'piman_fert1',date:'2026年7月10日',tag:'piman',label:'ピーマン',title:'追肥（初回）',desc:'化成肥料888（1番果収穫始め頃から10〜14日ごとに継続）',recurring:12},
-  {id:'piman_wat1',date:'2026年7月10日',tag:'piman',label:'ピーマン',title:'水やり確認',desc:'水分要求が高い。ただし元田んぼなので過湿注意。午前中に根元へ',type:'water',recurring:1},
   // === 7/12（オクラ開花後5日：初収穫）===
   {id:'okura_harv1',date:'2026年7月12日',tag:'okura',label:'オクラ',title:'初収穫',desc:'開花後4〜5日、5〜8cmのうちに収穫。6月は7日・7月は4日・8月は3日が目安。収穫遅れると固くなる'},
   {id:'okura_chk1',date:'2026年7月12日',tag:'okura',label:'オクラ',title:'毎日収穫確認',desc:'7月は4日・8月は3日で固くなるため毎日チェック。サイズは5〜8cm目安'},
-  // === 7/16（植え付け50日目：ナス本格収穫・シソ摘心）===
+  // === 7/16（植え付け50日目）===
   {id:'nasu_harv2',date:'2026年7月16日',tag:'nasu',label:'ナス',title:'本格収穫開始',desc:'12〜15cmの若いうちに収穫する'},
   {id:'nasu_flwchk',date:'2026年7月16日',tag:'nasu',label:'ナス',title:'花の状態で肥料チェック',desc:'柱頭（雌しべ）が雄しべより短い→肥料切れのサイン。追肥を増やす'},
   {id:'shiso_pch1',date:'2026年7月16日',tag:'shiso',label:'シソ',title:'摘心',desc:'草丈25〜30cmになっていれば最上部の葉を茎ごと摘む。わき芽が増える'},
-  // === 7/21（キュウリ再植え株：植え付け35日目。バジル花芽確認）===
+  // === 7/21（キュウリ再植え株：植え付け35日目）===
   {id:'kyuri2_harv1',date:'2026年7月21日',tag:'kyuri',label:'キュウリ',title:'再植え株：初収穫・初回追肥',desc:'メイン株の約3週間遅れ。20〜22cmで収穫、同時に初回追肥',recurring:14},
   {id:'basil_flw1',date:'2026年7月21日',tag:'basil',label:'バジル',title:'花芽確認・摘み取り',desc:'花芽（茎のてっぺんに出る穂状のもの）が見えたら早めに摘み取る'},
-  // === 7/22（ピーマン赤にする場合の判断）===
+  // === 7/22 ===
   {id:'piman_red1',date:'2026年7月22日',tag:'piman',label:'ピーマン',title:'赤ピーマンにする場合',desc:'緑果のまま開花後55〜60日置くと赤くなる。その間は収穫せず待つ（任意）'},
   // === 7/23（ナス2回目追肥から14日）===
   {id:'nasu_fert3',date:'2026年7月23日',tag:'nasu',label:'ナス',title:'3回目の追肥',desc:'化成肥料888を40g/株',recurring:14},
-  // === 8/1（更新剪定：7月後半〜8月上旬）===
+  // === 8/1 ===
   {id:'nasu_cut1',date:'2026年8月1日',tag:'nasu',label:'ナス',title:'更新剪定',desc:'各主枝を1/3〜1/2に切り戻す。直後にたっぷり水やりと追肥。秋ナスを目指す場合に実施'},
-  // === 8/27（シソ：花穂が出る時期）===
+  // === 8/27 ===
   {id:'shiso_spk1',date:'2026年8月27日',tag:'shiso',label:'シソ',title:'花穂の収穫',desc:'花が咲き始めた花穂を収穫。刺身のあしらいや天ぷらに'},
   {id:'shiso_rush',date:'2026年8月27日',tag:'shiso',label:'シソ',title:'葉の収穫を急ぐ',desc:'花穂が出たら葉が硬くなるため、積極的に使い切る'},
 ];
