@@ -60,7 +60,7 @@
 .tag-shiso{background:#f5d5e8;color:#8f3d6a;}
 .tl-body{font-size:.88em;line-height:1.5;color:#333;}
 .tl-body strong{color:#222;}
-.tl-checked .tl-tag,.tl-checked .tl-body{opacity:.4;text-decoration:line-through;}
+.tl-checked .tl-tag,.tl-checked .tl-body{opacity:.4;text-decoration:line-through;}.tl-rec{font-size:.72em;color:#4a90d9;background:#e8f4fd;border-radius:10px;padding:1px 6px;margin-left:4px;vertical-align:middle;font-weight:normal;}.water-btn{font-size:.8em;border:1px solid #90caf9;background:#e3f2fd;color:#1565c0;border-radius:14px;padding:3px 10px;cursor:pointer;white-space:nowrap;}.water-btn.hidden-mode{background:#f5f5f5;color:#aaa;border-color:#ddd;}
 </style>
 </head>
 <body>
@@ -167,87 +167,147 @@
 
   // ===== Tab =====
 function switchTab(tab){
-  document.getElementById("tab-overview").style.display=tab==="overview"?"":"none";
-  document.getElementById("tab-timeline").style.display=tab==="timeline"?"":"none";
-  document.getElementById("tabbtn-overview").classList.toggle("active",tab==="overview");
-  document.getElementById("tabbtn-timeline").classList.toggle("active",tab==="timeline");
-  if(tab==="timeline")renderTimeline();
+  document.getElementById('tab-overview').style.display=tab==='overview'?'':'none';
+  document.getElementById('tab-timeline').style.display=tab==='timeline'?'':'none';
+  document.getElementById('tabbtn-overview').classList.toggle('active',tab==='overview');
+  document.getElementById('tabbtn-timeline').classList.toggle('active',tab==='timeline');
+  if(tab==='timeline')renderTimeline();
 }
+
 // ===== Timeline data =====
 const tlData=[
-  {date:"2026年6月25日",tag:"nasu",label:"ナス",title:"初回追肥",desc:"化成肥料888を1株あたり40g、株元から20cm離してまく（植え付け後20〜30日が目安）"},
-  {date:"2026年6月25日",tag:"nasu",label:"ナス",title:"支柱・誘引確認",desc:"伸びている枝に支柱を立て、麻ひもで8の字に緩く誘引する"},
-  {date:"2026年6月25日",tag:"kyuri",label:"キュウリ",title:"下5〜6節の子づる・雌花を全て摘む",desc:"親づるを早く伸ばすために、下節の子づると雌花は全て摘除する"},
-  {date:"2026年6月25日",tag:"kyuri",label:"キュウリ",title:"支柱・ネット確認と誘引",desc:"つるが伸びているのでネットに絡ませて誘引する"},
-  {date:"2026年6月25日",tag:"kyuri",label:"キュウリ",title:"再植え株：根付き確認・水やり重視",desc:"植え付けから2週間は根が張る時期。乾燥させないよう毎日水やりする"},
-  {date:"2026年6月25日",tag:"piman",label:"ピーマン",title:"整枝確認",desc:"4本仕立て確認。1番花の下の脇芽以外は全て摘む"},
-  {date:"2026年6月25日",tag:"piman",label:"ピーマン",title:"支柱立て・誘引",desc:"ピーマンは風で折れやすいので各枝に支柱を立てる"},
-  {date:"2026年6月25日",tag:"basil",label:"バジル",title:"摘心",desc:"草丈20cm超えていれば最上部の葉を茎ごと摘む。わき芽が増えて収穫量が倍になる"},
-  {date:"2026年6月25日",tag:"shiso",label:"シソ",title:"収穫開始確認",desc:"本葉が10枚以上なら下の葉から順番に収穫できる"},
-  {date:"2026年6月25日",tag:"okura",label:"オクラ",title:"下葉の摘葉",desc:"収穫した節から下の葉を2枚残し、それ以下を摘む。風通しと光の透過を良くする"},
-  {date:"2026年6月25日",tag:"okura",label:"オクラ",title:"支柱立て",desc:"背が高くなるので（1m超）早めに支柱を立てる"},
-  {date:"2026年7月5日",tag:"nasu",label:"ナス",title:"2回目の追肥",desc:"化成肥料888を40g/株（初回から2〜3週間後）"},
-  {date:"2026年7月5日",tag:"nasu",label:"ナス",title:"1番果は小さいうちに収穫",desc:"5〜6cmのうちに収穫して株の負担を軽減する"},
-  {date:"2026年7月5日",tag:"kyuri",label:"キュウリ",title:"初収穫",desc:"20〜22cmで若どり。収穫が遅れると株が疲弊する"},
-  {date:"2026年7月5日",tag:"kyuri",label:"キュウリ",title:"初回追肥",desc:"化成肥料888を30g/m²を株周りに施す"},
-  {date:"2026年7月5日",tag:"kyuri",label:"キュウリ",title:"子づる摘心",desc:"親づる以外の子づるは葉を2枚残して先端を摘む"},
-  {date:"2026年7月5日",tag:"piman",label:"ピーマン",title:"初回追肥",desc:"化成肥料888（1番果収穫始め頃から10〜14日ごとに継続）"},
-  {date:"2026年7月5日",tag:"piman",label:"ピーマン",title:"初収穫",desc:"開花後15〜20日、30g程度の緑色果を収穫"},
-  {date:"2026年7月5日",tag:"okura",label:"オクラ",title:"開花確認・初回追肥",desc:"開花が始まったら追肥開始。化成肥料888を10〜14日ごと"},
-  {date:"2026年7月5日",tag:"okura",label:"オクラ",title:"初収穫確認",desc:"開花後4〜5日、5〜8cmのうちに収穫。7月は開花4日後が目安。収穫遅れると固くなる"},
-  {date:"2026年7月15日",tag:"nasu",label:"ナス",title:"3回目の追肥",desc:"化成肥料888を40g/株"},
-  {date:"2026年7月15日",tag:"nasu",label:"ナス",title:"本格収穫開始",desc:"12〜15cmの若いうちに収穫する"},
-  {date:"2026年7月15日",tag:"nasu",label:"ナス",title:"花の状態で肥料チェック",desc:"柱頭（雌しべ）が雄しべより短い→肥料切れのサイン。追肥を増やす"},
-  {date:"2026年7月15日",tag:"kyuri",label:"キュウリ",title:"2回目の追肥",desc:"化成肥料888を30g/m²（以降2週間ごと継続）"},
-  {date:"2026年7月15日",tag:"kyuri",label:"キュウリ",title:"再植え株：初収穫・初回追肥",desc:"メイン株の約3週間遅れ。20〜22cmで収穫、同時に初回追肥"},
-  {date:"2026年7月15日",tag:"piman",label:"ピーマン",title:"2回目の追肥",desc:"10〜14日ごとの追肥を継続"},
-  {date:"2026年7月15日",tag:"shiso",label:"シソ",title:"摘心",desc:"草丈25〜30cmになっていれば最上部の葉を茎ごと摘む。わき芽が増える"},
-  {date:"2026年7月15日",tag:"basil",label:"バジル",title:"花芽確認・摘み取り",desc:"花芽（茎のてっぺんに出る穂状のもの）が見えたら早めに摘み取る"},
-  {date:"2026年7月25日",tag:"nasu",label:"ナス",title:"更新剪定",desc:"各主枝を1/3〜1/2に切り戻す。直後にたっぷり水やりと追肥。秋ナスを目指す場合に実施"},
-  {date:"2026年8月25日",tag:"shiso",label:"シソ",title:"花穂の収穫",desc:"花が咲き始めた花穂を収穫。刺身のあしらいや天ぷらに"},
-  {date:"2026年8月25日",tag:"shiso",label:"シソ",title:"葉の収穫を急ぐ",desc:"花穂が出たら葉が硬くなるため、積極的に使い切る"},
+  // 6/25
+  {id:'nasu_fert1',date:'2026年6月25日',tag:'nasu',label:'ナス',title:'初回追肥',desc:'化成肥料888を1株あたり40g、株元から20cm離してまく（植え付け後20〜30日が目安）'},
+  {id:'nasu_sup1',date:'2026年6月25日',tag:'nasu',label:'ナス',title:'支柱・誘引確認',desc:'伸びている枝に支柱を立て、麻ひもで8の字に緩く誘引する'},
+  {id:'kyuri_pinch1',date:'2026年6月25日',tag:'kyuri',label:'キュウリ',title:'下5〜6節の子づる・雌花を摘む',desc:'親づるを早く伸ばすために、下節の子づると雌花は全て摘除する'},
+  {id:'kyuri_sup1',date:'2026年6月25日',tag:'kyuri',label:'キュウリ',title:'支柱・ネット確認と誘引',desc:'つるが伸びているのでネットに絡ませて誘引する'},
+  {id:'kyuri2_wat1',date:'2026年6月25日',tag:'kyuri',label:'キュウリ',title:'再植え株：毎日水やり（根付きまで）',desc:'植え付けから2週間は根が張る時期。乾燥させないよう毎日水やりする',type:'water',recurring:1},
+  {id:'kyuri2_sup1',date:'2026年6月25日',tag:'kyuri',label:'キュウリ',title:'再植え株：仮支柱の確認',desc:'倒れないよう仮支柱でしっかり支える'},
+  {id:'piman_prune1',date:'2026年6月25日',tag:'piman',label:'ピーマン',title:'整枝確認',desc:'4本仕立て確認。1番花の下の脇芽以外は全て摘む'},
+  {id:'piman_flw1',date:'2026年6月25日',tag:'piman',label:'ピーマン',title:'1番花を摘む（任意）',desc:'株が小さいうちは1番花を摘んで株を充実させる。すでに咲いているなら放置でもOK'},
+  {id:'piman_sup1',date:'2026年6月25日',tag:'piman',label:'ピーマン',title:'支柱立て・誘引',desc:'ピーマンは風で折れやすいので各枝に支柱を立てる'},
+  {id:'basil_pinch1',date:'2026年6月25日',tag:'basil',label:'バジル',title:'摘心',desc:'草丈20cm超えていれば最上部の葉を茎ごと摘む。わき芽が増えて収穫量が倍になる'},
+  {id:'basil_harv1',date:'2026年6月25日',tag:'basil',label:'バジル',title:'収穫開始',desc:'6月中旬〜が収穫期。葉が十分茂っていれば随時上から摘んで収穫できる'},
+  {id:'basil_fert1',date:'2026年6月25日',tag:'basil',label:'バジル',title:'追肥',desc:'液肥または固形肥料（少量）。下葉が黄色くなったら肥料切れのサイン',recurring:14},
+  {id:'shiso_harv1',date:'2026年6月25日',tag:'shiso',label:'シソ',title:'収穫開始確認',desc:'本葉が10枚以上なら下の葉から順番に収穫できる'},
+  {id:'shiso_fert1',date:'2026年6月25日',tag:'shiso',label:'シソ',title:'追肥',desc:'液肥（少量）を株元から10〜15cm離して施す',recurring:10},
+  {id:'okura_leaf1',date:'2026年6月25日',tag:'okura',label:'オクラ',title:'下葉の摘葉',desc:'収穫した節から下の葉を2枚残し、それ以下を摘む。風通しと光の透過を良くする'},
+  {id:'okura_sup1',date:'2026年6月25日',tag:'okura',label:'オクラ',title:'支柱立て',desc:'背が高くなるので（1m超）早めに支柱を立てる'},
+  {id:'water_all1',date:'2026年6月25日',tag:'water',label:'水やり',title:'全体水やり（毎朝確認）',desc:'土の表面が乾いていたら全株に水やり。特にキュウリ・ピーマンは水分要求が高い。元田んぼなので過湿注意',type:'water',recurring:1},
+  // 7/5
+  {id:'nasu_fert2',date:'2026年7月5日',tag:'nasu',label:'ナス',title:'2回目の追肥',desc:'化成肥料888を40g/株（初回から2〜3週間後）'},
+  {id:'nasu_harv1',date:'2026年7月5日',tag:'nasu',label:'ナス',title:'1番果を小さいうちに収穫',desc:'5〜6cmのうちに収穫して株の負担を軽減する'},
+  {id:'kyuri_harv1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'初収穫',desc:'20〜22cmで若どり。収穫が遅れると株が疲弊する'},
+  {id:'kyuri_fert1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'追肥（初回）',desc:'化成肥料888を30g/m²を株周りに施す',recurring:14},
+  {id:'kyuri_side1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'子づる摘心',desc:'子づるは葉を2枚残して先端を摘む'},
+  {id:'kyuri_main1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'親づる摘心',desc:'支柱の一番上まで伸びたら親づるの先端を摘む'},
+  {id:'kyuri_wat1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'水やり（毎日必須）',desc:'キュウリは水分要求が非常に高い。乾いていたら毎日水やり。夏場は朝夕2回が理想',type:'water',recurring:1},
+  {id:'kyuri_leaf1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'下葉の摘葉',desc:'黄化した下葉や病気の葉は随時摘葉。病気予防と風通し改善'},
+  {id:'kyuri_thin1',date:'2026年7月5日',tag:'kyuri',label:'キュウリ',title:'変形果の摘果',desc:'曲がり果・変形果は小さいうちに摘果して株の負担を減らす'},
+  {id:'piman_fert1',date:'2026年7月5日',tag:'piman',label:'ピーマン',title:'追肥（初回）',desc:'化成肥料888（1番果収穫始め頃から10〜14日ごとに継続）',recurring:12},
+  {id:'piman_harv1',date:'2026年7月5日',tag:'piman',label:'ピーマン',title:'初収穫',desc:'開花後15〜20日、30g程度の緑色果を収穫'},
+  {id:'piman_wat1',date:'2026年7月5日',tag:'piman',label:'ピーマン',title:'水やり確認',desc:'水分要求が高い。ただし元田んぼなので過湿注意。午前中に根元へ',type:'water',recurring:1},
+  {id:'okura_fert1',date:'2026年7月5日',tag:'okura',label:'オクラ',title:'開花確認・追肥（初回）',desc:'開花が始まったら追肥開始。化成肥料888を10〜14日ごと',recurring:12},
+  {id:'okura_harv1',date:'2026年7月5日',tag:'okura',label:'オクラ',title:'初収穫確認',desc:'開花後4〜5日、5〜8cmのうちに収穫。6月は7日・7月は4日・8月は3日が目安。収穫遅れると固くなる'},
+  {id:'okura_chk1',date:'2026年7月5日',tag:'okura',label:'オクラ',title:'毎日収穫確認',desc:'7月は4日・8月は3日で固くなるため毎日チェック。サイズは5〜8cm目安'},
+  // 7/15
+  {id:'nasu_fert3',date:'2026年7月15日',tag:'nasu',label:'ナス',title:'3回目の追肥',desc:'化成肥料888を40g/株',recurring:14},
+  {id:'nasu_harv2',date:'2026年7月15日',tag:'nasu',label:'ナス',title:'本格収穫開始',desc:'12〜15cmの若いうちに収穫する'},
+  {id:'nasu_flwchk',date:'2026年7月15日',tag:'nasu',label:'ナス',title:'花の状態で肥料チェック',desc:'柱頭（雌しべ）が雄しべより短い→肥料切れのサイン。追肥を増やす'},
+  {id:'kyuri_fert2',date:'2026年7月15日',tag:'kyuri',label:'キュウリ',title:'追肥（2回目）',desc:'化成肥料888を30g/m²'},
+  {id:'kyuri2_harv1',date:'2026年7月15日',tag:'kyuri',label:'キュウリ',title:'再植え株：初収穫・初回追肥',desc:'メイン株の約3週間遅れ。20〜22cmで収穫、同時に初回追肥',recurring:14},
+  {id:'piman_fert2',date:'2026年7月15日',tag:'piman',label:'ピーマン',title:'追肥（2回目）',desc:'10〜14日ごとの追肥を継続'},
+  {id:'piman_red1',date:'2026年7月15日',tag:'piman',label:'ピーマン',title:'赤ピーマンにする場合',desc:'緑果のまま開花後55〜60日置くと赤くなる。その間は収穫せず待つ（任意）'},
+  {id:'shiso_pch1',date:'2026年7月15日',tag:'shiso',label:'シソ',title:'摘心',desc:'草丈25〜30cmになっていれば最上部の葉を茎ごと摘む。わき芽が増える'},
+  {id:'basil_flw1',date:'2026年7月15日',tag:'basil',label:'バジル',title:'花芽確認・摘み取り',desc:'花芽（茎のてっぺんに出る穂状のもの）が見えたら早めに摘み取る'},
+  // 7/25
+  {id:'nasu_cut1',date:'2026年7月25日',tag:'nasu',label:'ナス',title:'更新剪定',desc:'各主枝を1/3〜1/2に切り戻す。直後にたっぷり水やりと追肥。秋ナスを目指す場合に実施'},
+  // 8/25
+  {id:'shiso_spk1',date:'2026年8月25日',tag:'shiso',label:'シソ',title:'花穂の収穫',desc:'花が咲き始めた花穂を収穫。刺身のあしらいや天ぷらに'},
+  {id:'shiso_rush',date:'2026年8月25日',tag:'shiso',label:'シソ',title:'葉の収穫を急ぐ',desc:'花穂が出たら葉が硬くなるため、積極的に使い切る'},
 ];
-const TL_KEY="garden_tl_checked";
-function getTLChecked(){try{return JSON.parse(localStorage.getItem(TL_KEY)||"{}");}catch(e){return {};}}
-function saveTLChecked(obj){localStorage.setItem(TL_KEY,JSON.stringify(obj));}
-let _tlFilter="all";
+
+const TL_CHK='garden_tl_checked';
+const TL_REC='garden_recurring';
+let _tlFilter='all';
+let _tlShowWater=true;
+
+function getTLChecked(){try{return JSON.parse(localStorage.getItem(TL_CHK)||'{}');}catch(e){return {};}}
+function saveTLChecked(o){localStorage.setItem(TL_CHK,JSON.stringify(o));}
+function getRecurring(){try{return JSON.parse(localStorage.getItem(TL_REC)||'[]');}catch(e){return [];}}
+function saveRecurring(a){localStorage.setItem(TL_REC,JSON.stringify(a));}
+function fmtDate(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';}
+function parseJPDate(s){return new Date(s.replace('年','-').replace('月','-').replace('日',''));}
+function getAllTasks(){return tlData.concat(getRecurring());}
+
+function toggleWater(){
+  _tlShowWater=!_tlShowWater;
+  const btn=document.getElementById('water-btn');
+  if(btn){btn.textContent=_tlShowWater?'💧 水やり非表示':'💧 水やり表示';btn.classList.toggle('hidden-mode',!_tlShowWater);}
+  renderTimeline();
+}
+
 function renderTimeline(){
   const checked=getTLChecked();
-  const body=document.getElementById("tl-body");
+  const body=document.getElementById('tl-body');
   if(!body)return;
+  let tasks=getAllTasks();
+  if(!_tlShowWater)tasks=tasks.filter(function(t){return t.type!=='water';});
+  if(_tlFilter!=='all')tasks=tasks.filter(function(t){return t.tag===_tlFilter;});
   const grouped={};
-  tlData.forEach(function(item,i){if(!grouped[item.date])grouped[item.date]=[];grouped[item.date].push({idx:i,tag:item.tag,label:item.label,title:item.title,desc:item.desc});});
-  let out="";
-  for(const date in grouped){
-    const items=grouped[date];
-    const visible=_tlFilter==="all"?items:items.filter(function(it){return it.tag===_tlFilter;});
-    if(visible.length===0)continue;
-    out+="<div class=\"tl-date\">"+date+"</div>";
-    visible.forEach(function(item){
-      const ck=checked[item.idx]?" checked":"";
-      const dc=checked[item.idx]?" tl-checked":"";
-      out+="<div class=\"tl-item"+dc+"\" data-idx=\""+item.idx+"\">";
-      out+="<input type=\"checkbox\""+ck+" onchange=\"tlToggle("+item.idx+",this)\">";
-      out+="<span class=\"tl-tag tag-"+item.tag+"\">"+item.label+"</span>";
-      out+="<div class=\"tl-body\"><strong>"+item.title+"</strong>："+item.desc+"</div>";
-      out+="</div>";
+  tasks.forEach(function(t){if(!grouped[t.date])grouped[t.date]=[];grouped[t.date].push(t);});
+  const dates=Object.keys(grouped).sort(function(a,b){return parseJPDate(a)-parseJPDate(b);});
+  let out='';
+  dates.forEach(function(date){
+    out+='<div class="tl-date">'+date+'</div>';
+    grouped[date].forEach(function(task){
+      const ck=checked[task.id]?' checked':'';
+      const dc=checked[task.id]?' tl-checked':'';
+      let badge='';
+      if(task.type==='water'){
+        badge='<span class="tl-rec" style="background:#e3f2fd;color:#1565c0;">💧'+(task.recurring===1?' 毎日':task.recurring?' 毎'+task.recurring+'日':'')+'</span>';
+      }else if(task.recurring){
+        badge='<span class="tl-rec">🔄 '+task.recurring+'日ごと</span>';
+      }
+      out+='<div class="tl-item'+dc+'">';
+      out+='<input type="checkbox" data-id="'+task.id+'"'+ck+' onchange="tlToggle(this.dataset.id,this)">';
+      out+='<span class="tl-tag tag-'+task.tag+'">'+task.label+'</span>';
+      out+='<div class="tl-body"><strong>'+task.title+'</strong>'+badge+'：'+task.desc+'</div>';
+      out+='</div>';
     });
-  }
+  });
   body.innerHTML=out;
 }
-function tlToggle(idx,cb){
+
+function tlToggle(taskId,cb){
   const obj=getTLChecked();
-  if(cb.checked){obj[idx]=true;}else{delete obj[idx];}
+  if(cb.checked){obj[taskId]=true;}else{delete obj[taskId];}
   saveTLChecked(obj);
-  const item=cb.closest(".tl-item");
-  if(cb.checked){item.classList.add("tl-checked");}else{item.classList.remove("tl-checked");}
+  const item=cb.closest('.tl-item');
+  if(item){if(cb.checked){item.classList.add('tl-checked');}else{item.classList.remove('tl-checked');}}
+  if(cb.checked){
+    const all=getAllTasks();
+    const task=all.find(function(t){return t.id===taskId;});
+    if(task&&task.recurring){
+      const next=new Date();
+      next.setDate(next.getDate()+task.recurring);
+      const newTask={id:'r_'+Date.now(),date:fmtDate(next),tag:task.tag,label:task.label,title:task.title,desc:task.desc,recurring:task.recurring};
+      if(task.type)newTask.type=task.type;
+      const arr=getRecurring();
+      arr.push(newTask);
+      saveRecurring(arr);
+      renderTimeline();
+    }
+  }
 }
+
 function filterTL(btn,tag){
-  document.querySelectorAll(".tf-btn").forEach(function(b){b.classList.remove("active");});
-  btn.classList.add("active");
+  document.querySelectorAll('.tf-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
   _tlFilter=tag;
   renderTimeline();
 }
+
 // 日数カウント
   const today = new Date(); today.setHours(0,0,0,0);
   const todayStr = today.toISOString().split('T')[0];
@@ -382,16 +442,11 @@ function filterTL(btn,tag){
 </script>
 </div><!-- /tab-overview -->
 <div id="tab-timeline" style="display:none">
-  <div class="tag-filter">
-    <button class="tf-btn active" onclick="filterTL(this,'all')">すべて</button>
-    <button class="tf-btn" onclick="filterTL(this,'nasu')">🍆 ナス</button>
-    <button class="tf-btn" onclick="filterTL(this,'kyuri')">🥒 キュウリ</button>
-    <button class="tf-btn" onclick="filterTL(this,'okura')">オクラ</button>
-    <button class="tf-btn" onclick="filterTL(this,'piman')">🫑 ピーマン</button>
-    <button class="tf-btn" onclick="filterTL(this,'basil')">🌿 バジル</button>
-    <button class="tf-btn" onclick="filterTL(this,'shiso')">🌿 シソ</button>
-  </div>
-  <div id="tl-body"></div>
+<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+<div class="tag-filter" style="margin-bottom:0"><button class="tf-btn active" onclick="filterTL(this,'all')">すべて</button><button class="tf-btn" onclick="filterTL(this,'nasu')">ナス</button><button class="tf-btn" onclick="filterTL(this,'kyuri')">キュウリ</button><button class="tf-btn" onclick="filterTL(this,'okura')">オクラ</button><button class="tf-btn" onclick="filterTL(this,'piman')">ピーマン</button><button class="tf-btn" onclick="filterTL(this,'basil')">バジル</button><button class="tf-btn" onclick="filterTL(this,'shiso')">シソ</button></div>
+<button id="water-btn" class="water-btn" onclick="toggleWater()">💧 水やり非表示</button>
+</div>
+<div id="tl-body"></div>
 </div>
 </body>
 </html>
