@@ -241,28 +241,39 @@ const tlData=[
   {id:'shiso_rush',date:'2026年8月27日',tag:'shiso',label:'シソ',title:'葉の収穫を急ぐ',desc:'花穂が出たら葉が硬くなるため、積極的に使い切る'},
 ];
 const TL_CHK='garden_tl_checked';
+const YOUBI=['日','月','火','水','木','金','土'];
 let _tlFilter='all';
 let _tlShowWater=true;
 
 function getTLChecked(){try{return JSON.parse(localStorage.getItem(TL_CHK)||'{}');}catch(e){return {};}}
 function saveTLChecked(o){localStorage.setItem(TL_CHK,JSON.stringify(o));}
 function fmtDate(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';}
-function parseJPDate(s){return new Date(s.replace('年','-').replace('月','-').replace('日',''));}
+function parseJPDate(s){return new Date(s.replace(/（.+）/,'').replace('年','-').replace('月','-').replace('日',''));}
 
 function getTodayJST(){
   const jst=new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Tokyo'}));
   return fmtDate(jst);
 }
 
-function scrollToToday(){
-  const today=parseJPDate(getTodayJST());
-  const dateEls=document.querySelectorAll('.tl-date');
-  let target=null;
-  for(let i=0;i<dateEls.length;i++){
-    if(parseJPDate(dateEls[i].textContent)>=today){target=dateEls[i];break;}
-  }
-  if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+function getFirstVisibleDate(){
+  const els=document.querySelectorAll('.tl-date');
+  for(let el of els){if(el.getBoundingClientRect().top>=0)return el.dataset.date;}
+  return null;
 }
+
+function scrollToDate(dateStr){
+  if(!dateStr)return;
+  const target=parseJPDate(dateStr);
+  const els=document.querySelectorAll('.tl-date');
+  let best=null,bestDiff=Infinity;
+  for(let el of els){
+    const diff=Math.abs(parseJPDate(el.dataset.date)-target);
+    if(diff<bestDiff){bestDiff=diff;best=el;}
+  }
+  if(best)best.scrollIntoView({block:'start'});
+}
+
+function scrollToToday(){scrollToDate(getTodayJST());}
 
 function generateRecurringTasks(){
   const horizon=new Date();
@@ -288,13 +299,14 @@ function generateRecurringTasks(){
 function getAllTasks(){return tlData.concat(generateRecurringTasks());}
 
 function toggleWater(){
+  const saved=getFirstVisibleDate();
   _tlShowWater=!_tlShowWater;
   const btn=document.getElementById('water-btn');
   if(btn){btn.textContent=_tlShowWater?'💧 水やり非表示':'💧 水やり表示';btn.classList.toggle('hidden-mode',!_tlShowWater);}
-  renderTimeline(false);
+  renderTimeline(false,saved);
 }
 
-function renderTimeline(autoScroll){
+function renderTimeline(autoScroll,restoreDate){
   const checked=getTLChecked();
   const body=document.getElementById('tl-body');
   if(!body)return;
@@ -306,7 +318,14 @@ function renderTimeline(autoScroll){
   const dates=Object.keys(grouped).sort(function(a,b){return parseJPDate(a)-parseJPDate(b);});
   let out='';
   dates.forEach(function(date){
-    out+='<div class="tl-date">'+date+'</div>';
+    const d=parseJPDate(date);
+    const yw=YOUBI[d.getDay()];
+    const isToday=date===getTodayJST();
+    const isSun=d.getDay()===0,isSat=d.getDay()===6;
+    const dateColor=isToday?'color:#2e7d32;font-weight:bold;':isSun?'color:#c62828;':isSat?'color:#1565c0;':'';
+    out+='<div class="tl-date" data-date="'+date+'" style="'+dateColor+'">';
+    out+=date+'（'+yw+'）'+(isToday?' ← 今日':'');
+    out+='</div>';
     grouped[date].forEach(function(task){
       const ck=checked[task.id]?' checked':'';
       const dc=checked[task.id]?' tl-checked':'';
@@ -325,6 +344,7 @@ function renderTimeline(autoScroll){
   });
   body.innerHTML=out;
   if(autoScroll)setTimeout(scrollToToday,80);
+  else if(restoreDate)setTimeout(function(){scrollToDate(restoreDate);},30);
 }
 
 function tlToggle(taskId,cb){
@@ -336,10 +356,11 @@ function tlToggle(taskId,cb){
 }
 
 function filterTL(btn,tag){
+  const saved=getFirstVisibleDate();
   document.querySelectorAll('.tf-btn').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   _tlFilter=tag;
-  renderTimeline(false);
+  renderTimeline(false,saved);
 }
 
 // 日数カウント
