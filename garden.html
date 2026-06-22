@@ -241,17 +241,43 @@ const tlData=[
   {id:'shiso_rush',date:'2026年8月27日',tag:'shiso',label:'シソ',title:'葉の収穫を急ぐ',desc:'花穂が出たら葉が硬くなるため、積極的に使い切る'},
 ];
 const TL_CHK='garden_tl_checked';
-const TL_REC='garden_recurring';
 let _tlFilter='all';
 let _tlShowWater=true;
 
 function getTLChecked(){try{return JSON.parse(localStorage.getItem(TL_CHK)||'{}');}catch(e){return {};}}
 function saveTLChecked(o){localStorage.setItem(TL_CHK,JSON.stringify(o));}
-function getRecurring(){try{return JSON.parse(localStorage.getItem(TL_REC)||'[]');}catch(e){return [];}}
-function saveRecurring(a){localStorage.setItem(TL_REC,JSON.stringify(a));}
 function fmtDate(d){return d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';}
 function parseJPDate(s){return new Date(s.replace('年','-').replace('月','-').replace('日',''));}
-function getAllTasks(){return tlData.concat(getRecurring());}
+
+// recurring タスクを60日分自動展開（チェック不要で最初から全日付生成）
+function generateRecurringTasks(){
+  const horizon=new Date();
+  horizon.setDate(horizon.getDate()+60);
+  const result=[];
+  tlData.forEach(function(task){
+    if(!task.recurring)return;
+    let d=parseJPDate(task.date);
+    d.setDate(d.getDate()+task.recurring);
+    while(d<=horizon){
+      const yr=d.getFullYear();
+      const mo=String(d.getMonth()+1).padStart(2,'0');
+      const dy=String(d.getDate()).padStart(2,'0');
+      const copy={
+        id:task.id+'_'+yr+mo+dy,
+        date:fmtDate(d),
+        tag:task.tag,label:task.label,
+        title:task.title,desc:task.desc,
+        recurring:task.recurring
+      };
+      if(task.type)copy.type=task.type;
+      result.push(copy);
+      d.setDate(d.getDate()+task.recurring);
+    }
+  });
+  return result;
+}
+
+function getAllTasks(){return tlData.concat(generateRecurringTasks());}
 
 function toggleWater(){
   _tlShowWater=!_tlShowWater;
@@ -298,20 +324,6 @@ function tlToggle(taskId,cb){
   saveTLChecked(obj);
   const item=cb.closest('.tl-item');
   if(item){if(cb.checked){item.classList.add('tl-checked');}else{item.classList.remove('tl-checked');}}
-  if(cb.checked){
-    const all=getAllTasks();
-    const task=all.find(function(t){return t.id===taskId;});
-    if(task&&task.recurring){
-      const next=new Date();
-      next.setDate(next.getDate()+task.recurring);
-      const newTask={id:'r_'+Date.now(),date:fmtDate(next),tag:task.tag,label:task.label,title:task.title,desc:task.desc,recurring:task.recurring};
-      if(task.type)newTask.type=task.type;
-      const arr=getRecurring();
-      arr.push(newTask);
-      saveRecurring(arr);
-      renderTimeline();
-    }
-  }
 }
 
 function filterTL(btn,tag){
