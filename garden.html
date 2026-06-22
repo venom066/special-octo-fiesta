@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>家庭菜園ログ</title>
+<style>
+  body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; line-height: 1.6; }
+  h1 { font-size: 1.4em; border-bottom: 2px solid #4a7c4e; padding-bottom: 8px; color: #2d5a30; }
+  h2 { font-size: 1.1em; color: #4a7c4e; margin-top: 24px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  th { background: #e8f5e9; text-align: left; padding: 6px 10px; }
+  td { padding: 6px 10px; border-bottom: 1px solid #ddd; }
+  .section { background: #f9f9f9; border-left: 4px solid #4a7c4e; padding: 10px 16px; margin: 8px 0; border-radius: 0 8px 8px 0; }
+  .day-count { font-size: 2em; font-weight: bold; color: #2d5a30; }
+  .label { font-size: 0.85em; color: #666; }
+  .log-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; border-bottom: 1px solid #eee; }
+  .log-item:last-child { border-bottom: none; }
+  .log-date { color: #555; font-size: 0.9em; min-width: 60px; }
+  .log-text { flex: 1; padding: 0 8px; }
+  .delete-btn { background: none; border: none; color: #ccc; cursor: pointer; font-size: 1em; padding: 0 4px; }
+  .delete-btn:hover { color: #e57373; }
+  .add-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .add-row input { border: 1px solid #ccc; border-radius: 4px; padding: 4px 8px; font-size: 0.9em; }
+  .add-row input[type="date"] { width: 130px; }
+  .add-row input[type="text"] { flex: 1; min-width: 150px; }
+  .btn { border: none; border-radius: 4px; padding: 4px 12px; cursor: pointer; font-size: 0.9em; }
+  .btn-green { background: #4a7c4e; color: white; }
+  .btn-green:hover { background: #2d5a30; }
+  .btn-gray { background: #888; color: white; }
+  .btn-gray:hover { background: #666; }
+  .status { font-size: 0.8em; margin-top: 6px; min-height: 1.2em; }
+  .status.ok { color: #4a7c4e; }
+  .status.err { color: #e57373; }
+  .status.loading { color: #999; }
+  .pat-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+  .pat-row input { border: 1px solid #ccc; border-radius: 4px; padding: 4px 8px; font-size: 0.85em; flex: 1; min-width: 200px; }
+  .pat-label { font-size: 0.85em; color: #666; }
+  .nav-link { font-size: 0.85em; color: #4a7c4e; text-decoration: none; }
+  .nav-link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div style="margin-bottom:12px">
+  <a class="nav-link" href="./index.html">← 中古車ウォッチャー</a>
+</div>
+
+<h1>🌱 家庭菜園ログ</h1>
+
+<h2>植え付け経過</h2>
+<div class="section">
+  <div style="display:flex; gap:32px; flex-wrap:wrap">
+    <div>
+      <div class="label">メイン植え付け日</div>
+      <div>2026年5月27日</div>
+      <div class="day-count" id="days">-</div>
+      <div class="label">日目</div>
+    </div>
+    <div>
+      <div class="label">キュウリ再植え付け日</div>
+      <div>2026年6月16日</div>
+      <div class="day-count" id="days2">-</div>
+      <div class="label">日目</div>
+    </div>
+  </div>
+</div>
+
+<h2>基本情報</h2>
+<div class="section">
+  <div>📍 元田んぼ（約5年半休耕）</div>
+  <div>📐 面積：約15㎡</div>
+  <div style="margin-top:8px"><strong>土作り資材</strong></div>
+  <ul style="margin:4px 0; padding-left:20px">
+    <li>牛糞堆肥</li>
+    <li>もみ殻活力堆肥</li>
+    <li>タマゴ有機石灰</li>
+    <li>化成肥料888</li>
+  </ul>
+</div>
+
+<h2>作業経過</h2>
+<div class="section">
+  <div id="log-list"><div style="color:#aaa;font-size:0.9em">読み込み中...</div></div>
+  <div class="add-row" style="margin-top:12px">
+    <input type="date" id="new-date">
+    <input type="text" id="new-text" placeholder="作業内容を入力">
+    <button class="btn btn-green" onclick="addLog()">追加</button>
+  </div>
+  <div class="status" id="status"></div>
+
+  <div style="margin-top:12px; border-top:1px solid #ddd; padding-top:10px">
+    <div class="pat-label">GitHub PAT（data/garden_logs.json に保存）</div>
+    <div class="pat-row">
+      <input type="password" id="pat-input" placeholder="ghp_xxxx（中古車と同じトークンでOK）">
+      <button class="btn btn-gray" onclick="savePat()">保存</button>
+    </div>
+    <div class="status" id="pat-status"></div>
+  </div>
+</div>
+
+<h2>栽培作物</h2>
+<table>
+  <tr><th>作物</th><th>株数</th><th>備考</th></tr>
+  <tr><td>ナス</td><td>2株</td><td></td></tr>
+  <tr><td>キュウリ</td><td>1+1株</td><td>1株枯死→6/16再植え</td></tr>
+  <tr><td>バジル</td><td>1株</td><td>シソと離して植える</td></tr>
+  <tr><td>シソ</td><td>1株</td><td></td></tr>
+  <tr><td>オクラ</td><td>2株</td><td></td></tr>
+  <tr><td>ピーマン</td><td>2株</td><td></td></tr>
+</table>
+
+<h2>収量目安（夏の間）</h2>
+<table>
+  <tr><th>作物</th><th>株数</th><th>1株あたり</th><th>合計目安</th></tr>
+  <tr><td>ナス</td><td>2株</td><td>30〜50本</td><td>60〜100本</td></tr>
+  <tr><td>キュウリ</td><td>1株</td><td>30〜50本</td><td>30〜50本</td></tr>
+  <tr><td>ピーマン</td><td>2株</td><td>50〜100個</td><td>100〜200個</td></tr>
+  <tr><td>オクラ</td><td>2株</td><td>50〜80本</td><td>100〜160本</td></tr>
+  <tr><td>バジル・シソ</td><td>各1株</td><td colspan="2">使い切れないくらい</td></tr>
+</table>
+
+<script>
+  const GITHUB_OWNER = 'venom066';
+  const GITHUB_REPO  = 'special-octo-fiesta';
+  const DATA_PATH    = 'data/garden_logs.json';
+
+  const defaultLogs = [
+    { date: '2026-05-12', text: 'スコップで20cm強の深耕' },
+    { date: '2026-05-13', text: '石灰・堆肥2種を混ぜ込み' },
+    { date: '2026-05-27', text: 'メイン植え付け（ナス2・キュウリ2・バジル1・シソ1・オクラ2・ピーマン2）' },
+    { date: '2026-05-27', text: '化成肥料888を撒いて混ぜ込み' },
+    { date: '2026-06-16', text: 'キュウリ1株枯死→再植え付け' },
+    { date: '2026-06-21', text: '脇芽・下葉処理（オクラ以外）' },
+  ];
+
+  let logs = [];
+  let currentSha = undefined;
+
+  // 日数カウント
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().split('T')[0];
+  const p1 = new Date('2026-05-27'); p1.setHours(0,0,0,0);
+  document.getElementById('days').textContent = Math.floor((today - p1) / 864e5);
+  const p2 = new Date('2026-06-16'); p2.setHours(0,0,0,0);
+  document.getElementById('days2').textContent = Math.floor((today - p2) / 864e5);
+  document.getElementById('new-date').value = todayStr;
+
+  function getPat() {
+    // 中古車ウォッチャーのPATを流用、なければ専用キー
+    return localStorage.getItem('usedcar_github_pat') || localStorage.getItem('garden_github_pat') || '';
+  }
+
+  function setStatus(msg, type = 'ok') {
+    const el = document.getElementById('status');
+    el.textContent = msg;
+    el.className = 'status ' + type;
+  }
+
+  function savePat() {
+    const pat = document.getElementById('pat-input').value.trim();
+    if (!pat) return;
+    localStorage.setItem('garden_github_pat', pat);
+    document.getElementById('pat-input').value = '';
+    document.getElementById('pat-status').textContent = '保存しました ✓';
+    document.getElementById('pat-status').className = 'status ok';
+    loadLogs();
+  }
+
+  async function loadLogs() {
+    const pat = getPat();
+    if (!pat) {
+      logs = defaultLogs;
+      renderLogs();
+      setStatus('PATが未設定のためデフォルトデータを表示中', 'err');
+      return;
+    }
+    setStatus('GitHubから読み込み中...', 'loading');
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_PATH}`,
+        { headers: { Authorization: `token ${pat}` } }
+      );
+      if (res.status === 404) {
+        logs = defaultLogs;
+        currentSha = undefined;
+        setStatus('新規ファイル（まだGitHubに保存されていません）', 'loading');
+      } else if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      } else {
+        const json = await res.json();
+        currentSha = json.sha;
+        logs = JSON.parse(atob(json.content.replace(/\n/g, '')));
+        setStatus('GitHubから読み込みました ✓');
+      }
+    } catch(e) {
+      logs = defaultLogs;
+      setStatus('読み込み失敗: ' + e.message, 'err');
+    }
+    renderLogs();
+  }
+
+  async function saveLogs() {
+    const pat = getPat();
+    if (!pat) { setStatus('PATが未設定です', 'err'); return; }
+    setStatus('GitHubに保存中...', 'loading');
+    try {
+      const body = {
+        message: 'update garden log',
+        content: btoa(unescape(encodeURIComponent(JSON.stringify(logs, null, 2)))),
+      };
+      if (currentSha) body.sha = currentSha;
+      const res = await fetch(
+        `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_PATH}`,
+        {
+          method: 'PUT',
+          headers: { Authorization: `token ${pat}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      currentSha = json.content.sha;
+      setStatus('GitHubに保存しました ✓');
+    } catch(e) {
+      setStatus('保存失敗: ' + e.message, 'err');
+    }
+  }
+
+  function renderLogs() {
+    const sorted = [...logs].sort((a, b) => a.date.localeCompare(b.date));
+    const el = document.getElementById('log-list');
+    if (sorted.length === 0) {
+      el.innerHTML = '<div style="color:#aaa;font-size:0.9em">まだ記録がありません</div>';
+      return;
+    }
+    el.innerHTML = sorted.map((l) => {
+      const idx = logs.findIndex(x => x.date === l.date && x.text === l.text);
+      const disp = l.date.slice(5).replace('-', '/');
+      return `<div class="log-item">
+        <span class="log-date">${disp}</span>
+        <span class="log-text">${l.text}</span>
+        <button class="delete-btn" onclick="deleteLog(${idx})">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  async function addLog() {
+    const date = document.getElementById('new-date').value;
+    const text = document.getElementById('new-text').value.trim();
+    if (!date || !text) return;
+    logs.push({ date, text });
+    renderLogs();
+    document.getElementById('new-text').value = '';
+    await saveLogs();
+  }
+
+  async function deleteLog(i) {
+    logs.splice(i, 1);
+    renderLogs();
+    await saveLogs();
+  }
+
+  // PATが既存のものと共有されている場合は入力欄にプレースホルダー表示
+  if (getPat()) {
+    document.getElementById('pat-status').textContent = 'PAT設定済み';
+    document.getElementById('pat-status').className = 'status ok';
+  }
+
+  loadLogs();
+</script>
+</body>
+</html>
