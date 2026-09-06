@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-06T01:06:36.198492",
+  "updated_at": "2026-09-06T06:05:19.250863",
   "total": 51,
   "listings": [
     {
@@ -11,7 +11,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7305740533/index.html",
       "fingerprint": "carsensor_AU7305740533",
       "watch_name": "V90 CC D4",
-      "scraped_at": "2026-09-06T01:06:11.808832",
+      "scraped_at": "2026-09-06T06:04:44.485202",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7305740533/index.html"
@@ -26,7 +26,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7154121127/index.html",
       "fingerprint": "carsensor_AU7154121127",
       "watch_name": "V90 CC D4",
-      "scraped_at": "2026-09-06T01:06:11.811307",
+      "scraped_at": "2026-09-06T06:04:44.486966",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7154121127/index.html"
@@ -41,7 +41,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7309033696/index.html",
       "fingerprint": "carsensor_AU7309033696",
       "watch_name": "V90 D4+T8",
-      "scraped_at": "2026-09-06T01:06:15.000578",
+      "scraped_at": "2026-09-06T06:04:48.660357",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7309033696/index.html"
@@ -52,15 +52,16 @@
       "title": "ボルボ V90 D4 モメンタム ディーゼルターボ インテリセーフ マルーンブラウン革 ナビ DTV 全方位カメラ スマートキー DSRC オートLED パークアシストパイロット 前後ドライブレコーダ",
       "year": 2019,
       "distance_km": 75000,
-      "price_man": 243,
+      "price_man": 233,
       "url": "https://www.carsensor.net/usedcar/detail/AU6904068259/index.html",
       "fingerprint": "carsensor_AU6904068259",
       "watch_name": "V90 D4+T8",
-      "scraped_at": "2026-09-06T01:06:15.003113",
+      "scraped_at": "2026-09-06T06:04:48.662190",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU6904068259/index.html"
-      }
+      },
+      "prev_price_man": 243
     },
     {
       "source": "carsensor",
@@ -71,7 +72,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7032031394/index.html",
       "fingerprint": "carsensor_AU7032031394",
       "watch_name": "V90 D4+T8",
-      "scraped_at": "2026-09-06T01:06:15.005619",
+      "scraped_at": "2026-09-06T06:04:48.664021",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7032031394/index.html"
@@ -86,7 +87,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7139447033/index.html",
       "fingerprint": "carsensor_AU7139447033",
       "watch_name": "V90 D4+T8",
-      "scraped_at": "2026-09-06T01:06:15.008133",
+      "scraped_at": "2026-09-06T06:04:48.665873",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7139447033/index.html"
@@ -101,7 +102,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7214848416/index.html",
       "fingerprint": "carsensor_AU7214848416",
       "watch_name": "V90 D4+T8",
-      "scraped_at": "2026-09-06T01:06:15.010247",
+      "scraped_at": "2026-09-06T06:04:48.667429",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7214848416/index.html"
@@ -116,7 +117,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7116002576/index.html",
       "fingerprint": "carsensor_AU7116002576",
       "watch_name": "V90 D4+T8",
-      "scraped_at": "2026-09-06T01:06:15.012775",
+      "scraped_at": "2026-09-06T06:04:48.669256",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7116002576/index.html"
@@ -131,7 +132,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7240252670/index.html",
       "fingerprint": "carsensor_AU7240252670",
       "watch_name": "V90 D4+T8",
-      "scraped_at": "2026-09-06T01:06:15.015274",
+      "scraped_at": "2026-09-06T06:04:48.671078",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7240252670/index.html"
@@ -146,7 +147,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7288873795/index.html",
       "fingerprint": "carsensor_AU7288873795",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.942990",
+      "scraped_at": "2026-09-06T06:04:52.204618",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7288873795/index.html"
@@ -161,7 +162,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7204964098/index.html",
       "fingerprint": "carsensor_AU7204964098",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.945348",
+      "scraped_at": "2026-09-06T06:04:52.206304",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7204964098/index.html"
@@ -176,7 +177,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7238349359/index.html",
       "fingerprint": "carsensor_AU7238349359",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.947622",
+      "scraped_at": "2026-09-06T06:04:52.207934",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7238349359/index.html"
@@ -191,7 +192,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7271591007/index.html",
       "fingerprint": "carsensor_AU7271591007",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.950150",
+      "scraped_at": "2026-09-06T06:04:52.209800",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7271591007/index.html"
@@ -206,7 +207,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7097419604/index.html",
       "fingerprint": "carsensor_AU7097419604",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.952673",
+      "scraped_at": "2026-09-06T06:04:52.211589",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7097419604/index.html"
@@ -221,7 +222,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU6888404494/index.html",
       "fingerprint": "carsensor_AU6888404494",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.955177",
+      "scraped_at": "2026-09-06T06:04:52.213353",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU6888404494/index.html"
@@ -229,14 +230,14 @@
     },
     {
       "source": "carsensor",
-      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD 後で 「お気に入り画面」 で じっくり比較検討できます！ 今後、表示させない 当社管理ユーザー様の下取り車両で、整備履歴等",
+      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD 当社管理ユーザー様の下取り車両で、整備履歴等管理もしっかりとした車両入荷致しました。 支払総額 392 .5 万円 車両本",
       "year": 2020,
       "distance_km": 35000,
       "price_man": 392,
       "url": "https://www.carsensor.net/usedcar/detail/AU7104413819/index.html",
       "fingerprint": "carsensor_AU7104413819",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.957514",
+      "scraped_at": "2026-09-06T06:04:52.214995",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7104413819/index.html"
@@ -244,14 +245,14 @@
     },
     {
       "source": "carsensor",
-      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD ブラウンレザー/ドラレコ/ETC/記録簿 後で 「お気に入り画面」 で じっくり比較検討できます！ 今後、表示させない 頭",
+      "title": "ボルボ XC60 D4 AWD インスクリプション ディーゼルターボ 4WD ブラウンレザー/ドラレコ/ETC/記録簿 頭金0円で最長120回までローンがご利用可能です！全国販売可能です☆総額はお気軽",
       "year": 2020,
       "distance_km": 34000,
       "price_man": 399,
       "url": "https://www.carsensor.net/usedcar/detail/AU7142251420/index.html",
       "fingerprint": "carsensor_AU7142251420",
       "watch_name": "XC60 D4+T",
-      "scraped_at": "2026-09-06T01:06:17.960087",
+      "scraped_at": "2026-09-06T06:04:52.216807",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7142251420/index.html"
@@ -266,7 +267,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7276698593/index.html",
       "fingerprint": "carsensor_AU7276698593",
       "watch_name": "V60 CC B5",
-      "scraped_at": "2026-09-06T01:06:21.520019",
+      "scraped_at": "2026-09-06T06:04:55.928067",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7276698593/index.html"
@@ -281,7 +282,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7101313373/index.html",
       "fingerprint": "carsensor_AU7101313373",
       "watch_name": "V60 CC B5",
-      "scraped_at": "2026-09-06T01:06:21.522612",
+      "scraped_at": "2026-09-06T06:04:55.929867",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7101313373/index.html"
@@ -296,7 +297,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7273340244/index.html",
       "fingerprint": "carsensor_AU7273340244",
       "watch_name": "V60 CC B5",
-      "scraped_at": "2026-09-06T01:06:21.525346",
+      "scraped_at": "2026-09-06T06:04:55.931664",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7273340244/index.html"
@@ -311,7 +312,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7291959058/index.html",
       "fingerprint": "carsensor_AU7291959058",
       "watch_name": "V60 CC B5",
-      "scraped_at": "2026-09-06T01:06:21.528052",
+      "scraped_at": "2026-09-06T06:04:55.933547",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7291959058/index.html"
@@ -326,7 +327,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7280787717/index.html",
       "fingerprint": "carsensor_AU7280787717",
       "watch_name": "V60 CC B5",
-      "scraped_at": "2026-09-06T01:06:21.530214",
+      "scraped_at": "2026-09-06T06:04:55.935111",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7280787717/index.html"
@@ -341,7 +342,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7058644719/index.html",
       "fingerprint": "carsensor_AU7058644719",
       "watch_name": "V60 CC B5",
-      "scraped_at": "2026-09-06T01:06:21.532793",
+      "scraped_at": "2026-09-06T06:04:55.936977",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7058644719/index.html"
@@ -356,7 +357,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7195404758/index.html",
       "fingerprint": "carsensor_AU7195404758",
       "watch_name": "V60 CC B5",
-      "scraped_at": "2026-09-06T01:06:21.535156",
+      "scraped_at": "2026-09-06T06:04:55.938706",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7195404758/index.html"
@@ -371,7 +372,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7221296685/index.html",
       "fingerprint": "carsensor_AU7221296685",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.539979",
+      "scraped_at": "2026-09-06T06:04:59.219890",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7221296685/index.html"
@@ -386,7 +387,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7298999403/index.html",
       "fingerprint": "carsensor_AU7298999403",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.542579",
+      "scraped_at": "2026-09-06T06:04:59.221757",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7298999403/index.html"
@@ -401,7 +402,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7218675120/index.html",
       "fingerprint": "carsensor_AU7218675120",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.545110",
+      "scraped_at": "2026-09-06T06:04:59.223573",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7218675120/index.html"
@@ -416,7 +417,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7122616155/index.html",
       "fingerprint": "carsensor_AU7122616155",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.547614",
+      "scraped_at": "2026-09-06T06:04:59.225374",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7122616155/index.html"
@@ -424,14 +425,14 @@
     },
     {
       "source": "carsensor",
-      "title": "ボルボ V60 プラス B4 禁煙車 純正9インチナビ 全周囲カメラ レーダークルーズ 茶革シート パワーメモリーシート シートヒーター パワーバックドア ステアリングヒーター パワーアシスト 後で ",
+      "title": "ボルボ V60 プラス B4 禁煙車 純正9インチナビ 全周囲カメラ レーダークルーズ 茶革シート パワーメモリーシート シートヒーター パワーバックドア ステアリングヒーター パワーアシスト ご遠方",
       "year": 2023,
       "distance_km": 21000,
       "price_man": 279,
       "url": "https://www.carsensor.net/usedcar/detail/AU7175000735/index.html",
       "fingerprint": "carsensor_AU7175000735",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.550116",
+      "scraped_at": "2026-09-06T06:04:59.227153",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7175000735/index.html"
@@ -446,10 +447,25 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7137164311/index.html",
       "fingerprint": "carsensor_AU7137164311",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.552664",
+      "scraped_at": "2026-09-06T06:04:59.228949",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7137164311/index.html"
+      }
+    },
+    {
+      "source": "carsensor",
+      "title": "ボルボ V60 B4 モメンタム 認定中古車 白革 純正ナビ 360°ビューカメラ シートヒーター メモリー機能付きパワーシート 禁煙車 パワーテールゲート Bluetooth 純正17インチアルミホ",
+      "year": 2021,
+      "distance_km": 21000,
+      "price_man": 308,
+      "url": "https://www.carsensor.net/usedcar/detail/AU7310536569/index.html",
+      "fingerprint": "carsensor_AU7310536569",
+      "watch_name": "V60 B(MHEV)~300M",
+      "scraped_at": "2026-09-06T06:04:59.230657",
+      "image_url": null,
+      "sources": {
+        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7310536569/index.html"
       }
     },
     {
@@ -461,7 +477,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7277018146/index.html",
       "fingerprint": "carsensor_AU7277018146",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.555035",
+      "scraped_at": "2026-09-06T06:04:59.232315",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7277018146/index.html"
@@ -476,7 +492,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7273017332/index.html",
       "fingerprint": "carsensor_AU7273017332",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.557579",
+      "scraped_at": "2026-09-06T06:04:59.234131",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7273017332/index.html"
@@ -491,7 +507,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7210356561/index.html",
       "fingerprint": "carsensor_AU7210356561",
       "watch_name": "V60 B(MHEV)~300M",
-      "scraped_at": "2026-09-06T01:06:24.560094",
+      "scraped_at": "2026-09-06T06:04:59.235915",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7210356561/index.html"
@@ -506,7 +522,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7240094208/index.html",
       "fingerprint": "carsensor_AU7240094208",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.528733",
+      "scraped_at": "2026-09-06T06:05:02.492371",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7240094208/index.html"
@@ -521,7 +537,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU6618932991/index.html",
       "fingerprint": "carsensor_AU6618932991",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.531261",
+      "scraped_at": "2026-09-06T06:05:02.494267",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU6618932991/index.html"
@@ -536,7 +552,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7305607263/index.html",
       "fingerprint": "carsensor_AU7305607263",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.533666",
+      "scraped_at": "2026-09-06T06:05:02.496073",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7305607263/index.html"
@@ -551,7 +567,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7273188758/index.html",
       "fingerprint": "carsensor_AU7273188758",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.535967",
+      "scraped_at": "2026-09-06T06:05:02.497760",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7273188758/index.html"
@@ -566,7 +582,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7173346938/index.html",
       "fingerprint": "carsensor_AU7173346938",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.538459",
+      "scraped_at": "2026-09-06T06:05:02.499566",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7173346938/index.html"
@@ -581,7 +597,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7133579660/index.html",
       "fingerprint": "carsensor_AU7133579660",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.540933",
+      "scraped_at": "2026-09-06T06:05:02.501347",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7133579660/index.html"
@@ -596,7 +612,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7282796168/index.html",
       "fingerprint": "carsensor_AU7282796168",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.543433",
+      "scraped_at": "2026-09-06T06:05:02.503162",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7282796168/index.html"
@@ -611,7 +627,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7305597204/index.html",
       "fingerprint": "carsensor_AU7305597204",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.545996",
+      "scraped_at": "2026-09-06T06:05:02.505001",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7305597204/index.html"
@@ -626,7 +642,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7265117951/index.html",
       "fingerprint": "carsensor_AU7265117951",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.548507",
+      "scraped_at": "2026-09-06T06:05:02.506856",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7265117951/index.html"
@@ -641,7 +657,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7151846292/index.html",
       "fingerprint": "carsensor_AU7151846292",
       "watch_name": "V60 PHEV",
-      "scraped_at": "2026-09-06T01:06:27.551027",
+      "scraped_at": "2026-09-06T06:05:02.508671",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7151846292/index.html"
@@ -656,7 +672,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7160634214/index.html",
       "fingerprint": "carsensor_AU7160634214",
       "watch_name": "A4アバントTDI",
-      "scraped_at": "2026-09-06T01:06:30.187132",
+      "scraped_at": "2026-09-06T06:05:07.242218",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7160634214/index.html"
@@ -671,7 +687,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7251814167/index.html",
       "fingerprint": "carsensor_AU7251814167",
       "watch_name": "A4アバントTDI",
-      "scraped_at": "2026-09-06T01:06:30.189512",
+      "scraped_at": "2026-09-06T06:05:07.243909",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7251814167/index.html"
@@ -686,7 +702,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7234071160/index.html",
       "fingerprint": "carsensor_AU7234071160",
       "watch_name": "A4アバントTDI",
-      "scraped_at": "2026-09-06T01:06:30.191989",
+      "scraped_at": "2026-09-06T06:05:07.245722",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7234071160/index.html"
@@ -701,7 +717,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7294636002/index.html",
       "fingerprint": "carsensor_AU7294636002",
       "watch_name": "A4アバントTDI",
-      "scraped_at": "2026-09-06T01:06:30.194508",
+      "scraped_at": "2026-09-06T06:05:07.247562",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7294636002/index.html"
@@ -716,25 +732,10 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7034069223/index.html",
       "fingerprint": "carsensor_AU7034069223",
       "watch_name": "A4アバントTDI",
-      "scraped_at": "2026-09-06T01:06:30.196985",
+      "scraped_at": "2026-09-06T06:05:07.249363",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7034069223/index.html"
-      }
-    },
-    {
-      "source": "carsensor",
-      "title": "アウディ A4アバント 35 TDI アドバンスト ディーゼルターボ サラウンドビューカメラ/パークアシスト シートヒーター パーシャルレザー プライバシーガラス マトリクスLEDヘッドライトパッケー",
-      "year": 2021,
-      "distance_km": 20000,
-      "price_man": 303,
-      "url": "https://www.carsensor.net/usedcar/detail/AU7270784899/index.html",
-      "fingerprint": "carsensor_AU7270784899",
-      "watch_name": "A4アバントTDI",
-      "scraped_at": "2026-09-06T01:06:30.199480",
-      "image_url": null,
-      "sources": {
-        "carsensor": "https://www.carsensor.net/usedcar/detail/AU7270784899/index.html"
       }
     },
     {
@@ -746,7 +747,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU6904360275/index.html",
       "fingerprint": "carsensor_AU6904360275",
       "watch_name": "A4アバントTDI",
-      "scraped_at": "2026-09-06T01:06:30.201988",
+      "scraped_at": "2026-09-06T06:05:07.251180",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU6904360275/index.html"
@@ -761,7 +762,7 @@
       "url": "https://www.carsensor.net/usedcar/detail/AU7305598048/index.html",
       "fingerprint": "carsensor_AU7305598048",
       "watch_name": "ポルシェ ~350M",
-      "scraped_at": "2026-09-06T01:06:35.080947",
+      "scraped_at": "2026-09-06T06:05:17.944477",
       "image_url": null,
       "sources": {
         "carsensor": "https://www.carsensor.net/usedcar/detail/AU7305598048/index.html"
