@@ -1,0 +1,285 @@
+<title>朝の拾いもの</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#fbfbf9; --surface:#ffffff; --fg:#1c1e1c; --muted:#6a6f6a;
+  --line:#e4e5e0; --chip:#eeefe9; --chipOn:#2f5d38; --chipOnFg:#fbfbf9;
+  --accent:#2f5d38; --thumb:#eceee8; --like:#a8443c; --likeBg:#f6eae8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121412; --surface:#181b18; --fg:#e6e8e4; --muted:#949a92;
+    --line:#272b27; --chip:#22261f; --chipOn:#86b98c; --chipOnFg:#121412;
+    --accent:#86b98c; --thumb:#22261f; --like:#e0857c; --likeBg:#2a1e1d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121412; --surface:#181b18; --fg:#e6e8e4; --muted:#949a92;
+  --line:#272b27; --chip:#22261f; --chipOn:#86b98c; --chipOnFg:#121412;
+  --accent:#86b98c; --thumb:#22261f; --like:#e0857c; --likeBg:#2a1e1d;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",sans-serif;
+  line-height:1.72; -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:660px; margin:0 auto; padding:34px 18px 90px;
+  display:flex; flex-direction:column; gap:24px}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent); outline-offset:3px; border-radius:3px}
+
+header{display:flex; flex-direction:column; gap:7px}
+h1{font-size:1.5rem; font-weight:700; letter-spacing:.02em; margin:0; text-wrap:balance}
+.rule{height:2px; background:var(--accent); width:44px; border-radius:2px}
+.stamp{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.72rem;
+  color:var(--muted); letter-spacing:.06em; font-variant-numeric:tabular-nums}
+
+.filters{display:flex; flex-wrap:wrap; gap:7px}
+.chip{font:inherit; font-size:.75rem; line-height:1.5; padding:5px 12px;
+  border-radius:999px; border:1px solid var(--line); background:var(--chip);
+  color:var(--fg); cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--chipOn); color:var(--chipOnFg); border-color:var(--chipOn)}
+
+/* 定点観測（URL固定・毎日中身が変わるページ） */
+.pin{display:flex; align-items:center; gap:8px; min-width:0}
+.pin-lb{flex:0 0 auto; font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:.64rem; letter-spacing:.1em; color:var(--muted)}
+.pin-scroll{display:flex; gap:6px; overflow-x:auto; padding-bottom:2px;
+  scrollbar-width:none; -ms-overflow-style:none}
+.pin-scroll::-webkit-scrollbar{display:none}
+.pin-scroll a{
+  flex:0 0 auto; font-size:.72rem; line-height:1.5; padding:4px 11px;
+  border-radius:999px; border:1px dashed var(--line); color:var(--muted);
+  text-decoration:none; white-space:nowrap;
+}
+.pin-scroll a:hover{color:var(--accent); border-color:var(--accent)}
+.pin[hidden]{display:none}
+
+.days{display:flex; flex-direction:column; gap:20px}
+.dstamp{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.72rem;
+  letter-spacing:.08em; color:var(--muted); font-variant-numeric:tabular-nums;
+  display:flex; align-items:center; gap:10px}
+.dstamp::after{content:""; flex:1; height:1px; background:var(--line)}
+details > summary{list-style:none; cursor:pointer; padding:4px 0}
+details > summary::-webkit-details-marker{display:none}
+summary .dstamp::before{content:"+"; color:var(--accent); font-weight:500}
+details[open] summary .dstamp::before{content:"−"}
+.items{display:flex; flex-direction:column; margin-top:10px}
+
+.item{display:flex; align-items:flex-start; gap:6px;
+  border-bottom:1px solid var(--line); padding:10px 0}
+.items > .item:last-child{border-bottom:none}
+.item.liked{background:var(--likeBg); border-radius:7px; padding-left:8px; padding-right:4px}
+.lk{flex:1; min-width:0; display:flex; gap:12px; align-items:flex-start; text-decoration:none}
+.lk:hover .title{color:var(--accent)}
+.thumb{flex:0 0 86px; width:86px; height:58px; border-radius:5px;
+  overflow:hidden; background:var(--thumb)}
+.thumb.none{display:none}
+.thumb img{width:100%; height:100%; object-fit:cover; display:block}
+.txt{flex:1; min-width:0; display:flex; flex-direction:column; gap:3px}
+.title{font-size:.94rem; font-weight:500; line-height:1.55; word-break:break-word}
+.meta{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.67rem;
+  letter-spacing:.04em; color:var(--muted); display:flex; gap:9px; flex-wrap:wrap}
+.meta .tp{color:var(--accent)}
+
+.acts{flex:0 0 auto; display:flex; flex-direction:column; gap:3px; padding-top:2px}
+.acts button{
+  font:inherit; font-size:.8rem; line-height:1; width:28px; height:26px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:transparent; border:1px solid transparent; border-radius:6px;
+  color:var(--muted);
+}
+.acts button:hover{border-color:var(--line); background:var(--surface)}
+.acts .like[aria-pressed="true"]{color:var(--like); border-color:var(--like)}
+.none-msg{color:var(--muted); font-size:.9rem; padding:28px 0; text-align:center}
+
+.bar{position:fixed; left:0; right:0; bottom:0; background:var(--surface);
+  border-top:1px solid var(--line); padding:9px 18px; display:flex; justify-content:center}
+.bar-in{width:100%; max-width:660px; display:flex; align-items:center; gap:12px;
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:.7rem; color:var(--muted)}
+.bar-in .grow{flex:1}
+.bar-in .st{color:var(--accent)}
+.bar[hidden]{display:none}
+@media (prefers-reduced-motion: reduce){*{transition:none !important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="rule"></div>
+    <h1>朝の拾いもの</h1>
+    <div class="stamp" id="stamp"></div>
+  </header>
+  <div class="filters" id="filters"></div>
+  <div class="pin" id="pin" hidden>
+    <span class="pin-lb">定点</span>
+    <div class="pin-scroll" id="pinScroll"></div>
+  </div>
+  <div class="days" id="days"></div>
+</div>
+
+<div class="bar" id="bar" hidden>
+  <div class="bar-in">
+    <span id="counts"></span>
+    <span class="grow"></span>
+    <span class="st" id="status"></span>
+  </div>
+</div>
+
+<script>
+const TEMPLATE = "__TEMPLATE__";
+const STATE = __STATE__;
+
+STATE.feedback = STATE.feedback || { liked: [], hidden: [], hiddenSources: [] };
+const FB = STATE.feedback;
+
+const $days = document.getElementById("days");
+const $filters = document.getElementById("filters");
+const $stamp = document.getElementById("stamp");
+const $bar = document.getElementById("bar");
+const $counts = document.getElementById("counts");
+const $status = document.getElementById("status");
+
+let topic = null;
+let api = null;
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g,
+  c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function fmt(iso){
+  const [y,m,d] = String(iso).split("-").map(Number);
+  const w = "日月火水木金土"[new Date(y,m-1,d).getDay()];
+  return `${y}.${String(m).padStart(2,"0")}.${String(d).padStart(2,"0")} ${w}`;
+}
+
+function visible(it){
+  if (FB.hidden.includes(it.url)) return false;
+  if (FB.hiddenSources.includes(it.source)) return false;
+  if (topic && it.topic !== topic) return false;
+  return true;
+}
+
+function itemHTML(it){
+  const liked = FB.liked.includes(it.url);
+  const thumb = it.thumb
+    ? `<div class="thumb"><img src="${esc(it.thumb)}" alt="" loading="lazy"
+         referrerpolicy="no-referrer" onerror="this.parentNode.classList.add('none')"></div>` : "";
+  const tp = it.topic ? `<span class="tp">${esc(it.topic)}</span>` : "";
+  return `<div class="item${liked ? " liked" : ""}" data-u="${esc(it.url)}">
+    <a class="lk" href="${esc(it.url)}" target="_blank" rel="noopener">
+      ${thumb}
+      <div class="txt">
+        <div class="title">${esc(it.title)}</div>
+        <div class="meta"><span>${esc(it.source||"")}</span>${tp}</div>
+      </div>
+    </a>
+    <div class="acts">
+      <button class="like" data-a="like" aria-pressed="${liked}"
+        title="好き（次回以降この傾向を増やす）">${liked ? "♥" : "♡"}</button>
+      <button data-a="hide" title="見たくない（この記事を消す）">✕</button>
+    </div>
+  </div>`;
+}
+
+function render(){
+  const blocks = STATE.days.map((day, i) => {
+    const items = (day.items || []).filter(visible);
+    if (!items.length) return "";
+    const inner = `<div class="items">${items.map(itemHTML).join("")}</div>`;
+    if (i === 0) return `<section><div class="dstamp">${fmt(day.date)}</div>${inner}</section>`;
+    return `<details><summary><span class="dstamp">${fmt(day.date)}　${items.length}件</span></summary>${inner}</details>`;
+  }).join("");
+  $days.innerHTML = blocks || `<div class="none-msg">表示できる記事がありません。</div>`;
+  updateBar();
+}
+
+function renderFilters(){
+  const ts = [...new Set(STATE.days.flatMap(d => (d.items||[]).map(i => i.topic)).filter(Boolean))];
+  $filters.innerHTML = [
+    `<button class="chip" data-t="" aria-pressed="${topic===null}">すべて</button>`,
+    ...ts.map(t => `<button class="chip" data-t="${esc(t)}" aria-pressed="${topic===t}">${esc(t)}</button>`)
+  ].join("");
+}
+
+$filters.addEventListener("click", e => {
+  const b = e.target.closest(".chip");
+  if (!b) return;
+  topic = b.dataset.t || null;
+  renderFilters(); render();
+});
+
+// ---- フィードバック ----
+let timer = null;
+
+$days.addEventListener("click", e => {
+  const b = e.target.closest("[data-a]");
+  if (!b) return;
+  e.preventDefault();
+  const url = b.closest(".item").dataset.u;
+  if (b.dataset.a === "like") {
+    const i = FB.liked.indexOf(url);
+    i < 0 ? FB.liked.push(url) : FB.liked.splice(i, 1);
+  } else {
+    if (!FB.hidden.includes(url)) FB.hidden.push(url);
+    const li = FB.liked.indexOf(url);
+    if (li >= 0) FB.liked.splice(li, 1);
+  }
+  render();
+  queueSave();
+});
+
+function updateBar(){
+  $counts.textContent = `♥ ${FB.liked.length}　✕ ${FB.hidden.length}`;
+  $bar.hidden = !api;
+}
+
+function queueSave(){
+  if (!api) return;
+  $status.textContent = "…";
+  clearTimeout(timer);
+  timer = setTimeout(saveNow, 1200);
+}
+
+// ビルド時の置換と衝突しないよう、マーカーは実行時に組み立てる
+const MK = s => "__" + s + "__";
+
+function buildDoc(){
+  const bin = atob(TEMPLATE);
+  const src = new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
+  const json = JSON.stringify(STATE);
+  return src
+    .replace(MK("TEMPLATE"), () => TEMPLATE)
+    .replace(MK("STATE"), () => json);
+}
+
+async function saveNow(){
+  try {
+    await api.publish(buildDoc());
+    $status.textContent = "保存した";
+  } catch (err) {
+    $status.textContent = (err && err.code === "conflict") ? "他で更新あり" : "保存できず";
+  }
+  setTimeout(() => { $status.textContent = ""; }, 2500);
+}
+
+function renderPinned(){
+  const list = (STATE.pinned || []).filter(p => !FB.hidden.includes(p.url));
+  const $p = document.getElementById("pin");
+  if (!list.length) { $p.hidden = true; return; }
+  $p.hidden = false;
+  document.getElementById("pinScroll").innerHTML = list.map(p =>
+    `<a href="${esc(p.url)}" target="_blank" rel="noopener"
+       title="${esc(p.source||"")}">${esc(p.title)}</a>`).join("");
+}
+renderPinned();
+
+const total = STATE.days.reduce((n,d) => n + (d.items||[]).length, 0);
+$stamp.textContent = `最終更新 ${String(STATE.updated).replace("T"," ").slice(0,16)} ／ 全${total}件`;
+renderFilters();
+render();
+
+// 保存機能が使えない環境（プレビュー等）でも静的ページとして成立させる
+Promise.resolve(window.claude && window.claude.use ? window.claude.use("artifact") : null)
+  .then(a => { api = a; updateBar(); })
+  .catch(() => {});
+</script>
